@@ -15,6 +15,7 @@ $nombre   = $_SESSION['nombre'];
 <head>
     <meta charset="UTF-8">
     <title>Dashboard — Constructora</title>
+    <link rel="stylesheet" href="https://cdn.datatables.net/2.3.8/css/dataTables.dataTables.min.css">
 </head>
 <body>
 
@@ -56,13 +57,16 @@ $nombre   = $_SESSION['nombre'];
     ?>
 
     <?php if ($proyectos): ?>
-        <table border="1" cellpadding="8">
+        <table class="tabla-datos" border="1" cellpadding="8">
+        <thead>
             <tr>
                 <th>Proyecto</th>
                 <th>Tipo</th>
                 <th>Estado</th>
                 <th>Fecha fin estimada</th>
             </tr>
+         </thead>
+         <tbody>
             <?php foreach ($proyectos as $p): ?>
                 <tr>
                     <td><?= htmlspecialchars($p['nombre']) ?></td>
@@ -71,6 +75,7 @@ $nombre   = $_SESSION['nombre'];
                     <td><?= $p['fecha_fin_estimada'] ?></td>
                 </tr>
             <?php endforeach; ?>
+         </tbody>
         </table>
     <?php else: ?>
         <p>No tienes proyectos asignados.</p>
@@ -94,13 +99,16 @@ $nombre   = $_SESSION['nombre'];
     ?>
 
     <?php if ($stock_bajo): ?>
-        <table border="1" cellpadding="8">
+        <table class="tabla-datos" border="1" cellpadding="8">
+        <thead>
             <tr>
                 <th>Material</th>
                 <th>Almacén</th>
                 <th>Stock actual</th>
                 <th>Stock mínimo</th>
             </tr>
+         </thead>
+         <tbody>
             <?php foreach ($stock_bajo as $s): ?>
                 <tr>
                     <td><?= htmlspecialchars($s['nombre']) ?></td>
@@ -109,6 +117,7 @@ $nombre   = $_SESSION['nombre'];
                     <td><?= $s['stock_minimo'] ?></td>
                 </tr>
             <?php endforeach; ?>
+          </tbody>
         </table>
     <?php else: ?>
         <p>Todo el inventario está en niveles normales.</p>
@@ -133,17 +142,21 @@ $nombre   = $_SESSION['nombre'];
     $empleados = $stmt->fetchAll();
     ?>
 
-    <table border="1" cellpadding="8">
+    <table class="tabla-datos" border="1" cellpadding="8">
+    <thead>
         <tr>
             <th>Nombre</th>
             <th>Cargo actual</th>
         </tr>
+     </thead> 
+     <tbody>
         <?php foreach ($empleados as $emp): ?>
             <tr>
                 <td><?= htmlspecialchars($emp['nombre']) ?></td>
                 <td><?= htmlspecialchars($emp['cargo']) ?></td>
             </tr>
         <?php endforeach; ?>
+      </tbody>
     </table>
 <?php endif; ?>
 
@@ -304,6 +317,18 @@ $nombre   = $_SESSION['nombre'];
 
 <hr>
 <a href="modules/auth/logout.php">Cerrar sesión</a>
-
+<script src="https://code.jquery.com/jquery-3.7.1.js"></script>
+<script src="https://cdn.datatables.net/2.3.8/js/dataTables.min.js"></script>
+<script>
+$(document).ready(function() {
+    $('.tabla-datos').DataTable({
+        "language": {
+            "url": "https://cdn.datatables.net/plug-ins/1.11.5/i18n/es-ES.json"
+        },
+        "paging": true,
+        "searching": true
+    });
+});
+</script>
 </body>
 </html>

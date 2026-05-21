@@ -26,8 +26,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $stmt->execute([$usuario]);
         $user = $stmt->fetch();
 
-        //if ($user && $user['estado'] === 'activo' && $contrasena === $user['password_hash']) {
-        if ($user && $user['estado'] === 'activo' && password_verify($contrasena, $user['password_hash'])) {
+        if ($user && $user['estado'] === 'activo' && $contrasena === $user['password_hash']) {
+        //las contrasena al registrar usuario se genera con hash. 
+        //si quieres que la contrasena nuevas cuentas funcionen comparalo asi. (tendrias que volver a registrar las cuentas que ya habian de antes)
+        //if ($user && $user['estado'] === 'activo' && password_verify($contrasena, $user['password_hash'])) {
 
             // Carga los permisos del usuario
             $stmt2 = $pdo->prepare("
