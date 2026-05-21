@@ -1,9 +1,7 @@
 <?php
 require_once '../../config/session.php';
 require_once '../../config/database.php';
-require_once '../../middleware/logger.php';
 
-// Si ya está logueado, manda al dashboard
 if (isset($_SESSION['id_usuario'])) {
     header('Location: ../../dashboard.php');
     exit;
@@ -26,9 +24,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $stmt->execute([$usuario]);
         $user = $stmt->fetch();
 
-        if ($user && $user['estado'] === 'activo' && $contrasena === $user['password_hash']) {
-
-            // Carga los permisos del usuario
+        if ($user && $user['estado'] === 'activo' && password_verify($contrasena, $user['password_hash'])) {
             $stmt2 = $pdo->prepare("
                 SELECT DISTINCT p.nombre_permiso
                 FROM usuarios_roles ur
@@ -39,7 +35,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $stmt2->execute([$user['id_usuario_sistema']]);
             $permisos = $stmt2->fetchAll(PDO::FETCH_COLUMN);
 
-            // Carga los roles
             $stmt3 = $pdo->prepare("
                 SELECT r.nombre_rol
                 FROM usuarios_roles ur
@@ -49,16 +44,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $stmt3->execute([$user['id_usuario_sistema']]);
             $roles = $stmt3->fetchAll(PDO::FETCH_COLUMN);
 
-            // Guarda en sesión
-            $_SESSION['id_usuario'] = $user['id_usuario_sistema'];
-            $_SESSION['nombre']     = $user['nombre'];
-            $_SESSION['permisos']   = $permisos;
-            $_SESSION['roles']      = $roles;
-            registrarAccion('Entro al sistema');
+            $_SESSION['id_usuario']  = $user['id_usuario_sistema'];
+            $_SESSION['nombre']      = $user['nombre'];
+            $_SESSION['permisos']    = $permisos;
+            $_SESSION['roles']       = $roles;
+            $_SESSION['tipo_sesion'] = 'empleado';
 
             header('Location: ../../dashboard.php');
             exit;
-
         } else {
             $error = 'Usuario o contraseña incorrectos';
         }
@@ -72,26 +65,30 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Login — Constructora</title>
+    <title>Iniciar Sesión como Empleado — Empresa Constructora</title>
 </head>
 <body>
-    <h1>Constructora</h1>
-    <h2>Iniciar Sesión</h2>
 
-    <?php if ($error): ?>
-        <p style="color:red"><?= $error ?></p>
-    <?php endif; ?>
+<h2>👷 Iniciar Sesión como Empleado — Empresa Constructora</h2>
+<a href="inicio.php">← Volver</a>
 
-    <form method="POST">
-        <label>Usuario:</label><br>
-        <input type="text" name="usuario" required><br><br>
+<br><br>
 
-        <label>Contraseña:</label><br>
-        <input type="password" name="contrasena" required><br><br>
+<?php if ($error): ?>
+    <p style="color:red"><?= $error ?></p>
+<?php endif; ?>
 
-        <button type="submit">Entrar</button>
-    </form>
+<form method="POST">
+    <label>Usuario:</label><br>
+    <input type="text" name="usuario" required><br><br>
+
+    <label>Contraseña:</label><br>
+    <input type="password" name="contrasena" required><br><br>
+
+    <button type="submit">Entrar</button>
+</form>
 
     <p>¿No tienes cuenta? <a href="register.php">Crear cuenta</a></p>
+    <p>¿Olvidaste tu contraseña? <a href="recuperar.php">Recuperar aquí</a></p>
 </body>
 </html>
