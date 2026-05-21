@@ -26,7 +26,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $stmt->execute([$usuario]);
         $user = $stmt->fetch();
 
-        if ($user && $user['estado'] === 'activo' && $contrasena === $user['password_hash']) {
+        //if ($user && $user['estado'] === 'activo' && $contrasena === $user['password_hash']) {
+        if ($user && $user['estado'] === 'activo' && password_verify($contrasena, $user['password_hash'])) {
 
             // Carga los permisos del usuario
             $stmt2 = $pdo->prepare("
