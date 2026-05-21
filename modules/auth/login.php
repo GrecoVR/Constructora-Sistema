@@ -75,26 +75,36 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <html lang="es">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login — Constructora</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body>
-    <h1>Constructora</h1>
-    <h2>Iniciar Sesión</h2>
-
     <?php if ($error): ?>
         <p style="color:red"><?= $error ?></p>
     <?php endif; ?>
-
-    <form method="POST">
-        <label>Usuario:</label><br>
-        <input type="text" name="usuario" required><br><br>
-
-        <label>Contraseña:</label><br>
-        <input type="password" name="contrasena" required><br><br>
-
-        <button type="submit">Entrar</button>
-    </form>
-
-    <p>¿No tienes cuenta? <a href="register.php">Crear cuenta</a></p>
+     <div class="container-fluid bg-light">
+        <div class="wrapper d-flex align-items-center justify-content-center vh-100">
+            <div class="card" style="width:350px;">
+                <div class="card-body">
+                    <h5 class="card-title text-center">Iniciar Sesion</h5>
+                    <form method="POST">
+                       <div class="mb-3">
+                          <label for="user" class="form-label">Usuario:</label><br>
+                          <input class="form-control" type="text" name="usuario" id="user" required>
+                       </div>
+                       <div class="mb-3">
+                          <label for="password" class="form-label">Contraseña:</label><br>
+                          <input  class="form-control" type="password" name="contrasena" id="password" required>
+                       </div>
+                       <button class="btn btn-primary w-100" type="submit">Entrar</button>
+                       <div class="sign-up mt-3 text-center">
+                          ¿No tienes cuenta? <a href="register.php">Crear cuenta</a>
+                       </div>
+                    </form>
+               </div>
+             </div>
+          </div>
+      </div>
 </body>
 </html>
