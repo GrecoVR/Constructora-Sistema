@@ -10,18 +10,9 @@ $roles    = $_SESSION['roles'];
 $nombre   = $_SESSION['nombre'];
 ?>
 
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard — Constructora</title>
-    <!-- Bootstrap -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.datatables.net/2.3.8/css/dataTables.dataTables.min.css">
-</head>
-<body>
-<div class="container-fluid p-4">
+<?php require_once 'modules/layouts/header.php'; ?>
+
+<div class="p-4">
   <h2>Bienvenido, <?= htmlspecialchars($nombre) ?></h2>
   <p><strong>Roles:</strong> <?= implode(', ', $roles) ?></p>
   <p><strong>Permisos:</strong> <?= implode(', ', $permisos) ?></p>
@@ -215,7 +206,7 @@ $nombre   = $_SESSION['nombre'];
       <h3>🔄 Movimientos de Inventario</h3>
       <p>Puedes registrar entradas, salidas y ajustes de materiales.</p>
       <a href="modules/materiales/movimientos.php">
-          <button>Registrar movimiento</button>
+          <button class="btn btn-primary">Registrar movimiento</button>
       </a>
   <?php endif; ?>
 
@@ -321,8 +312,6 @@ $nombre   = $_SESSION['nombre'];
   <hr>
   <a href="modules/auth/logout.php">Cerrar sesión</a>
 </div>
-<script src="https://code.jquery.com/jquery-3.7.1.js"></script>
-<script src="https://cdn.datatables.net/2.3.8/js/dataTables.min.js"></script>
 <script>
 $(document).ready(function() {
     $('.tabla-datos').DataTable({
@@ -334,5 +323,4 @@ $(document).ready(function() {
     });
 });
 </script>
-</body>
-</html>
+<?php require_once 'modules/layouts/footer.php'; ?>
