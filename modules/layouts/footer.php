@@ -1,8 +1,8 @@
 <!-- Footer for end section -->
-      <div class="row">
-        <footer class="pt-5 d-flex justify-content-between">
-          <span class="fw-semibold">Taller de Base de Datos</span>
-          <ul class="nav m-0">
+      <div class="row mt-3 border-top">      
+        <footer class="pt-3 d-flex justify-content-between">
+          <p class="fw-semibold">Taller de Base de Datos</p>
+          <ul class="nav">
             <li class="nav-item">
               <a class="nav-link text-secondary" aria-current="page" href="#">Grupo-1</a>
             </li>
@@ -24,19 +24,20 @@
       <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
     </div>
     <div class="offcanvas-body">
-     <?php require 'modules/layouts/menu.php'; ?>
+     <?php require 'menu.php'; ?>
     </div>
   </div>
   <script>
     function changeclass() {
+      
       const mclass = $("#main");
-      if (mclass.hasClass('col-sm-12')) {
+      if (mclass.hasClass('col-sm-8')) {
         localStorage.setItem('menushow', 1)
       } else {
         localStorage.setItem('menushow', 0)
       }
 
-      $("#main").toggleClass('col-sm-10 col-sm-12');
+      $("#main").toggleClass('col-md-10 col-sm-8');
     }
      /*!
      * Color mode toggler

@@ -1,7 +1,7 @@
 <?php
-require_once 'middleware/auth.php';
-require_once 'middleware/logger.php';
-require_once 'config/database.php';
+require_once '../../middleware/auth.php';
+require_once '../../middleware/logger.php';
+require_once '../../config/database.php';
 
 
 $pdo      = conectar();
@@ -10,17 +10,20 @@ $roles    = $_SESSION['roles'];
 $nombre   = $_SESSION['nombre'];
 ?>
 
-<?php require_once 'modules/layouts/header.php'; ?>
+<?php require_once '../layouts/header.php'; ?>
 
 <div class="p-4">
   <h2>Bienvenido, <?= htmlspecialchars($nombre) ?></h2>
   <p><strong>Roles:</strong> <?= implode(', ', $roles) ?></p>
   <p><strong>Permisos:</strong> <?= implode(', ', $permisos) ?></p>
 
-  <hr>
-
+  
   <?php if (in_array('ver_proyectos', $permisos)): ?>
-      <h3>📁 Proyectos</h3>
+  <div class="card shadow mb-4">
+      <div class="card-header">
+          <h4 class="mb-0">📁 Proyectos</h4>
+      </div> 
+      <div class="card-body table-responsive"> 
       <?php
       // Si es gerente o director ve todos
       // Si es jefe de obras solo ve los suyos
@@ -51,7 +54,8 @@ $nombre   = $_SESSION['nombre'];
       ?>
 
       <?php if ($proyectos): ?>
-          <table class="tabla-datos" border="1" cellpadding="8">
+        
+          <table class="tabla-datos table table-striped table-bordered">
           <thead>
               <tr>
                   <th>Proyecto</th>
@@ -74,12 +78,18 @@ $nombre   = $_SESSION['nombre'];
       <?php else: ?>
           <p>No tienes proyectos asignados.</p>
       <?php endif; ?>
+  </div><!-- end card-body -->
+  </div><!-- end card -->
   <?php endif; ?>
 
-  <hr>
 
-  <?php if (in_array('ver_inventarios', $permisos)): ?>
-      <h3>📦 Inventario con stock bajo</h3>
+
+  <?php if (in_array('ver_inventarios', $permisos)): ?>      
+      <div class="card shadow mb-4">
+      <div class="card-header">
+          <h4 class="mb-0">📦 Inventario con stock bajo</h4>
+      </div> 
+      <div class="card-body table-responsive"> 
       <?php
       $stmt = $pdo->query("
           SELECT m.nombre, i.stock, i.stock_minimo, a.nombre as almacen
@@ -93,7 +103,7 @@ $nombre   = $_SESSION['nombre'];
       ?>
 
       <?php if ($stock_bajo): ?>
-          <table class="tabla-datos" border="1" cellpadding="8">
+          <table class="tabla-datos table table-striped table-bordered">
           <thead>
               <tr>
                   <th>Material</th>
@@ -116,12 +126,18 @@ $nombre   = $_SESSION['nombre'];
       <?php else: ?>
           <p>Todo el inventario está en niveles normales.</p>
       <?php endif; ?>
+  </div><!-- end card-body -->
+  </div><!-- end card -->
   <?php endif; ?>
 
-  <hr>
+  
 
   <?php if (in_array('ver_empleados', $permisos)): ?>
-      <h3>👷 Empleados activos</h3>
+      <div class="card shadow mb-4">
+      <div class="card-header">
+          <h4 class="mb-0">👷 Empleados activos</h4>
+      </div> 
+      <div class="card-body table-responsive"> 
       <?php
       $stmt = $pdo->query("
           SELECT e.nombre, MAX(c.nombre) as cargo
@@ -136,7 +152,7 @@ $nombre   = $_SESSION['nombre'];
       $empleados = $stmt->fetchAll();
       ?>
 
-      <table class="tabla-datos" border="1" cellpadding="8">
+      <table class="tabla-datos table table-striped table-bordered">
       <thead>
           <tr>
               <th>Nombre</th>
@@ -152,12 +168,18 @@ $nombre   = $_SESSION['nombre'];
           <?php endforeach; ?>
         </tbody>
       </table>
+  </div><!-- end card-body -->
+  </div><!-- end card -->
   <?php endif; ?>
 
-  <hr>
+  
 
   <?php if (in_array('ver_reportes_financieros', $permisos)): ?>
-      <h3>💰 Resumen financiero</h3>
+      <div class="card shadow mb-4">
+      <div class="card-header">
+          <h4 class="mb-0">💰 Resumen financiero</h4>
+      </div> 
+      <div class="card-body"> 
       <?php
       $stmt = $pdo->query("
           SELECT 
@@ -170,12 +192,16 @@ $nombre   = $_SESSION['nombre'];
       <p>✅ Ingresos recibidos: <strong>Bs <?= number_format($fin['ingresos'], 2) ?></strong></p>
       <p>👷 Pagos personal: <strong>Bs <?= number_format($fin['gastos_personal'], 2) ?></strong></p>
       <p>🏗️ Gastos de obra: <strong>Bs <?= number_format($fin['gastos_obra'], 2) ?></strong></p>
+    </div><!-- end card-body -->
+    </div><!-- end card -->
   <?php endif; ?>
 
-  <hr>
-
   <?php if (in_array('ver_auditoria', $permisos)): ?>
-      <h3>🔍 Últimas acciones en el sistema</h3>
+      <div class="card shadow mb-4">
+      <div class="card-header">
+          <h4 class="mb-0">🔍 Últimas acciones en el sistema</h4>
+      </div> 
+      <div class="card-body table-responsive"> 
       <?php
       $stmt = $pdo->query("
           SELECT rs.accion, rs.fecha_hora, us.nombre_usuario
@@ -186,12 +212,15 @@ $nombre   = $_SESSION['nombre'];
       ");
       $logs = $stmt->fetchAll();
       ?>
-      <table border="1" cellpadding="8">
+      <table class="tabla-datos table table-striped table-bordered">
+        <thead>
           <tr>
               <th>Usuario</th>
               <th>Acción</th>
               <th>Fecha y hora</th>
           </tr>
+        </thead>
+        <tbody>
           <?php foreach ($logs as $log): ?>
               <tr>
                   <td><?= htmlspecialchars($log['nombre_usuario']) ?></td>
@@ -199,128 +228,180 @@ $nombre   = $_SESSION['nombre'];
                   <td><?= $log['fecha_hora'] ?></td>
               </tr>
           <?php endforeach; ?>
+         </tbody>
       </table>
+    </div><!-- end card-body -->
+    </div><!-- end card -->
   <?php endif; ?>
+
 
   <?php if (in_array('registrar_movimientos', $permisos)): ?>
-      <h3>🔄 Movimientos de Inventario</h3>
-      <p>Puedes registrar entradas, salidas y ajustes de materiales.</p>
-      <a href="modules/materiales/movimientos.php">
-          <button class="btn btn-primary">Registrar movimiento</button>
-      </a>
+    <div class="card shadow mb-4">
+      <div class="card-header">
+          <h4 class="mb-0">🔄 Movimientos de Inventario</h4>
+      </div> 
+      <div class="card-body"> 
+        <p>Puedes registrar entradas, salidas y ajustes de materiales.</p>
+        <a href="../materiales/movimientos.php">
+            <button class="btn btn-primary">Registrar movimiento</button>
+        </a>
+      </div>
+    </div>
   <?php endif; ?>
 
-  <hr>
-
+  
   <?php if (in_array('registrar_asistencia', $permisos)): ?>
-      <h3>📋 Asistencia</h3>
+    <div class="card shadow mb-4">
+      <div class="card-header">
+          <h4 class="mb-0">📋 Asistencia</h4>
+      </div> 
+      <div class="card-body"> 
       <p>Registra la asistencia del personal en obra.</p>
       <a href="modules/empleados/asistencia.php">
-          <button>Registrar asistencia</button>
+          <button class="btn btn-primary">Registrar asistencia</button>
       </a>
+      </div>
+    </div>
   <?php endif; ?>
-
-  <hr>
+  
 
   <?php if (in_array('gestionar_materiales', $permisos)): ?>
-      <h3>🧱 Gestión de Materiales</h3>
+    <div class="card shadow mb-4">
+      <div class="card-header">
+          <h4 class="mb-0">🧱 Gestión de Materiales</h4>
+      </div> 
+      <div class="card-body"> 
       <p>Administra el catálogo de materiales del sistema.</p>
       <a href="modules/materiales/index.php">
-          <button>Ver materiales</button>
+          <button class="btn btn-primary">Ver materiales</button>
       </a>
+      </div>
+    </div>
   <?php endif; ?>
 
-  <hr>
+  
 
   <?php if (in_array('gestionar_pedidos', $permisos)): ?>
-      <h3>🛒 Pedidos a Proveedores</h3>
+    <div class="card shadow mb-4">
+      <div class="card-header">
+          <h4 class="mb-0">🛒 Pedidos a Proveedores</h4>
+      </div> 
+      <div class="card-body"> 
       <p>Crea y gestiona pedidos de materiales.</p>
       <a href="modules/materiales/pedidos.php">
-          <button>Ver pedidos</button>
+          <button class="btn btn-primary">Ver pedidos</button>
       </a>
+      </div>
+    </div>
   <?php endif; ?>
 
-  <hr>
 
   <?php if (in_array('gestionar_contratos', $permisos)): ?>
-      <h3>📄 Contratos y Cotizaciones</h3>
+    <div class="card shadow mb-4">
+      <div class="card-header">
+          <h4 class="mb-0">📄 Contratos y Cotizaciones</h4>
+      </div> 
+      <div class="card-body"> 
       <p>Gestiona contratos activos y cotizaciones pendientes.</p>
       <a href="modules/contratos/index.php">
-          <button>Ver contratos</button>
+          <button class="btn btn-primary me-2">Ver contratos</button>
       </a>
       <a href="modules/contratos/cotizaciones.php">
-          <button>Ver cotizaciones</button>
+          <button class="btn btn-secondary">Ver cotizaciones</button>
       </a>
+      </div>
+    </div>
   <?php endif; ?>
 
-  <hr>
 
   <?php if (in_array('gestionar_pagos', $permisos)): ?>
-      <h3>💳 Pagos</h3>
+    <div class="card shadow mb-4">
+      <div class="card-header">
+          <h4 class="mb-0">💳 Pagos</h4>
+      </div> 
+      <div class="card-body"> 
       <p>Procesa pagos a empleados y proveedores.</p>
       <a href="modules/pagos/empleados.php">
           <button>Pagos empleados</button>
       </a>
       <a href="modules/pagos/pedidos.php">
-          <button>Pagos pedidos</button>
+          <button class="btn btn-primary">Pagos pedidos</button>
       </a>
+      </div>
+    </div>
   <?php endif; ?>
 
-  <hr>
-
+  
   <?php if (in_array('gestionar_empleados', $permisos)): ?>
-      <h3>👥 Gestión de Empleados</h3>
+    <div class="card shadow mb-4">
+      <div class="card-header">
+          <h4 class="mb-0">👥 Gestión de Empleados</h4>
+      </div> 
+      <div class="card-body"> 
       <p>Administra el personal de la empresa.</p>
       <a href="modules/empleados/index.php">
           <button>Ver empleados</button>
       </a>
       <a href="modules/empleados/crear.php">
-          <button>Nuevo empleado</button>
+          <button class="btn btn-primary">Nuevo empleado</button>
       </a>
+      </div>
+    </div>
   <?php endif; ?>
 
-  <hr>
-
+  
   <?php if (in_array('gestionar_proveedores', $permisos)): ?>
-      <h3>🏭 Proveedores</h3>
+    <div class="card shadow mb-4">
+      <div class="card-header">
+          <h4 class="mb-0">🏭 Proveedores</h4>
+      </div> 
+      <div class="card-body"> 
       <p>Administra el catálogo de proveedores.</p>
       <a href="modules/proveedores/index.php">
-          <button>Ver proveedores</button>
+          <button class="btn btn-primary">Ver proveedores</button>
       </a>
+      </div>
+    </div>
   <?php endif; ?>
 
-  <hr>
-
+  
   <?php if (in_array('crear_proyectos', $permisos)): ?>
-      <h3>➕ Nuevo Proyecto</h3>
+    <div class="card shadow mb-4">
+      <div class="card-header">
+          <h4 class="mb-0">➕ Nuevo Proyecto</h4>
+      </div> 
+      <div class="card-body"> 
       <p>Crea un nuevo proyecto en el sistema.</p>
       <a href="modules/proyectos/crear.php">
-          <button>Crear proyecto</button>
+          <button class="btn btn-primary">Crear proyecto</button>
       </a>
+      </div>
+    </div>
   <?php endif; ?>
 
-  <hr>
 
   <?php if (in_array('configurar_sistema', $permisos)): ?>
-      <h3>⚙️ Configuración del Sistema</h3>
+    <div class="card shadow mb-4">
+      <div class="card-header">
+          <h4 class="mb-0">⚙️ Configuración del Sistema</h4>
+      </div> 
+      <div class="card-body"> 
       <p>Gestiona usuarios, roles y permisos.</p>
       <a href="modules/usuarios/index.php">
-          <button>Gestionar usuarios</button>
+          <button class="btn btn-primary">Gestionar usuarios</button>
       </a>
+      </div>
+    </div>
   <?php endif; ?>
 
-  <hr>
-  <a href="modules/auth/logout.php">Cerrar sesión</a>
 </div>
 <script>
 $(document).ready(function() {
     $('.tabla-datos').DataTable({
         "language": {
             "url": "https://cdn.datatables.net/plug-ins/1.11.5/i18n/es-ES.json"
-        },
-        "paging": true,
-        "searching": true
+        }
     });
 });
 </script>
-<?php require_once 'modules/layouts/footer.php'; ?>
+<?php require_once '../layouts/footer.php'; ?>

@@ -1,16 +1,25 @@
+<?php
+require_once '../../middleware/auth.php';
+require_once '../../middleware/logger.php';
+require_once '../../config/database.php';
+
+$pdo      = conectar();
+$nombre   = $_SESSION['nombre'];
+?>
 <!doctype html>
 <html lang="en" data-bs-theme="auto">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Empresa Constructora</title>
+  <link rel="icon" type="image/x-icon" href="../../public/assets/favicon.png">
   <!-- Bootstrap -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" 
     integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">  
   <!-- Iconos de bootstrap -->  
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
   <!-- datatables -->  
-  <link rel="stylesheet" href="https://cdn.datatables.net/2.3.8/css/dataTables.dataTables.min.css">
+  <link rel="stylesheet" href="https://cdn.datatables.net/2.3.8/css/dataTables.bootstrap5.min.css">
   <!-- Custom styles for this template -->
   <style>
     body {
@@ -69,16 +78,17 @@
     integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
   <!-- datatables -->
   <script src="https://cdn.datatables.net/2.3.8/js/dataTables.min.js" crossorigin="anonymous"></script>
+  <script src="https://cdn.datatables.net/2.3.8/js/dataTables.bootstrap5.min.js" crossorigin="anonymous"></script>
 </head>
 <!-- Body of dashboard - inside is all content-->
 <body class="bg-body-tertiary">
   <!-- Aside menu orginal -->
-  <aside class="collapse show collapse-horizontal col-sm-2 p-3 border-end bg-body-tertiary" id="collapseWidthExample">
-     <?php require 'modules/layouts/menu.php'; ?>
+  <aside class="collapse show collapse-horizontal col-md-2 col-sm-4 p-3 border-end bg-body-tertiary" id="collapseWidthExample">
+     <?php require 'menu.php'; ?>
   </aside>
   <!-- End aside -->
   <!-- Content of the main body - heres the main content like graph, tables, etc... -->
-  <main class="col-sm-10 bg-body-tertiary" id="main">
+  <main class="col-md-10 col-sm-8 bg-body-tertiary" id="main">
 
     <!-- Start navbar - here is inside of the main  -->
     <nav class="navbar sticky-top navbar-expand-lg border-bottom bg-body-tertiary">
@@ -94,7 +104,7 @@
           style="margin-right: 10px; padding: 2px 6px 2px 6px;" id="sidebarshow">
           <i class="bi bi-arrow-bar-right"></i>
         </button>
-        <a class="navbar-brand" href="#">Navbar</a>
+        <a class="navbar-brand" href="#">Empresa Constructora</a>
 
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
           aria-controls="navbarSupportedContent" aria-expanded="true" aria-label="Toggle navigation">
@@ -160,13 +170,13 @@
               <!-- Dropdown Item Start -->
               <li class="nav-item dropdown">
                 <a class="nav-link dropdown-toggle fw-semibold" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                  Dropdown link
+                  <?= htmlspecialchars($nombre) ?>
                 </a>
                 <ul class="dropdown-menu">
                   <li><a class="dropdown-item" href="#">Config</a></li>
                   <li><a class="dropdown-item" href="#">Perfil</a></li>
                   <li><hr class="dropdown-divider"></li>
-                  <li><a class="dropdown-item" href="#">Cerrar Sesion</a></li>
+                  <li><a class="dropdown-item" href="modules/auth/logout.php">Cerrar Sesion</a></li>
                 </ul>
               </li>              
             </ul>

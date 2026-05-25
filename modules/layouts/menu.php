@@ -1,29 +1,29 @@
       <span class="d-print-block">Menu</span>
       <hr>
-      <ul class="nav nav-pills flex-column mb-auto">
+      <ul class="nav nav-pills flex-column">
         <li class="nav-item">
           <a href="#" class="nav-link link-body-emphasis" aria-current="page">
-            <p class="bi bi-house-door" style="position:fixed;"> Home</p><br>
+            <i class="bi bi-house-door"></i> Home
           </a>
         </li>
         <li>
           <a href="#" class="nav-link link-body-emphasis">
-            <p class="bi bi-speedometer2" style="position:fixed;"> Dashboard</p><br>
+            <i class="bi bi-speedometer2"></i> Dashboard
           </a>
         </li>
         <li>
           <a href="#" class="nav-link link-body-emphasis">
-            <p class="bi bi-table" style="position:fixed;"> Orders</p><br>
+            <i class="bi bi-table"></i> Orders
           </a>
         </li>
         <li>
           <a href="#" class="nav-link link-body-emphasis">
-            <p class="bi bi-grid" style="position:fixed;"> Products</p><br>
+            <i class="bi bi-grid"></i> Products
           </a>
         </li>
         <li>
           <a href="#" class="nav-link link-body-emphasis">
-            <p class="bi bi-person-circle" style="position:fixed;"> Customers</p><br>
+            <i class="bi bi-person-circle"></i> Customers
           </a>
         </li>
       </ul>
