@@ -135,9 +135,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
    if ($_POST['action'] == 'delete') {
      $stmt = $pdo->prepare("DELETE FROM movimientos_inventario WHERE id_movimiento = ?");
      $result = $stmt->execute([$_POST['id_movimiento']]);
-     if($result){
-       $exito = 'Movimiento Eliminado correctamente';
-     }
    }
    
   }
@@ -160,7 +157,8 @@ $historial = $historial_stmt->fetchAll();
 ?>
 
 <?php require_once '../../modules/layouts/header.php'; ?>
-<div class="p-3">
+
+<div class="p-4">
 
 <nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
   <ol class="breadcrumb">
@@ -194,64 +192,10 @@ $historial = $historial_stmt->fetchAll();
       </div>
     </div>
 <?php endif; ?>
-<div class="row mt-2">
-  <div class="col-md-4 col-sm-12"> 
-    <div class="card shadow">
-       <div class="card-header">
-          <h4 class="mb-0" id="formTitle">Registrar movimiento</h4>
-       </div>
-       <div class="card-body">
-          <form method="POST" id="dataForm">
-            <input type="hidden" name="id_movimiento" id="id_movimiento">
-            <input type="hidden" name="action" id="action" value="create">
-            <div class="mb-3">
-              <label for="fecha" class="form-label">Fecha: *</label>
-              <input class="form-control" type="date" id="fecha" name="fecha" value="<?= date('Y-m-d') ?>" required>
-            </div>
-            <div class="mt-3 mb-3">
-              <label for="id_material" class="form-label">Material: *</label>
-              <select class="form-select" id="id_material" name="id_material" required>
-                  <option value="">-- Selecciona --</option>
-                  <?php foreach ($materiales as $m): ?>
-                      <option value="<?= $m['id_material'] ?>"
-                          <?= $m['id_material'] == $id_material_filtro ? 'selected' : '' ?>>
-                          <?= htmlspecialchars($m['nombre']) ?>
-                      </option>
-                  <?php endforeach; ?>
-              </select>
-            </div>
-            <div class="mb-3">
-              <label for="id_almacen" class="form-label">Almacén: *</label>
-              <select class="form-select" id="id_almacen" name="id_almacen"  required>
-                  <option value="">-- Selecciona --</option>
-                  <?php foreach ($almacenes as $a): ?>
-                      <option value="<?= $a['id_almacen'] ?>"><?= htmlspecialchars($a['nombre']) ?></option>
-                  <?php endforeach; ?>
-              </select>
-            </div>
-            <div class="mb-3">
-              <label for="tipo_movimiento" class="form-label">Tipo de movimiento: *</label>
-              <select  class="form-select" id="tipo_movimiento" name="tipo_movimiento" required>
-                  <option value="">-- Selecciona --</option>
-                  <option value="entrada">Entrada</option>
-                  <option value="salida">Salida</option>
-                  <option value="ajuste">Ajuste</option>
-              </select>
-            </div>
-            <div class="mb-3">
-              <label for="cantidad" class="form-label">Cantidad: *</label>
-              <input class="form-control" type="number" id="cantidad" name="cantidad" step="0.01" min="0.01" required>
-            </div>
-              <button class="btn btn-primary mb-4" type="submit">Registrar</button>
-          </form>
-        </div>
-     </div>
-</div><!-- end col -->
-<div class="col-md-8 col-sm-12">
-  <div class="card shadow">
+  <div class="card shadow mt-2">
       <div class="card-header d-flex justify-content-between align-items-center">
           <h4 class="mb-0">Últimos 20 movimientos</h4>
-          <button type="button" class="btn btn-success btn-sm" id="addRowBtn"><i class="bi bi-plus-circle"></i> Registrar Movimiento</button>
+          <button type="button" class="btn btn-primary btn-sm" id="addRowBtn"><i class="bi bi-plus-lg"></i> Registrar Movimiento</button>
       </div> 
       <div class="card-body table-responsive">
       <table id="tabla-datos" class="table table-striped table-bordered">
@@ -275,18 +219,78 @@ $historial = $historial_stmt->fetchAll();
                   <td><?= $h['cantidad'] ?></td>
                   <td>
                   <button class="btn btn-sm btn-outline-secondary editBtn" data-id="<?= $h['id_movimiento'] ?>">
-                    <i class="bi bi-pencil-square"></i> </button>
+                     Editar</button>
                   <button class="btn btn-sm btn-outline-danger deleteBtn" data-id="<?= $h['id_movimiento'] ?>">
-                    <i class="bi bi-trash"></i> </button>
+                     Eliminar</button>
                   </td>
               </tr>
           <?php endforeach; ?>
          </tbody>
       </table>
       </div>
-  </div>
-</div><!-- end col -->
-</div><!-- end row -->
+  </div> <!-- end card >
+ 
+
+<!--  Modal (Handles both Create and Update) -->
+<div class="modal fade" id="userModal" tabindex="-1" aria-labelledby="userModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+        <form method="POST" id="dataForm">
+            <div class="modal-header">
+                <h5 class="modal-title" id="userModalLabel">Registrar Movimiento</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              <input type="hidden" name="id_movimiento" id="id_movimiento">
+              <input type="hidden" name="action" id="action" value="create">
+              <div class="mb-3">
+                <label for="fecha" class="form-label">Fecha: *</label>
+                <input class="form-control" type="date" id="fecha" name="fecha" value="<?= date('Y-m-d') ?>" required>
+              </div>
+              <div class="mt-3 mb-3">
+                <label for="id_material" class="form-label">Material: *</label>
+                <select class="form-select" id="id_material" name="id_material" required>
+                    <option value="">-- Selecciona --</option>
+                    <?php foreach ($materiales as $m): ?>
+                        <option value="<?= $m['id_material'] ?>"
+                            <?= $m['id_material'] == $id_material_filtro ? 'selected' : '' ?>>
+                            <?= htmlspecialchars($m['nombre']) ?>
+                        </option>
+                    <?php endforeach; ?>
+                </select>
+              </div>
+              <div class="mb-3">
+                <label for="id_almacen" class="form-label">Almacén: *</label>
+                <select class="form-select" id="id_almacen" name="id_almacen"  required>
+                    <option value="">-- Selecciona --</option>
+                    <?php foreach ($almacenes as $a): ?>
+                        <option value="<?= $a['id_almacen'] ?>"><?= htmlspecialchars($a['nombre']) ?></option>
+                    <?php endforeach; ?>
+                </select>
+              </div>
+              <div class="mb-3">
+                <label for="tipo_movimiento" class="form-label">Tipo de movimiento: *</label>
+                <select  class="form-select" id="tipo_movimiento" name="tipo_movimiento" required>
+                    <option value="">-- Selecciona --</option>
+                    <option value="entrada">Entrada</option>
+                    <option value="salida">Salida</option>
+                    <option value="ajuste">Ajuste</option>
+                </select>
+              </div>
+              <div class="mb-3">
+                <label for="cantidad" class="form-label">Cantidad: *</label>
+                <input class="form-control" type="number" id="cantidad" name="cantidad" step="0.01" min="0.01" required>
+              </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-primary" type="submit">Registrar</button>
+            </div>
+        </div>
+        </form>
+   </div>
+</div><!-- end modal -->
+
+</div>
 <script>
 $(document).ready(function() {
     var table = $('#tabla-datos').DataTable({
@@ -305,9 +309,9 @@ $(document).ready(function() {
     // Open Modal for Adding row
     $('#addRowBtn').click(function() {
         $('#dataForm')[0].reset();
-        $('#formTitle').text('Registrar Movimiento');
+        $('.modal-title').text('Registrar Movimiento');
         $('#action').val('create');
-        //$('#userModal').modal('show');
+        $('#userModal').modal('show');
     });
     
     
@@ -336,8 +340,9 @@ $(document).ready(function() {
         $('#tipo_movimiento').val(data[3]);
         $('#cantidad').val(data[4]);
                 
-        $('#formTitle').text('Editar Movimiento');
+        $('.modal-title').text('Editar Movimiento');
         $('#action').val('update');
+        $('#userModal').modal('show');
 
     });
     

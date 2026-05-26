@@ -257,7 +257,7 @@ $nombre   = $_SESSION['nombre'];
       </div> 
       <div class="card-body"> 
       <p>Registra la asistencia del personal en obra.</p>
-      <a href="modules/empleados/asistencia.php">
+      <a href="../../modules/empleados/asistencia.php">
           <button class="btn btn-primary">Registrar asistencia</button>
       </a>
       </div>
@@ -272,7 +272,7 @@ $nombre   = $_SESSION['nombre'];
       </div> 
       <div class="card-body"> 
       <p>Administra el catálogo de materiales del sistema.</p>
-      <a href="modules/materiales/index.php">
+      <a href="../../modules/materiales/index.php">
           <button class="btn btn-primary">Ver materiales</button>
       </a>
       </div>
@@ -288,7 +288,7 @@ $nombre   = $_SESSION['nombre'];
       </div> 
       <div class="card-body"> 
       <p>Crea y gestiona pedidos de materiales.</p>
-      <a href="modules/materiales/pedidos.php">
+      <a href="../../modules/materiales/pedidos.php">
           <button class="btn btn-primary">Ver pedidos</button>
       </a>
       </div>
@@ -303,10 +303,10 @@ $nombre   = $_SESSION['nombre'];
       </div> 
       <div class="card-body"> 
       <p>Gestiona contratos activos y cotizaciones pendientes.</p>
-      <a href="modules/contratos/index.php">
+      <a href="../../modules/contratos/index.php">
           <button class="btn btn-primary me-2">Ver contratos</button>
       </a>
-      <a href="modules/contratos/cotizaciones.php">
+      <a href="../../modules/contratos/cotizaciones.php">
           <button class="btn btn-secondary">Ver cotizaciones</button>
       </a>
       </div>
@@ -321,10 +321,10 @@ $nombre   = $_SESSION['nombre'];
       </div> 
       <div class="card-body"> 
       <p>Procesa pagos a empleados y proveedores.</p>
-      <a href="modules/pagos/empleados.php">
+      <a href="../../modules/pagos/empleados.php">
           <button>Pagos empleados</button>
       </a>
-      <a href="modules/pagos/pedidos.php">
+      <a href="../../modules/pagos/pedidos.php">
           <button class="btn btn-primary">Pagos pedidos</button>
       </a>
       </div>
@@ -339,10 +339,10 @@ $nombre   = $_SESSION['nombre'];
       </div> 
       <div class="card-body"> 
       <p>Administra el personal de la empresa.</p>
-      <a href="modules/empleados/index.php">
+      <a href="../../modules/empleados/index.php">
           <button>Ver empleados</button>
       </a>
-      <a href="modules/empleados/crear.php">
+      <a href="../../modules/empleados/crear.php">
           <button class="btn btn-primary">Nuevo empleado</button>
       </a>
       </div>
@@ -357,7 +357,7 @@ $nombre   = $_SESSION['nombre'];
       </div> 
       <div class="card-body"> 
       <p>Administra el catálogo de proveedores.</p>
-      <a href="modules/proveedores/index.php">
+      <a href="../../modules/proveedores/index.php">
           <button class="btn btn-primary">Ver proveedores</button>
       </a>
       </div>
@@ -372,7 +372,7 @@ $nombre   = $_SESSION['nombre'];
       </div> 
       <div class="card-body"> 
       <p>Crea un nuevo proyecto en el sistema.</p>
-      <a href="modules/proyectos/crear.php">
+      <a href="../../modules/proyectos/crear.php">
           <button class="btn btn-primary">Crear proyecto</button>
       </a>
       </div>
@@ -387,7 +387,7 @@ $nombre   = $_SESSION['nombre'];
       </div> 
       <div class="card-body"> 
       <p>Gestiona usuarios, roles y permisos.</p>
-      <a href="modules/usuarios/index.php">
+      <a href="../../modules/usuarios/index.php">
           <button class="btn btn-primary">Gestionar usuarios</button>
       </a>
       </div>
@@ -398,8 +398,8 @@ $nombre   = $_SESSION['nombre'];
 <script>
 $(document).ready(function() {
     $('.tabla-datos').DataTable({
-        "language": {
-            "url": "https://cdn.datatables.net/plug-ins/1.11.5/i18n/es-ES.json"
+        language: {
+            url: "https://cdn.datatables.net/plug-ins/1.11.5/i18n/es-ES.json"
         }
     });
 });
