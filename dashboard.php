@@ -21,7 +21,7 @@ $nombre   = $_SESSION['nombre'];
 <h2>Bienvenido, <?= htmlspecialchars($nombre) ?></h2>
 <p><strong>Roles:</strong> <?= implode(', ', $roles) ?></p>
 <p><strong>Permisos:</strong> <?= implode(', ', $permisos) ?></p>
-
+<a href="modules/auth/logout.php">Cerrar sesión</a>
 <hr>
 
 <?php if (in_array('ver_proyectos', $permisos)): ?>
@@ -303,7 +303,6 @@ $nombre   = $_SESSION['nombre'];
 <?php endif; ?>
 
 <hr>
-<a href="modules/auth/logout.php">Cerrar sesión</a>
 
 </body>
 </html>
