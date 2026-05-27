@@ -13,9 +13,212 @@ $nombre   = $_SESSION['nombre'];
 <?php require_once '../layouts/header.php'; ?>
 
 <div class="p-4">
-  <h2>Bienvenido, <?= htmlspecialchars($nombre) ?></h2>
-  <p><strong>Roles:</strong> <?= implode(', ', $roles) ?></p>
-  <p><strong>Permisos:</strong> <?= implode(', ', $permisos) ?></p>
+  <h3>Bienvenido, <?= htmlspecialchars($nombre) ?></h3>
+  <div class="mb-2 mt-3">
+    <strong>Roles:</strong> 
+    <?php foreach ($roles as $r): ?>
+    <span class="badge text-bg-secondary"><?= $r ?></span>
+    <?php endforeach; ?>
+  </div>
+  <div class="mb-4">
+   <strong>Permisos:</strong> <span><?= implode(', ', $permisos) ?></span>
+  </div> 
+
+<div class="row">
+
+  <?php if (in_array('ver_reportes_financieros', $permisos)): ?>
+    <div class="col-md-4 col-sm-6 col-xs-12">
+      <div class="card shadow mb-4">
+        <div class="card-header">
+            <h4 class="mb-0">💰 Resumen financiero</h4>
+        </div> 
+        <div class="card-body"> 
+        <?php
+        $stmt = $pdo->query("
+            SELECT 
+                (SELECT COALESCE(SUM(monto),0) FROM pagos_cliente WHERE estado = 'completado') as ingresos,
+                (SELECT COALESCE(SUM(monto),0) FROM pagos_empleados WHERE estado = 'completado') as gastos_personal,
+                (SELECT COALESCE(SUM(monto),0) FROM gastos) as gastos_obra
+        ");
+        $fin = $stmt->fetch();
+        ?>
+        <p>✅ Ingresos recibidos: <strong>Bs <?= number_format($fin['ingresos'], 2) ?></strong></p>
+        <p>👷 Pagos personal: <strong>Bs <?= number_format($fin['gastos_personal'], 2) ?></strong></p>
+        <p>🏗️ Gastos de obra: <strong>Bs <?= number_format($fin['gastos_obra'], 2) ?></strong></p>
+      </div>
+    </div>
+   </div>
+  <?php endif; ?>
+
+  <?php if (in_array('registrar_movimientos', $permisos)): ?>
+  <div class="col-md-4 col-sm-6 col-xs-12">
+    <div class="card shadow mb-4">
+      <div class="card-header">
+          <h4 class="mb-0">🔄 Movimientos de Inventario</h4>
+      </div> 
+      <div class="card-body"> 
+        <p>Puedes registrar entradas, salidas y ajustes de materiales.</p>
+        <a class="btn btn-primary" href="../materiales/movimientos.php">
+            Registrar movimiento
+        </a>
+      </div>
+    </div>
+  </div>
+  <?php endif; ?>
+  
+  <?php if (in_array('registrar_asistencia', $permisos)): ?>
+  <div class="col-md-4 col-sm-6 col-xs-12">
+    <div class="card shadow mb-4">
+      <div class="card-header">
+          <h4 class="mb-0">📋 Asistencia</h4>
+      </div> 
+      <div class="card-body"> 
+      <p>Registra la asistencia del personal en obra.</p>
+      <a class="btn btn-primary" href="../../modules/empleados/asistencia.php">
+          Registrar asistencia
+      </a>
+      </div>
+    </div>
+  </div>
+  <?php endif; ?>
+
+  <?php if (in_array('gestionar_materiales', $permisos)): ?>
+  <div class="col-md-4 col-sm-6 col-xs-12">
+    <div class="card shadow mb-4">
+      <div class="card-header">
+          <h4 class="mb-0">🧱 Gestión de Materiales</h4>
+      </div> 
+      <div class="card-body"> 
+      <p>Administra el catálogo de materiales del sistema.</p>
+      <a class="btn btn-primary" href="../../modules/materiales/index.php">
+          Ver materiales
+      </a>
+      </div>
+    </div>
+  </div>
+  <?php endif; ?>
+
+  <?php if (in_array('gestionar_pedidos', $permisos)): ?>
+  <div class="col-md-4 col-sm-6 col-xs-12">
+    <div class="card shadow mb-4">
+      <div class="card-header">
+          <h4 class="mb-0">🛒 Pedidos a Proveedores</h4>
+      </div> 
+      <div class="card-body"> 
+      <p>Crea y gestiona pedidos de materiales.</p>
+      <a class="btn btn-primary" href="../../modules/materiales/pedidos.php">
+          Ver pedidos
+      </a>
+      </div>
+    </div>
+  </div>
+  <?php endif; ?>
+
+  <?php if (in_array('gestionar_contratos', $permisos)): ?>
+  <div class="col-md-4 col-sm-6 col-xs-12">
+    <div class="card shadow mb-4">
+      <div class="card-header">
+          <h4 class="mb-0">📄 Contratos y Cotizaciones</h4>
+      </div> 
+      <div class="card-body"> 
+      <p>Gestiona contratos activos y cotizaciones pendientes.</p>
+      <a class="btn btn-primary" href="../../modules/contratos/index.php">
+         Ver contratos
+      </a>
+      <a class="btn btn-secondary" href="../../modules/contratos/cotizaciones.php">
+          Ver cotizaciones
+      </a>
+      </div>
+    </div>
+  </div>
+  <?php endif; ?>
+
+  <?php if (in_array('gestionar_pagos', $permisos)): ?>
+  <div class="col-md-4 col-sm-6 col-xs-12">
+    <div class="card shadow mb-4">
+      <div class="card-header">
+          <h4 class="mb-0">💳 Pagos</h4>
+      </div> 
+      <div class="card-body"> 
+      <p>Procesa pagos a empleados y proveedores.</p>
+      <a class="btn btn-primary" class="btn btn-primary" href="../../modules/pagos/empleados.php">
+          Pagos empleados
+      </a>
+      <a class="btn btn-primary" href="../../modules/pagos/pedidos.php">
+          Pagos pedidos
+      </a>
+      </div>
+    </div>
+  </div>
+  <?php endif; ?>
+  
+  <?php if (in_array('gestionar_empleados', $permisos)): ?>
+  <div class="col-md-4 col-sm-6 col-xs-12">
+    <div class="card shadow mb-4">
+      <div class="card-header">
+          <h4 class="mb-0">👥 Gestión de Empleados</h4>
+      </div> 
+      <div class="card-body"> 
+      <p>Administra el personal de la empresa.</p>
+      <a href="../../modules/empleados/index.php">
+         Ver empleados
+      </a>
+      <a href="../../modules/empleados/crear.php">
+          Nuevo empleado
+      </a>
+      </div>
+    </div>
+  </div>
+  <?php endif; ?>
+  
+  <?php if (in_array('gestionar_proveedores', $permisos)): ?>
+  <div class="col-md-4 col-sm-6 col-xs-12">
+    <div class="card shadow mb-4">
+      <div class="card-header">
+          <h4 class="mb-0">🏭 Proveedores</h4>
+      </div> 
+      <div class="card-body"> 
+      <p>Administra el catálogo de proveedores.</p>
+      <a class="btn btn-primary" href="../../modules/proveedores/index.php">
+          Ver proveedores
+      </a>
+      </div>
+    </div>
+  </div>
+  <?php endif; ?>
+  
+  <?php if (in_array('crear_proyectos', $permisos)): ?>
+  <div class="col-md-4 col-sm-6 col-xs-12">
+    <div class="card shadow mb-4">
+      <div class="card-header">
+          <h4 class="mb-0">➕ Nuevo Proyecto</h4>
+      </div> 
+      <div class="card-body"> 
+      <p>Crea un nuevo proyecto en el sistema.</p>
+      <a class="btn btn-primary" href="../../modules/proyectos/crear.php">
+          Crear proyecto
+      </a>
+      </div>
+    </div>
+  </div>
+  <?php endif; ?>
+
+  <?php if (in_array('configurar_sistema', $permisos)): ?>
+  <div class="col-md-4 col-sm-6 col-xs-12">
+    <div class="card shadow mb-4">
+      <div class="card-header">
+          <h4 class="mb-0">⚙️ Configuración del Sistema</h4>
+      </div> 
+      <div class="card-body"> 
+      <p>Gestiona usuarios, roles y permisos.</p>
+      <a class="btn btn-primary" href="../../modules/usuarios/index.php">
+          Gestionar usuarios
+      </a>
+      </div>
+    </div>
+  </div>
+  <?php endif; ?>
+  </div> <!-- end row -->
 
   
   <?php if (in_array('ver_proyectos', $permisos)): ?>
@@ -53,8 +256,7 @@ $nombre   = $_SESSION['nombre'];
       $proyectos = $stmt->fetchAll();
       ?>
 
-      <?php if ($proyectos): ?>
-        
+      <?php if ($proyectos): ?> 
           <table class="tabla-datos table table-striped table-bordered">
           <thead>
               <tr>
@@ -81,7 +283,6 @@ $nombre   = $_SESSION['nombre'];
   </div><!-- end card-body -->
   </div><!-- end card -->
   <?php endif; ?>
-
 
 
   <?php if (in_array('ver_inventarios', $permisos)): ?>      
@@ -129,7 +330,6 @@ $nombre   = $_SESSION['nombre'];
   </div><!-- end card-body -->
   </div><!-- end card -->
   <?php endif; ?>
-
   
 
   <?php if (in_array('ver_empleados', $permisos)): ?>
@@ -172,30 +372,6 @@ $nombre   = $_SESSION['nombre'];
   </div><!-- end card -->
   <?php endif; ?>
 
-  
-
-  <?php if (in_array('ver_reportes_financieros', $permisos)): ?>
-      <div class="card shadow mb-4">
-      <div class="card-header">
-          <h4 class="mb-0">💰 Resumen financiero</h4>
-      </div> 
-      <div class="card-body"> 
-      <?php
-      $stmt = $pdo->query("
-          SELECT 
-              (SELECT COALESCE(SUM(monto),0) FROM pagos_cliente WHERE estado = 'completado') as ingresos,
-              (SELECT COALESCE(SUM(monto),0) FROM pagos_empleados WHERE estado = 'completado') as gastos_personal,
-              (SELECT COALESCE(SUM(monto),0) FROM gastos) as gastos_obra
-      ");
-      $fin = $stmt->fetch();
-      ?>
-      <p>✅ Ingresos recibidos: <strong>Bs <?= number_format($fin['ingresos'], 2) ?></strong></p>
-      <p>👷 Pagos personal: <strong>Bs <?= number_format($fin['gastos_personal'], 2) ?></strong></p>
-      <p>🏗️ Gastos de obra: <strong>Bs <?= number_format($fin['gastos_obra'], 2) ?></strong></p>
-    </div><!-- end card-body -->
-    </div><!-- end card -->
-  <?php endif; ?>
-
   <?php if (in_array('ver_auditoria', $permisos)): ?>
       <div class="card shadow mb-4">
       <div class="card-header">
@@ -233,167 +409,7 @@ $nombre   = $_SESSION['nombre'];
     </div><!-- end card-body -->
     </div><!-- end card -->
   <?php endif; ?>
-
-
-  <?php if (in_array('registrar_movimientos', $permisos)): ?>
-    <div class="card shadow mb-4">
-      <div class="card-header">
-          <h4 class="mb-0">🔄 Movimientos de Inventario</h4>
-      </div> 
-      <div class="card-body"> 
-        <p>Puedes registrar entradas, salidas y ajustes de materiales.</p>
-        <a href="../materiales/movimientos.php">
-            <button class="btn btn-primary">Registrar movimiento</button>
-        </a>
-      </div>
-    </div>
-  <?php endif; ?>
-
   
-  <?php if (in_array('registrar_asistencia', $permisos)): ?>
-    <div class="card shadow mb-4">
-      <div class="card-header">
-          <h4 class="mb-0">📋 Asistencia</h4>
-      </div> 
-      <div class="card-body"> 
-      <p>Registra la asistencia del personal en obra.</p>
-      <a href="../../modules/empleados/asistencia.php">
-          <button class="btn btn-primary">Registrar asistencia</button>
-      </a>
-      </div>
-    </div>
-  <?php endif; ?>
-  
-
-  <?php if (in_array('gestionar_materiales', $permisos)): ?>
-    <div class="card shadow mb-4">
-      <div class="card-header">
-          <h4 class="mb-0">🧱 Gestión de Materiales</h4>
-      </div> 
-      <div class="card-body"> 
-      <p>Administra el catálogo de materiales del sistema.</p>
-      <a href="../../modules/materiales/index.php">
-          <button class="btn btn-primary">Ver materiales</button>
-      </a>
-      </div>
-    </div>
-  <?php endif; ?>
-
-  
-
-  <?php if (in_array('gestionar_pedidos', $permisos)): ?>
-    <div class="card shadow mb-4">
-      <div class="card-header">
-          <h4 class="mb-0">🛒 Pedidos a Proveedores</h4>
-      </div> 
-      <div class="card-body"> 
-      <p>Crea y gestiona pedidos de materiales.</p>
-      <a href="../../modules/materiales/pedidos.php">
-          <button class="btn btn-primary">Ver pedidos</button>
-      </a>
-      </div>
-    </div>
-  <?php endif; ?>
-
-
-  <?php if (in_array('gestionar_contratos', $permisos)): ?>
-    <div class="card shadow mb-4">
-      <div class="card-header">
-          <h4 class="mb-0">📄 Contratos y Cotizaciones</h4>
-      </div> 
-      <div class="card-body"> 
-      <p>Gestiona contratos activos y cotizaciones pendientes.</p>
-      <a href="../../modules/contratos/index.php">
-          <button class="btn btn-primary me-2">Ver contratos</button>
-      </a>
-      <a href="../../modules/contratos/cotizaciones.php">
-          <button class="btn btn-secondary">Ver cotizaciones</button>
-      </a>
-      </div>
-    </div>
-  <?php endif; ?>
-
-
-  <?php if (in_array('gestionar_pagos', $permisos)): ?>
-    <div class="card shadow mb-4">
-      <div class="card-header">
-          <h4 class="mb-0">💳 Pagos</h4>
-      </div> 
-      <div class="card-body"> 
-      <p>Procesa pagos a empleados y proveedores.</p>
-      <a href="../../modules/pagos/empleados.php">
-          <button>Pagos empleados</button>
-      </a>
-      <a href="../../modules/pagos/pedidos.php">
-          <button class="btn btn-primary">Pagos pedidos</button>
-      </a>
-      </div>
-    </div>
-  <?php endif; ?>
-
-  
-  <?php if (in_array('gestionar_empleados', $permisos)): ?>
-    <div class="card shadow mb-4">
-      <div class="card-header">
-          <h4 class="mb-0">👥 Gestión de Empleados</h4>
-      </div> 
-      <div class="card-body"> 
-      <p>Administra el personal de la empresa.</p>
-      <a href="../../modules/empleados/index.php">
-          <button>Ver empleados</button>
-      </a>
-      <a href="../../modules/empleados/crear.php">
-          <button class="btn btn-primary">Nuevo empleado</button>
-      </a>
-      </div>
-    </div>
-  <?php endif; ?>
-
-  
-  <?php if (in_array('gestionar_proveedores', $permisos)): ?>
-    <div class="card shadow mb-4">
-      <div class="card-header">
-          <h4 class="mb-0">🏭 Proveedores</h4>
-      </div> 
-      <div class="card-body"> 
-      <p>Administra el catálogo de proveedores.</p>
-      <a href="../../modules/proveedores/index.php">
-          <button class="btn btn-primary">Ver proveedores</button>
-      </a>
-      </div>
-    </div>
-  <?php endif; ?>
-
-  
-  <?php if (in_array('crear_proyectos', $permisos)): ?>
-    <div class="card shadow mb-4">
-      <div class="card-header">
-          <h4 class="mb-0">➕ Nuevo Proyecto</h4>
-      </div> 
-      <div class="card-body"> 
-      <p>Crea un nuevo proyecto en el sistema.</p>
-      <a href="../../modules/proyectos/crear.php">
-          <button class="btn btn-primary">Crear proyecto</button>
-      </a>
-      </div>
-    </div>
-  <?php endif; ?>
-
-
-  <?php if (in_array('configurar_sistema', $permisos)): ?>
-    <div class="card shadow mb-4">
-      <div class="card-header">
-          <h4 class="mb-0">⚙️ Configuración del Sistema</h4>
-      </div> 
-      <div class="card-body"> 
-      <p>Gestiona usuarios, roles y permisos.</p>
-      <a href="../../modules/usuarios/index.php">
-          <button class="btn btn-primary">Gestionar usuarios</button>
-      </a>
-      </div>
-    </div>
-  <?php endif; ?>
-
 </div>
 <script>
 $(document).ready(function() {

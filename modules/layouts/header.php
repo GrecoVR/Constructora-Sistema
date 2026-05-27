@@ -14,18 +14,24 @@ $nombre   = $_SESSION['nombre'];
   <title>Empresa Constructora</title>
   <link rel="icon" type="image/x-icon" href="../../public/assets/favicon.png">
   <!-- Bootstrap -->
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" 
-    integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">  
+  <link id="theme-link" rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootswatch@5.3.8/dist/cerulean/bootstrap.min.css">
   <!-- Iconos de bootstrap -->  
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
   <!-- datatables -->  
   <link rel="stylesheet" href="https://cdn.datatables.net/2.3.8/css/dataTables.bootstrap5.min.css">
   <!-- Custom styles for this template -->
   <style>
+  
     body {
       height: 100%;
+      opacity: 1;
+      transition: opacity 0.25s ease-in-out;
     }
-
+    
+    body.theme-fading {
+      opacity: 0;
+    }
+    
     aside {
       /* border: 1px yellow solid; */
       position: fixed;
@@ -33,7 +39,6 @@ $nombre   = $_SESSION['nombre'];
       height: calc(100vh - 12px);
       justify-content: flex-start;
       align-self: flex-start;
-
     }
 
     nav {
@@ -81,7 +86,7 @@ $nombre   = $_SESSION['nombre'];
   <script src="https://cdn.datatables.net/2.3.8/js/dataTables.bootstrap5.min.js" crossorigin="anonymous"></script>
 </head>
 <!-- Body of dashboard - inside is all content-->
-<body class="bg-body-tertiary">
+<body>
   <!-- Aside menu orginal -->
   <aside class="collapse show collapse-horizontal col-md-2 col-sm-4 p-3 border-end bg-body-tertiary" id="collapseWidthExample">
      <?php require 'menu.php'; ?>
@@ -120,16 +125,25 @@ $nombre   = $_SESSION['nombre'];
             </li>
             <li class="nav-item dropdown">
               <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="true">
-                Dropdown
+                Tema
               </a>
-              <ul class="dropdown-menu">
-                <li><a class="dropdown-item" href="#">Action</a></li>
-                <li><a class="dropdown-item" href="#">Another action</a></li>
-                <li>
-                  <hr class="dropdown-divider">
-                </li>
-                <li><a class="dropdown-item" href="#">Something else here</a></li>
+              <ul class="dropdown-menu dropdown-menu-end" id="theme-dropdown">
+                <li><a class="dropdown-item" href="#" data-theme="cerulean">Cerulean (Default)</a></li>
+                <li><a class="dropdown-item" href="#" data-theme="cosmo">Cosmo</a></li>
+                <li><a class="dropdown-item" href="#" data-theme="flatly">Flatly</a></li>
+                <li><a class="dropdown-item" href="#" data-theme="journal">Journal</a></li>
+                <li><a class="dropdown-item" href="#" data-theme="litera">Litera</a></li>
+                <li><a class="dropdown-item" href="#" data-theme="lumen">Lumen</a></li>
+                <li><a class="dropdown-item" href="#" data-theme="pulse">Pulse</a></li>
+                <li><a class="dropdown-item" href="#" data-theme="sandstone">Sandstone</a></li>
+                <li><a class="dropdown-item" href="#" data-theme="simplex">Simplex</a></li>
+                <li><a class="dropdown-item" href="#" data-theme="sketchy">Sketchy</a></li>
+                <li><a class="dropdown-item" href="#" data-theme="spacelab">Spacelab</a></li>
+                <li><a class="dropdown-item" href="#" data-theme="united">United</a></li>
+                <li><a class="dropdown-item" href="#" data-theme="zephyr">Zephyr</a></li>
               </ul>
+            </li>
+          </ul>
             </li>
           </ul>
           <!-- Cambiar Tema -->

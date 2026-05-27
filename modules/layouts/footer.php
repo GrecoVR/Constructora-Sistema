@@ -28,6 +28,48 @@
     </div>
   </div>
   <script>
+    const cdnBase = "https://cdn.jsdelivr.net/npm/bootswatch@5.3.8/dist/";
+    
+    function updateDropdownUI(themeName) {
+        $('#theme-dropdown .dropdown-item').removeClass('active');
+        $(`#theme-dropdown .dropdown-item[data-theme="${themeName}"]`).addClass('active');
+    }
+    
+    const savedTheme = localStorage.getItem('bootswatchTheme');
+    if (savedTheme) {
+        $('#theme-link').attr('href', `${cdnBase}${savedTheme}/bootstrap.min.css`);
+        updateDropdownUI(savedTheme);
+    } else {
+        updateDropdownUI('cerulean');
+    }
+
+    $('#theme-dropdown .dropdown-item').on('click', function(e) {
+        e.preventDefault();
+        const selectedTheme = $(this).data('theme');
+        const currentTheme = localStorage.getItem('bootswatchTheme') || 'cerulean';
+        
+        if (selectedTheme === currentTheme) return;
+        
+        $('body').addClass('theme-fading');
+        
+        setTimeout(function() {
+          
+          const $tempStyle = $('<style id="temp-theme-hide">body { opacity: 0 !important; }</style>').appendTo('head');
+          
+          $('#theme-link').one('load', function() {
+
+              updateDropdownUI(selectedTheme);
+              localStorage.setItem('bootswatchTheme', selectedTheme);
+              
+              $tempStyle.remove();
+              
+              $('body').removeClass('theme-fading');
+              
+              }).attr('href', `${cdnBase}${selectedTheme}/bootstrap.min.css`);
+
+         }, 300); // Matches the 0.3s CSS transition
+      });
+  
     function changeclass() {
       
       const mclass = $("#main");

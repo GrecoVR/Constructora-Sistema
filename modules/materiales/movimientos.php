@@ -232,10 +232,10 @@ $historial = $historial_stmt->fetchAll();
  
 
 <!--  Modal (Handles both Create and Update) -->
+<form method="POST" id="dataForm">
 <div class="modal fade" id="userModal" tabindex="-1" aria-labelledby="userModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
-        <form method="POST" id="dataForm">
             <div class="modal-header">
                 <h5 class="modal-title" id="userModalLabel">Registrar Movimiento</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
@@ -286,9 +286,9 @@ $historial = $historial_stmt->fetchAll();
                 <button class="btn btn-primary" type="submit">Registrar</button>
             </div>
         </div>
-        </form>
    </div>
 </div><!-- end modal -->
+</form>
 
 </div>
 <script>

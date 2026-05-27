@@ -47,68 +47,94 @@ $contratos = $pdo->query("
 ")->fetchAll();
 ?>
 
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <title>Crear Proyecto — Vértice</title>
-</head>
-<body>
+<?php require_once '../../modules/layouts/header.php'; ?>
 
-<h2>➕ Nuevo Proyecto</h2>
-<a href="index.php">← Volver a proyectos</a>
+<div class="p-4">
 
-<br><br>
+<nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item"><a href="index.php"> Proyectos</a></li>
+    <li class="breadcrumb-item active" aria-current="page">Crear proyecto</li>
+  </ol>
+</nav>
 
 <?php if ($error): ?>
-    <p style="color:red"><?= $error ?></p>
+    <div class="toast fade show align-items-center text-bg-danger border-0 w-100" role="alert" aria-live="assertive" aria-atomic="true">
+      <div class="d-flex">
+        <div class="toast-body">
+          <?= $error ?>
+        </div>
+        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+      </div>
+    </div>
 <?php endif; ?>
 <?php if ($exito): ?>
-    <p style="color:green"><?= $exito ?></p>
+    <div class="toast fade show align-items-center text-bg-success border-0 w-100" role="alert" aria-live="assertive" aria-atomic="true">
+      <div class="d-flex">
+        <div class="toast-body">
+          <?= $exito ?>
+        </div>
+        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+      </div>
+    </div>
 <?php endif; ?>
 
-<form method="POST">
-    <label>Nombre: *</label><br>
-    <input type="text" name="nombre" required style="width:400px"><br><br>
-
-    <label>Descripción: *</label><br>
-    <textarea name="descripcion" rows="3" cols="50" required></textarea><br><br>
-
-    <label>Ubicación: *</label><br>
-    <input type="text" name="ubicacion" required style="width:400px"><br><br>
-
-    <label>Tipo de proyecto: *</label><br>
-    <select name="id_tipo_proyecto" required>
-        <option value="">-- Selecciona --</option>
-        <?php foreach ($tipos as $t): ?>
-            <option value="<?= $t['id_tipo_proyecto'] ?>"><?= htmlspecialchars($t['nombre']) ?></option>
-        <?php endforeach; ?>
-    </select><br><br>
-
-    <label>Contrato activo: *</label><br>
-    <select name="id_contrato" required>
-        <option value="">-- Selecciona --</option>
-        <?php foreach ($contratos as $c): ?>
-            <option value="<?= $c['id_contrato'] ?>">
-                #<?= $c['id_contrato'] ?> — <?= htmlspecialchars($c['cliente']) ?>
-            </option>
-        <?php endforeach; ?>
-    </select><br><br>
-
-    <label>Fecha de inicio: *</label><br>
-    <input type="date" name="fecha_inicio" required><br><br>
-
-    <label>Fecha fin estimada: *</label><br>
-    <input type="date" name="fecha_fin_estimada" required><br><br>
-
-    <label>Estado inicial:</label><br>
-    <select name="estado">
-        <option value="planificacion">Planificación</option>
-        <option value="ejecucion">Ejecución</option>
-    </select><br><br>
-
-    <button type="submit">Crear proyecto</button>
-</form>
-
-</body>
-</html>
+<div class="card shadow mt-2" style="width:400px;">
+  <div class="card-header">
+      <h4 class="mb-0">➕ Nuevo Proyecto</h4>
+  </div>   
+  <div class="card-body">
+    <form method="POST">
+    <div class="mb-3">
+      <label class="form-label" for="nombre">Nombre: *</label>
+      <input class="form-control" type="text" id="nombre" name="nombre" required>
+    </div>
+    <div class="mb-3">
+      <label class="form-label" for="descripcion">Descripción: *</label>
+      <textarea class="form-control" id="descripcion" name="descripcion" rows="3" cols="50" required></textarea>
+    </div>
+    <div class="mb-3">
+      <label class="form-label" for="ubicacion">Ubicación: *</label><br>
+      <input class="form-control" type="text" id="ubicacion" name="ubicacion" required>
+    </div>
+    <div class="mb-3">
+      <label class="form-label" for="id_tipo_proyecto">Tipo de proyecto: *</label>
+      <select class="form-select" id="id_tipo_proyecto" name="id_tipo_proyecto" required>
+          <option value="">-- Selecciona --</option>
+          <?php foreach ($tipos as $t): ?>
+              <option value="<?= $t['id_tipo_proyecto'] ?>"><?= htmlspecialchars($t['nombre']) ?></option>
+          <?php endforeach; ?>
+      </select>
+    </div>
+    <div class="mb-3">
+      <label class="form-label" for="id_contrato">Contrato activo: *</label><br>
+      <select class="form-select" id="id_contrato" name="id_contrato" required>
+          <option value="">-- Selecciona --</option>
+          <?php foreach ($contratos as $c): ?>
+              <option value="<?= $c['id_contrato'] ?>">
+                  #<?= $c['id_contrato'] ?> — <?= htmlspecialchars($c['cliente']) ?>
+              </option>
+          <?php endforeach; ?>
+      </select>
+    </div>
+    <div class="mb-3">
+      <label class="form-label" for="fecha_inicio">Fecha de inicio: *</label>
+      <input class="form-control" type="date" id="fecha_inicio" name="fecha_inicio" required>
+    </div>
+    <div class="mb-3">
+      <label class="form-label" for="fecha_fin_estimada">Fecha fin estimada: *</label><br>
+      <input class="form-control" type="date" id="fecha_fin_estimada" name="fecha_fin_estimada" required>
+    </div>
+    <div class="mb-3">
+      <label class="form-label" for="estado" >Estado inicial:</label>
+      <select class="form-select" id="estado" name="estado">
+          <option value="planificacion">Planificación</option>
+          <option value="ejecucion">Ejecución</option>
+      </select>
+    </div>
+      <button class="btn btn-primary" type="submit">Crear proyecto</button>
+    </form>
+    </div>
+  </div>
+</div>
+<?php require_once '../../modules/layouts/footer.php'; ?>

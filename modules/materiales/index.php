@@ -152,10 +152,10 @@ $unidades = $pdo->query("SELECT * FROM unidades_medida ORDER BY descripcion ASC"
   </div>
   
   <!--  Modal (Handles both Create and Update) -->
+<form method="POST" id="dataForm">
 <div class="modal fade" id="userModal" tabindex="-1" aria-labelledby="userModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
-        <form method="POST" id="dataForm">
             <div class="modal-header">
                 <h5 class="modal-title" id="userModalLabel">Crear Material</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
@@ -198,10 +198,11 @@ $unidades = $pdo->query("SELECT * FROM unidades_medida ORDER BY descripcion ASC"
             <div class="modal-footer">
                 <button class="btn btn-primary" type="submit">Guardar</button>
             </div>
-        </div>
-        </form>
+        </div> 
+     </div>
    </div>
 </div><!-- end modal -->
+</form>
 
 <?php if (empty($materiales)): ?>
     <p>No se encontraron materiales.</p>
