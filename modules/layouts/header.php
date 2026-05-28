@@ -14,24 +14,38 @@ $nombre   = $_SESSION['nombre'];
   <title>Empresa Constructora</title>
   <link rel="icon" type="image/x-icon" href="../../public/assets/favicon.png">
   <!-- Bootstrap -->
-  <link id="theme-link" rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootswatch@5.3.8/dist/cerulean/bootstrap.min.css">
-  <!-- Iconos de bootstrap -->  
+  <link id="themeStylesheet" rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
+  <!-- Iconos de bootstrap -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
-  <!-- datatables -->  
+  <!-- datatables -->
   <link rel="stylesheet" href="https://cdn.datatables.net/2.3.8/css/dataTables.bootstrap5.min.css">
   <!-- Custom styles for this template -->
   <style>
-  
-    body {
-      height: 100%;
-      opacity: 1;
-      transition: opacity 0.25s ease-in-out;
+
+  body {
+     height: 100%;
+     transition:
+       background-color 0.35s ease,
+       color 0.35s ease,
+       opacity 0.25s ease;
     }
-    
-    body.theme-fading {
+
+    body.theme-loading {
+      opacity: 0.4;
+      pointer-events: none;
+    }
+
+    .theme-check {
+      width: 18px;
+      display: inline-block;
       opacity: 0;
+      transition: opacity 0.2s ease;
     }
-    
+
+    .dropdown-item.active .theme-check {
+      opacity: 1;
+    }
+
     aside {
       /* border: 1px yellow solid; */
       position: fixed;
@@ -57,7 +71,7 @@ $nombre   = $_SESSION['nombre'];
       display: none;
 
     }
-    
+
     .btn-toggle-nav a {
       padding: .1875rem .5rem;
       margin-top: .125rem;
@@ -75,9 +89,9 @@ $nombre   = $_SESSION['nombre'];
     }
   </style>
   <!-- Script de bootstap  -->
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" 
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
     integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
-  
+
   <!-- Jquery -->
   <script src="https://code.jquery.com/jquery-3.7.1.min.js"
     integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
@@ -93,7 +107,7 @@ $nombre   = $_SESSION['nombre'];
   </aside>
   <!-- End aside -->
   <!-- Content of the main body - heres the main content like graph, tables, etc... -->
-  <main class="col-md-10 col-sm-8 bg-body-tertiary" id="main">
+  <main class="col-md-10 col-sm-8" id="main">
 
     <!-- Start navbar - here is inside of the main  -->
     <nav class="navbar sticky-top navbar-expand-lg border-bottom bg-body-tertiary">
@@ -123,37 +137,91 @@ $nombre   = $_SESSION['nombre'];
             <li class="nav-item">
               <a class="nav-link" href="#">Link</a>
             </li>
+            <!-- Cambiar Tema -->
             <li class="nav-item dropdown">
-              <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="true">
-                Tema
-              </a>
-              <ul class="dropdown-menu dropdown-menu-end" id="theme-dropdown">
-                <li><a class="dropdown-item" href="#" data-theme="cerulean">Cerulean (Default)</a></li>
-                <li><a class="dropdown-item" href="#" data-theme="cosmo">Cosmo</a></li>
-                <li><a class="dropdown-item" href="#" data-theme="flatly">Flatly</a></li>
-                <li><a class="dropdown-item" href="#" data-theme="journal">Journal</a></li>
-                <li><a class="dropdown-item" href="#" data-theme="litera">Litera</a></li>
-                <li><a class="dropdown-item" href="#" data-theme="lumen">Lumen</a></li>
-                <li><a class="dropdown-item" href="#" data-theme="pulse">Pulse</a></li>
-                <li><a class="dropdown-item" href="#" data-theme="sandstone">Sandstone</a></li>
-                <li><a class="dropdown-item" href="#" data-theme="simplex">Simplex</a></li>
-                <li><a class="dropdown-item" href="#" data-theme="sketchy">Sketchy</a></li>
-                <li><a class="dropdown-item" href="#" data-theme="spacelab">Spacelab</a></li>
-                <li><a class="dropdown-item" href="#" data-theme="united">United</a></li>
-                <li><a class="dropdown-item" href="#" data-theme="zephyr">Zephyr</a></li>
-              </ul>
-            </li>
+            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+              Tema:
+              <span id="activeThemeLabel">Bootstrap</span>
+            </a>
+            <ul class="dropdown-menu dropdown-menu-end">
+              <li>
+                <a class="dropdown-item theme-option" data-theme="bootstrap" href="#">
+                  <span class="theme-check">✓</span> Bootstrap
+                </a>
+              </li>
+              <li>
+                <a class="dropdown-item theme-option" data-theme="cerulean" href="#">
+                  <span class="theme-check">✓</span> Cerulean
+                </a>
+              </li>
+              <li>
+                <a class="dropdown-item theme-option" data-theme="cosmo" href="#">
+                  <span class="theme-check">✓</span> Cosmo
+                </a>
+              </li>
+              <li>
+                <a class="dropdown-item theme-option" data-theme="flatly" href="#">
+                  <span class="theme-check">✓</span> Flatly
+                </a>
+              </li>
+              <li>
+                <a class="dropdown-item theme-option" data-theme="journal" href="#">
+                  <span class="theme-check">✓</span> Journal
+                </a>
+              </li>
+              <li>
+                <a class="dropdown-item theme-option" data-theme="litera" href="#">
+                  <span class="theme-check">✓</span> Litera
+                </a>
+              </li>
+              <li>
+                <a class="dropdown-item theme-option" data-theme="lumen" href="#">
+                  <span class="theme-check">✓</span> Lumen
+                </a>
+              </li>
+              <li>
+                <a class="dropdown-item theme-option" data-theme="pulse" href="#">
+                  <span class="theme-check">✓</span> Pulse
+                </a>
+              </li>
+              <li>
+                <a class="dropdown-item theme-option" data-theme="sandstone" href="#">
+                  <span class="theme-check">✓</span> Sandstone
+                </a>
+              </li>
+              <li>
+                <a class="dropdown-item theme-option" data-theme="simplex" href="#">
+                  <span class="theme-check">✓</span> Simplex
+                </a>
+              </li>
+              <li>
+                <a class="dropdown-item theme-option" data-theme="spacelab" href="#">
+                  <span class="theme-check">✓</span> Spacelab
+                </a>
+              </li>
+              <li>
+                <a class="dropdown-item theme-option" data-theme="united" href="#">
+                  <span class="theme-check">✓</span> United
+                </a>
+              </li>
+              <li>
+                <a class="dropdown-item theme-option" data-theme="zephyr" href="#">
+                  <span class="theme-check">✓</span> Zephyr
+                </a>
+              </li>
+            </ul>
+          </li>
           </ul>
             </li>
           </ul>
-          <!-- Cambiar Tema -->
+          <!-- Cambiar Tema claro oscuro -->
           <div class="dropdown-center">
             <button class="btn btn-bd-primary py-2 dropdown-toggle d-flex align-items-center" id="bd-theme"
               type="button" aria-expanded="false" data-bs-toggle="dropdown" aria-label="Toggle theme (auto)">
               <i class="bi bi-circle-half me-2" id="theme-icon-active"></i>
               <span class="visually-hidden" id="bd-theme-text">Cambiar Tema</span>
             </button>
-            <ul class="dropdown-menu shadow" aria-labelledby="bd-theme-text">
+            <ul class="dropdown-menu dropdown-menu-end shadow" aria-labelledby="bd-theme-text">
               <li>
                 <button type="button" class="dropdown-item d-flex align-items-center" data-bs-theme-value="light"
                   data-bs-icon-value="sun-fill" aria-pressed="false">
@@ -186,13 +254,13 @@ $nombre   = $_SESSION['nombre'];
                 <a class="nav-link dropdown-toggle fw-semibold" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                   <?= htmlspecialchars($nombre) ?>
                 </a>
-                <ul class="dropdown-menu">
-                  <li><a class="dropdown-item" href="#">Config</a></li>
-                  <li><a class="dropdown-item" href="#">Perfil</a></li>
+                <ul class="dropdown-menu dropdown-menu-end">
+                  <li><a class="dropdown-item" href="#">Configurar</a></li>
+                  <li><a class="dropdown-item" href="#">Ver Perfil</a></li>
                   <li><hr class="dropdown-divider"></li>
                   <li><a class="dropdown-item" href="modules/auth/logout.php">Cerrar Sesion</a></li>
                 </ul>
-              </li>              
+              </li>
             </ul>
           </div>
           <!-- fin dropdown -->
