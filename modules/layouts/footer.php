@@ -107,7 +107,7 @@
       localStorage.setItem('menushow', 0)
     }
 
-    $("#main").toggleClass('col-md-10 col-sm-8');
+    $("#main").toggleClass('col-lg-10 col-md-9 col-sm-8');
   }
 
   // Color mode toggler

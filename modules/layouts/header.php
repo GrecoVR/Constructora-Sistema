@@ -72,18 +72,12 @@ $nombre   = $_SESSION['nombre'];
 
     }
 
-    .btn-toggle-nav a {
-      padding: .1875rem .5rem;
-      margin-top: .125rem;
-      margin-left: 1.25rem;
-    }
-
     @media screen and (max-width: 575px) {
       #sidebarshow {
         display: inline;
       }
 
-      #sidebartoggle {
+      #sidebartoggle, aside {
         display: none;
       }
     }
@@ -102,12 +96,12 @@ $nombre   = $_SESSION['nombre'];
 <!-- Body of dashboard - inside is all content-->
 <body>
   <!-- Aside menu orginal -->
-  <aside class="collapse show collapse-horizontal col-md-2 col-sm-4 p-3 border-end bg-body-tertiary" id="collapseWidthExample">
+  <aside class="collapse show collapse-horizontal col-lg-2 col-md-3 col-sm-4 p-3 border-end bg-body-tertiary" id="collapseWidthExample">
      <?php require 'menu.php'; ?>
   </aside>
   <!-- End aside -->
   <!-- Content of the main body - heres the main content like graph, tables, etc... -->
-  <main class="col-md-10 col-sm-8" id="main">
+  <main class="col-lg-10 col-md-9 col-sm-8" id="main">
 
     <!-- Start navbar - here is inside of the main  -->
     <nav class="navbar sticky-top navbar-expand-lg border-bottom bg-body-tertiary">
@@ -211,8 +205,6 @@ $nombre   = $_SESSION['nombre'];
               </li>
             </ul>
           </li>
-          </ul>
-            </li>
           </ul>
           <!-- Cambiar Tema claro oscuro -->
           <div class="dropdown-center">

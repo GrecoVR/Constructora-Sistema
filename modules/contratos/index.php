@@ -25,55 +25,82 @@ $contratos = $pdo->query("
 ")->fetchAll();
 ?>
 
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <title>Contratos — Vértice</title>
-</head>
-<body>
+<?php require_once '../../modules/layouts/header.php'; ?>
 
-<h2>📄 Contratos</h2>
-<a href="../../dashboard.php">← Volver al dashboard</a>
-<?php if (in_array('gestionar_contratos', $_SESSION['permisos'])): ?>
-    &nbsp;&nbsp;
-    <a href="crear.php"><button>+ Nuevo contrato</button></a>
-    &nbsp;&nbsp;
-    <a href="cotizaciones.php"><button>Ver cotizaciones</button></a>
+<div class="p-4">
+
+<nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item"><a href="../../modules/dashboard/dashboard.php"> Dashboard</a></li>
+    <li class="breadcrumb-item active" aria-current="page">Contratos</li>
+  </ol>
+</nav>
+
+<h3>📄 Contratos</h3>
+
+<?php if (in_array('gestionar_contratos', $_SESSION['permisos'])): ?>    
+    <a class="btn btn-secondary" href="crear.php">+ Nuevo contrato</a>
+    
+    <a class="btn btn-light" href="cotizaciones.php">Ver cotizaciones</a>
 <?php endif; ?>
 
-<br><br>
-
-<table border="1" cellpadding="8">
-    <tr>
-        <th>ID</th>
-        <th>Cliente</th>
-        <th>Proyecto</th>
-        <th>Monto (Bs)</th>
-        <th>Fecha firma</th>
-        <th>Fecha fin</th>
-        <th>Estado</th>
-        <th>Acciones</th>
-    </tr>
-    <?php foreach ($contratos as $c): ?>
+<div class="card shadow mt-2">
+  <div class="card-header">
+      <h4 class="mb-0">📌 Información general</h4>
+  </div>   
+  <div class="card-body table-responsive">
+    <table id="tabla-datos" class="table table-striped table-bordered">
+    <thead>
         <tr>
-            <td><?= $c['id_contrato'] ?></td>
-            <td><?= htmlspecialchars($c['cliente']) ?></td>
-            <td><?= $c['proyecto'] ? htmlspecialchars($c['proyecto']) : '—' ?></td>
-            <td><?= number_format($c['monto_total'], 2) ?></td>
-            <td><?= formatoFechaCorta($c['fecha_firma']) ?></td>
-            <td><?= $c['fecha_fin_estimada'] ? estadoFecha($c['fecha_fin_estimada']) : '—' ?></td>
-            <td><?= ucfirst($c['estado']) ?></td>
-            <td>
-                <a href="pagos_cliente.php?id=<?= $c['id_contrato'] ?>">Pagos</a>
-            </td>
+            <th>ID</th>
+            <th>Cliente</th>
+            <th>Proyecto</th>
+            <th>Monto (Bs)</th>
+            <th>Fecha firma</th>
+            <th>Fecha fin</th>
+            <th>Estado</th>
+            <th>Acciones</th>
         </tr>
-    <?php endforeach; ?>
-</table>
+      </thead>
+      </tbody>
+        <?php foreach ($contratos as $c): ?>
+            <tr>
+                <td><?= $c['id_contrato'] ?></td>
+                <td><?= htmlspecialchars($c['cliente']) ?></td>
+                <td><?= $c['proyecto'] ? htmlspecialchars($c['proyecto']) : '—' ?></td>
+                <td><?= number_format($c['monto_total'], 2) ?></td>
+                <td><?= formatoFechaCorta($c['fecha_firma']) ?></td>
+                <td><?= $c['fecha_fin_estimada'] ? estadoFecha($c['fecha_fin_estimada']) : '—' ?></td>
+                <td><?= ucfirst($c['estado']) ?></td>
+                <td>
+                    <a class="btn btn-outline-secondary btn-sm" href="pagos_cliente.php?id=<?= $c['id_contrato'] ?>">Pagos</a>
+                </td>
+            </tr>
+        <?php endforeach; ?>
+        </tbody>
+    </table>
+  </div>
+</div>
 
 <?php if (empty($contratos)): ?>
     <p>No hay contratos registrados.</p>
 <?php endif; ?>
 
-</body>
-</html>
+</div>
+<script>
+$(document).ready(function() {
+   var table = $('#tabla-datos').DataTable({
+        language: {
+            url: "https://cdn.datatables.net/plug-ins/1.11.5/i18n/es-ES.json"
+        },
+        order: [],
+        columnDefs: [
+        {
+          targets: -1,
+          orderable: false
+        }
+        ]
+    });
+});    
+</script>
+<?php require_once '../../modules/layouts/footer.php'; ?>
