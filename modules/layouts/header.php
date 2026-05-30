@@ -250,7 +250,7 @@ $nombre   = $_SESSION['nombre'];
                   <li><a class="dropdown-item" href="#">Configurar</a></li>
                   <li><a class="dropdown-item" href="#">Ver Perfil</a></li>
                   <li><hr class="dropdown-divider"></li>
-                  <li><a class="dropdown-item" href="modules/auth/logout.php">Cerrar Sesion</a></li>
+                  <li><a class="dropdown-item" href="../../modules/auth/logout.php">Cerrar Sesion</a></li>
                 </ul>
               </li>
             </ul>

@@ -285,7 +285,7 @@ $nombre   = $_SESSION['nombre'];
   <?php endif; ?>
 
 
-  <?php if (in_array('ver_inventarios', $permisos)): ?>      
+  <?php if (in_array('ver_inventarios', $permisos)): ?>
       <div class="card shadow mb-4">
       <div class="card-header">
           <h4 class="mb-0">📦 Inventario con stock bajo</h4>

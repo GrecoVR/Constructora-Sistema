@@ -35,7 +35,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['cambiar_estado'])) {
             ]);
         }
 
-        registrarAccion("Cambió estado cotización ID: $id_cotizacion a $nuevo_estado");
+        registrarAccion("Cambi estado cotización ID: $id_cotizacion a $nuevo_estado");
         $exito = 'Estado actualizado correctamente';
     } else {
         $error = 'Datos incorrectos';
@@ -87,7 +87,7 @@ $cotizaciones = $pdo->query("
 
 <div class="card shadow mt-2">
   <div class="card-header">
-      <h4 class="mb-0">📌 Información general</h4>
+      <h4 class="mb-0"> Información general</h4>
   </div>   
   <div class="card-body table-responsive">
   <table id="tabla-datos" class="table table-striped table-bordered">
@@ -125,19 +125,17 @@ $cotizaciones = $pdo->query("
                           <input type="hidden" name="nuevo_estado" value="aprobada">
                           <button class="btn btn-outline-success btn-sm" type="submit" name="cambiar_estado"
                                   onclick="return confirm('¿Aprobar esta cotización?')">
-                              ✅ Aprobar
+                              <i class="bi bi-check-square-fill"></i> Aprobar
                           </button>
                       </form>
                       <form method="POST" style="display:inline">
                           <input type="hidden" name="id_cotizacion" value="<?= $co['id_cotizacion'] ?>">
                           <input type="hidden" name="nuevo_estado" value="rechazada">
-                          <button class="btn btn-outline-danger btn-sm" type="submit" name="cambiar_estado"
+                          <button class="btn btn-outline-danger btn-sm ms-2" type="submit" name="cambiar_estado"
                                   onclick="return confirm('¿Rechazar esta cotización?')">
-                              ❌ Rechazar
+                              <i class="bi bi-x-square-fill"></i> Rechazar
                           </button>
                       </form>
-                  <?php else: ?>
-                      —
                   <?php endif; ?>
               </td>
           </tr>
