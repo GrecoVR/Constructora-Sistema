@@ -77,41 +77,62 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 ?>
 
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <title>Editar Usuario — Vértice</title>
-</head>
-<body>
+<?php require_once '../../modules/layouts/header.php'; ?>
 
-<h2>✏️ Editar Usuario — <?= htmlspecialchars($usuario['empleado']) ?></h2>
-<a href="index.php">← Volver a usuarios</a>
+<nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item"><a href="index.php">Usuarios</a></li>
+    <li class="breadcrumb-item active" aria-current="page">Editar Usuario</li>
+  </ol>
+</nav>
 
-<br><br>
+<h2 class="mb-4 fw-semibold">✏️ Editar Usuario </h2> 
+
+<h4 class="mb-4 fw-semibold"><?= htmlspecialchars($usuario['empleado']) ?></h4>
+
 
 <?php if ($error): ?>
-    <p style="color:red"><?= $error ?></p>
+    <div class="toast fade show align-items-center text-bg-danger border-0 w-100" role="alert" aria-live="assertive" aria-atomic="true">
+      <div class="d-flex">
+        <div class="toast-body">
+          <?= $error ?>
+        </div>
+        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+      </div>
+    </div>
 <?php endif; ?>
 <?php if ($exito): ?>
-    <p style="color:green"><?= $exito ?></p>
+    <div class="toast fade show align-items-center text-bg-success border-0 w-100" role="alert" aria-live="assertive" aria-atomic="true">
+      <div class="d-flex">
+        <div class="toast-body">
+          <?= $exito ?>
+        </div>
+        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+      </div>
+    </div>
 <?php endif; ?>
 
+<div class="card shadow" style="width:400px;">
+<div class="card-body">
 <form method="POST">
-    <label>Nombre de usuario:</label><br>
-    <input type="text" name="usuario" value="<?= htmlspecialchars($usuario['nombre_usuario']) ?>" required><br><br>
-
-    <label>Nueva contraseña (dejar vacío para no cambiar):</label><br>
-    <input type="password" name="contrasena"><br><br>
-
-    <label>Estado:</label><br>
-    <select name="estado">
-        <option value="activo" <?= $usuario['estado'] === 'activo' ? 'selected' : '' ?>>Activo</option>
-        <option value="inactivo" <?= $usuario['estado'] === 'inactivo' ? 'selected' : '' ?>>Inactivo</option>
-    </select><br><br>
-
-    <button type="submit">Guardar cambios</button>
+    <div class="mb-3">
+    <label class="form-label" for="usuario" >Nombre de usuario:</label>
+    <input class="form-control" type="text" id="usuario" name="usuario" value="<?= htmlspecialchars($usuario['nombre_usuario']) ?>" required>
+    </div>
+    <div class="mb-3">
+    <label class="form-label" for="contrasena">Nueva Contraseña: (dejar vacío para no cambiar):</label>
+    <input class="form-control" type="password" id="contrasena" name="contrasena" required>
+    </div>
+    <div class="mb-3">
+    <label class="form-label" for="estado">Estado:</label>
+    <select class="form-select" id="estado" name="estado" value="<?= $usuario['estado'] ?>">
+        <option value="activo">Activo</option>
+        <option value="inactivo">Inactivo</option>
+    </select>
+    </div>
+    <button class="btn btn-primary" type="submit">Guardar Cambios</button>
 </form>
+</div>
+</div>
 
-</body>
-</html>
+<?php require_once '../../modules/layouts/footer.php'; ?>

@@ -75,14 +75,14 @@ $pedidos = $pdo->query("
 
 <?php require_once '../../modules/layouts/header.php'; ?>
 
-<div class="p-4">
-
 <nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
   <ol class="breadcrumb">
     <li class="breadcrumb-item"><a href="../../modules/dashboard/dashboard.php">Dashboard</a></li>
     <li class="breadcrumb-item active" aria-current="page">Pedidos</li>
   </ol>
 </nav>
+
+<h2 class="mb-4 fw-semibold">🛒 Pedidos a Proveedores</h2>
 
 <?php if ($error): ?>
     <div class="toast fade show align-items-center text-bg-danger border-0 w-100" role="alert" aria-live="assertive" aria-atomic="true">
@@ -105,8 +105,49 @@ $pedidos = $pdo->query("
     </div>
 <?php endif; ?>
 
-<h2>🛒 Pedidos a Proveedores</h2>
+  <div class="card shadow mt-2">
+      <div class="card-header d-flex justify-content-between align-items-center">
+          <h4 class="mb-0">Pedidos Recientes</h4>
+          <button type="button" class="btn btn-primary" id="addRowBtn"><i class="bi bi-plus-lg"></i> Nuevo Pedido</button>
+      </div>
+      <div class="card-body table-responsive">
+      <table id="tabla-datos" class="table table-striped table-bordered">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Fecha</th>
+          <th>Proveedor</th>
+          <th>Almacén</th>
+          <th>Items</th>
+          <th>Estado</th>
+          <th>Acciones</th>
+      </tr>
+      </thead>
+      <tbody>
+      <?php foreach ($pedidos as $p): ?>
+        <tr>
+            <td><?= $p['id_pedido'] ?></td>
+            <td><?= $p['fecha_pedido'] ?></td>
+            <td><?= htmlspecialchars($p['proveedor']) ?></td>
+            <td><?= htmlspecialchars($p['almacen']) ?></td>
+            <td><?= $p['total_items'] ?></td>
+            <td><?= $p['estado'] ?></td>
+            <td>
+            <?php if ($p['estado'] == 'pendiente'): ?>
+            <button class="btn btn-sm btn-outline-secondary border-0 fw-semibold editBtn" data-id="<?= $h['id_pedido'] ?>">
+               <i class="bi bi-pencil-square"></i> Editar</button>
+            <button class="btn btn-sm btn-outline-danger border-0 fw-semibold deleteBtn" data-id="<?= $h['id_pedido'] ?>">
+               <i class="bi bi-trash-fill"></i> Eliminar</button>
+            <?php endif; ?>
+            </td>
+        </tr>
+      <?php endforeach; ?>
+      </tbody>
+      </table>
+      </div>
+ </div>
 
+<!-- modal -->
 <form method="POST" id="dataForm">
 <div class="modal fade" id="userModal" tabindex="-1" aria-labelledby="userModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg modal-dialog-scrollable">
@@ -140,7 +181,7 @@ $pedidos = $pdo->query("
             <label class="form-label" for="fecha_pedido">Fecha del pedido: *</label>
             <input class="form-control" type="date" id="fecha_pedido" name="fecha_pedido" value="<?= date('Y-m-d') ?>"><br><br>
             </div>
-            
+
             <div class="d-flex gap-2 justify-content-between mb-3">
             <h5>Materiales del pedido</h5>
             <button id="addFieldBtn" class="btn btn-sm btn-success" type="button"><i class="bi bi-plus-lg"></i>Agregar Material</button>
@@ -168,54 +209,11 @@ $pedidos = $pdo->query("
           <div class="modal-footer">
             <button type="submit" class="btn btn-primary">Guardar</button>
           </div>
-       </div> 
+       </div>
     </div>
 </div><!-- end modal -->
 </form>
 
-
-  <div class="card shadow mt-2">
-      <div class="card-header d-flex justify-content-between align-items-center">
-          <h4 class="mb-0">🧱 Pedidos Recientes</h4>
-          <button type="button" class="btn btn-primary btn-sm" id="addRowBtn"><i class="bi bi-plus-lg"></i> Nuevo Pedido</button>
-      </div> 
-      <div class="card-body table-responsive">
-      <table id="tabla-datos" class="table table-striped table-bordered">
-      <thead>
-        <tr>
-          <th>ID</th>
-          <th>Fecha</th>
-          <th>Proveedor</th>
-          <th>Almacén</th>
-          <th>Items</th>
-          <th>Estado</th>
-          <th>Acciones</th>
-      </tr>
-      </thead>
-      <tbody>
-      <?php foreach ($pedidos as $p): ?>
-        <tr>
-            <td><?= $p['id_pedido'] ?></td>
-            <td><?= $p['fecha_pedido'] ?></td>
-            <td><?= htmlspecialchars($p['proveedor']) ?></td>
-            <td><?= htmlspecialchars($p['almacen']) ?></td>
-            <td><?= $p['total_items'] ?></td>
-            <td><?= $p['estado'] ?></td>
-            <td>
-            <?php if ($p['estado'] == 'pendiente'): ?>
-            <button class="btn btn-sm btn-outline-secondary editBtn" data-id="<?= $h['id_pedido'] ?>">
-               Editar</button>
-            <button class="btn btn-sm btn-outline-danger deleteBtn" data-id="<?= $h['id_pedido'] ?>">
-               Eliminar</button>
-            <?php endif; ?> 
-            </td>
-        </tr>
-      <?php endforeach; ?>
-      </tbody>
-      </table>
-      </div>
- </div>
-</div>
 <script>
 var table = $('#tabla-datos').DataTable({
         language: {
@@ -229,13 +227,13 @@ var table = $('#tabla-datos').DataTable({
         }
         ]
     });
-    
-    
+
+
   // Use a counter
   let fieldCount = 4;
 
   $("#addFieldBtn").click(function(e) {
-    e.preventDefault(); // Prevent default button behavior    
+    e.preventDefault(); // Prevent default button behavior
       fieldCount++;
       // Append a new inputs
       $("#materialsContainer").append(
@@ -251,7 +249,7 @@ var table = $('#tabla-datos').DataTable({
     $(this).parent(".field-group").remove();
     fieldCount--;
   });
-  
+
   // Open Modal for Adding row
   $('#addRowBtn').click(function() {
       $('#dataForm')[0].reset();
@@ -259,6 +257,6 @@ var table = $('#tabla-datos').DataTable({
       $('#action').val('create');
       $('#userModal').modal('show');
   });
-    
+
 </script>
 <?php require_once '../../modules/layouts/footer.php'; ?>

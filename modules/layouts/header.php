@@ -101,7 +101,7 @@ $nombre   = $_SESSION['nombre'];
   </aside>
   <!-- End aside -->
   <!-- Content of the main body - heres the main content like graph, tables, etc... -->
-  <main class="col-lg-10 col-md-9 col-sm-8" id="main">
+  <main class="col-lg-10 col-md-9 col-sm-8 bg-body-tertiary" id="main">
 
     <!-- Start navbar - here is inside of the main  -->
     <nav class="navbar sticky-top navbar-expand-lg border-bottom bg-body-tertiary">
@@ -262,3 +262,4 @@ $nombre   = $_SESSION['nombre'];
     <!-- end navbar -->
 
     <div class="container-fluid">
+    <div class="p-4">

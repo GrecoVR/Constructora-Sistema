@@ -45,7 +45,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if (!$error) {
             // Registra el movimiento
             $stmt = $pdo->prepare("
-                INSERT INTO movimientos_inventario 
+                INSERT INTO movimientos_inventario
                 (id_material, id_almacen, tipo_movimiento, fecha, cantidad)
                 VALUES (?, ?, ?, ?, ?)
             ");
@@ -77,7 +77,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $error = 'Completa todos los campos';
     }
    }
-   
+
    //actualizar datos
    if ($_POST['action'] == 'update') {
     if ($id_material && $id_almacen && $tipo_movimiento && $cantidad > 0) {
@@ -99,8 +99,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if (!$error) {
             // Actualiza el movimiento
             $stmt = $pdo->prepare("
-                UPDATE movimientos_inventario SET 
-                id_material = ?, id_almacen = ?, tipo_movimiento = ? , fecha = ? , cantidad = ? 
+                UPDATE movimientos_inventario SET
+                id_material = ?, id_almacen = ?, tipo_movimiento = ? , fecha = ? , cantidad = ?
                 WHERE id_movimiento = ?
             ");
             $cantidad_real = $tipo_movimiento === 'salida' ? -$cantidad : $cantidad;
@@ -136,7 +136,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
      $stmt = $pdo->prepare("DELETE FROM movimientos_inventario WHERE id_movimiento = ?");
      $result = $stmt->execute([$_POST['id_movimiento']]);
    }
-   
+
   }
 }
 
@@ -158,8 +158,6 @@ $historial = $historial_stmt->fetchAll();
 
 <?php require_once '../../modules/layouts/header.php'; ?>
 
-<div class="p-4">
-
 <nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
   <ol class="breadcrumb">
     <li class="breadcrumb-item"><a href="../../modules/dashboard/dashboard.php">Dashboard</a></li>
@@ -167,9 +165,9 @@ $historial = $historial_stmt->fetchAll();
   </ol>
 </nav>
 
-<h2 class="mb-4">🔄 Movimientos de Inventario</h2>
+<h2 class="mb-4 fw-semibold">🔄 Movimientos de Inventario</h2>
 
-<a class="btn btn-secondary mb-3" href="index.php">Ver materiales</a>
+<a class="btn btn-secondary mb-3" href="index.php"><i class="bi bi-eye-fill"></i> Ver materiales</a>
 
 
 <?php if ($error): ?>
@@ -195,8 +193,8 @@ $historial = $historial_stmt->fetchAll();
   <div class="card shadow mt-2">
       <div class="card-header d-flex justify-content-between align-items-center">
           <h4 class="mb-0">Últimos 20 movimientos</h4>
-          <button type="button" class="btn btn-primary btn-sm" id="addRowBtn"><i class="bi bi-plus-lg"></i> Registrar Movimiento</button>
-      </div> 
+          <button type="button" class="btn btn-primary" id="addRowBtn"><i class="bi bi-plus-lg"></i> Registrar Movimiento</button>
+      </div>
       <div class="card-body table-responsive">
       <table id="tabla-datos" class="table table-striped table-bordered">
         <thead>
@@ -218,10 +216,10 @@ $historial = $historial_stmt->fetchAll();
                   <td><?= $h['tipo_movimiento'] ?></td>
                   <td><?= $h['cantidad'] ?></td>
                   <td>
-                  <button class="btn btn-sm btn-outline-secondary editBtn" data-id="<?= $h['id_movimiento'] ?>">
-                     Editar</button>
-                  <button class="btn btn-sm btn-outline-danger deleteBtn" data-id="<?= $h['id_movimiento'] ?>">
-                     Eliminar</button>
+                  <button class="btn btn-sm btn-outline-secondary border-0 fw-semibold editBtn" data-id="<?= $h['id_movimiento'] ?>">
+                     <i class="bi bi-pencil-square"></i> Editar</button>
+                  <button class="btn btn-sm btn-outline-danger border-0 fw-semibold deleteBtn" data-id="<?= $h['id_movimiento'] ?>">
+                     <i class="bi bi-trash-fill"></i> Eliminar</button>
                   </td>
               </tr>
           <?php endforeach; ?>
@@ -229,7 +227,7 @@ $historial = $historial_stmt->fetchAll();
       </table>
       </div>
   </div> <!-- end card >
- 
+
 
 <!--  Modal (Handles both Create and Update) -->
 <form method="POST" id="dataForm">
@@ -290,7 +288,6 @@ $historial = $historial_stmt->fetchAll();
 </div><!-- end modal -->
 </form>
 
-</div>
 <script>
 $(document).ready(function() {
     var table = $('#tabla-datos').DataTable({
@@ -305,7 +302,7 @@ $(document).ready(function() {
         }
         ]
     });
-    
+
     // Open Modal for Adding row
     $('#addRowBtn').click(function() {
         $('#dataForm')[0].reset();
@@ -313,13 +310,13 @@ $(document).ready(function() {
         $('#action').val('create');
         $('#userModal').modal('show');
     });
-    
-    
+
+
     // Handle Edit Button Click
     $(document).on('click', '.editBtn', function() {
         var id = $(this).data('id');
         $('#id_movimiento').val(id);
-        
+
         //Get the row data
         var data = table.row($(this).parents('tr')).data();
 
@@ -329,30 +326,31 @@ $(document).ready(function() {
         var idMaterial = $("#id_material option").filter(function() {
             return $(this).text().trim() === data[1];
         }).val();
-        
+
         $('#id_material').val(idMaterial);
-        
+
         var idAlmacen = $("#id_almacen option").filter(function() {
             return $(this).text().trim() === data[2];
         }).val();
 
         $('#id_almacen').val(idAlmacen);
         $('#tipo_movimiento').val(data[3]);
-        $('#cantidad').val(data[4]);
-                
+        var cantidadFloat = parseFloat(data[4].replaceAll(',', ''));
+        $('#cantidad').val(cantidadFloat);
+
         $('.modal-title').text('Editar Movimiento');
         $('#action').val('update');
         $('#userModal').modal('show');
 
     });
-    
+
     // Handle Delete Button Click
     $(document).on('click', '.deleteBtn', function() {
         var id = $(this).data('id');
         $('#id_movimiento').val(id);
         if(confirm("Estas seguro que deseas eliminar este movimiento?")) {
             $('#action').val('delete');
-            $('#dataForm').submit(); 
+            $('#dataForm').submit();
         }
     });
 });

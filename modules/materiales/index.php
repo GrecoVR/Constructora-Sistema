@@ -19,7 +19,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $precio          = floatval($_POST['precio'] ?? 0);
     $id_tipo         = intval($_POST['id_tipo_material'] ?? 0);
     $id_unidad       = intval($_POST['id_unidad_medida'] ?? 0);
-    
+
     //crear
     if ($_POST['action'] == 'create') {
 
@@ -34,14 +34,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       } else {
           $error = 'Completa todos los campos obligatorios';
       }
-    
+
     }
     //actualizar datos
    if ($_POST['action'] == 'update') {
-     
+
      if ($nombre && $precio && $id_tipo && $id_unidad) {
         $stmt2 = $pdo->prepare("
-            UPDATE materiales 
+            UPDATE materiales
             SET nombre = ?, descripcion = ?, precio_unitario_base = ?,
                 id_tipo_material = ?, id_unidad_medida = ?
             WHERE id_material = ?
@@ -49,12 +49,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $stmt2->execute([$nombre, $descripcion, $precio, $id_tipo, $id_unidad, $id]);
         registrarAccion("Editó material ID: $id");
         $exito = 'Material actualizado correctamente';
-        
+
      } else {
           $error = 'Completa todos los campos obligatorios';
-     }    
+     }
    }
-   
+
    // Eliminar
    if ($_POST['action'] == 'delete') {
      $stmt = $pdo->prepare("DELETE FROM materiales WHERE id_material = ?");
@@ -80,7 +80,6 @@ $unidades = $pdo->query("SELECT * FROM unidades_medida ORDER BY descripcion ASC"
 
 <?php require_once '../../modules/layouts/header.php'; ?>
 
-<div class="p-4">
 
 <nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
   <ol class="breadcrumb">
@@ -88,6 +87,8 @@ $unidades = $pdo->query("SELECT * FROM unidades_medida ORDER BY descripcion ASC"
     <li class="breadcrumb-item active" aria-current="page">Materiales</li>
   </ol>
 </nav>
+
+<h2 class="mb-4 fw-semibold">🧱 Materiales</h2>
 
 <?php if ($error): ?>
     <div class="toast fade show align-items-center text-bg-danger border-0 w-100" role="alert" aria-live="assertive" aria-atomic="true">
@@ -112,9 +113,9 @@ $unidades = $pdo->query("SELECT * FROM unidades_medida ORDER BY descripcion ASC"
 
   <div class="card shadow mt-2">
       <div class="card-header d-flex justify-content-between align-items-center">
-          <h4 class="mb-0">🧱 Materiales</h4>
-          <button type="button" class="btn btn-primary btn-sm" id="addRowBtn"><i class="bi bi-plus-lg"></i> Nuevo Material</button>
-      </div> 
+          <h4 class="mb-0">Lista de Materiales</h4>
+          <button type="button" class="btn btn-primary" id="addRowBtn"><i class="bi bi-plus-lg"></i> Nuevo Material</button>
+      </div>
       <div class="card-body table-responsive">
       <table id="tabla-datos" class="table table-striped table-bordered">
         <thead>
@@ -138,11 +139,12 @@ $unidades = $pdo->query("SELECT * FROM unidades_medida ORDER BY descripcion ASC"
                   <td><?= $m['unidad'] ?></td>
                   <td><?= number_format($m['precio_unitario_base'], 2) ?></td>
                   <td>
-                      <button class="btn btn-sm btn-outline-secondary editBtn" data-id="<?= $m['id_material'] ?>">
-                     Editar</button>
+                      <button class="btn btn-sm btn-outline-secondary border-0 fw-semibold editBtn" data-id="<?= $m['id_material'] ?>">
+                        <i class="bi bi-pencil-square"></i> Editar</button>
                      <!--<button class="btn btn-sm btn-outline-danger deleteBtn" data-id="<?= $m['id_material'] ?>">
                      Eliminar</button>-->
-                      <a class="btn btn-outline-success btn-sm" href="movimientos.php?id_material=<?= $m['id_material'] ?>">Ver stock</a>
+                      <a class="btn btn-outline-success btn-sm border-0 fw-semibold" href="movimientos.php?id_material=<?= $m['id_material'] ?>">
+                       <i class="bi bi-eye-fill"></i> Ver stock</a>
                   </td>
               </tr>
           <?php endforeach; ?>
@@ -150,7 +152,7 @@ $unidades = $pdo->query("SELECT * FROM unidades_medida ORDER BY descripcion ASC"
       </table>
       </div>
   </div>
-  
+
   <!--  Modal (Handles both Create and Update) -->
 <form method="POST" id="dataForm">
 <div class="modal fade" id="userModal" tabindex="-1" aria-labelledby="userModalLabel" aria-hidden="true">
@@ -198,7 +200,7 @@ $unidades = $pdo->query("SELECT * FROM unidades_medida ORDER BY descripcion ASC"
             <div class="modal-footer">
                 <button class="btn btn-primary" type="submit">Guardar</button>
             </div>
-        </div> 
+        </div>
      </div>
    </div>
 </div><!-- end modal -->
@@ -207,7 +209,7 @@ $unidades = $pdo->query("SELECT * FROM unidades_medida ORDER BY descripcion ASC"
 <?php if (empty($materiales)): ?>
     <p>No se encontraron materiales.</p>
 <?php endif; ?>
-</div>
+
 <script>
 $(document).ready(function() {
    var table = $('#tabla-datos').DataTable({
@@ -222,7 +224,7 @@ $(document).ready(function() {
         }
         ]
     });
-    
+
     // Open Modal for Adding row
     $('#addRowBtn').click(function() {
         $('#dataForm')[0].reset();
@@ -230,12 +232,12 @@ $(document).ready(function() {
         $('#action').val('create');
         $('#userModal').modal('show');
     });
-    
+
     // Handle Edit Button Click
     $(document).on('click', '.editBtn', function() {
         var id = $(this).data('id');
         $('#id_material').val(id);
-        
+
         //Get the row data
         var data = table.row($(this).parents('tr')).data();
         console.log(data);
@@ -247,28 +249,28 @@ $(document).ready(function() {
             return $(this).text().trim() === data[3];
         }).val();
         $('#id_tipo_material').val(idTipoMaterial);
-        
+
         var idUnidadMedida = $("#id_unidad_medida option").filter(function() {
             return $(this).text().trim() === data[4];
         }).val();
         $('#id_unidad_medida').val(idUnidadMedida);
-        
+
         var precioFloat = parseFloat(data[5].replaceAll(',', ''));
         $('#precio').val(precioFloat);
-                
+
         $('.modal-title').text('Editar Material');
         $('#action').val('update');
         $('#userModal').modal('show');
 
     });
-    
+
     // Handle Delete Button Click
     $(document).on('click', '.deleteBtn', function() {
         var id = $(this).data('id');
         $('#id_material').val(id);
         if(confirm("Estas seguro que deseas eliminar este material?")) {
             $('#action').val('delete');
-            $('#dataForm').submit(); 
+            $('#dataForm').submit();
         }
     });
 });

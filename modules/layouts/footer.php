@@ -1,3 +1,4 @@
+      </div> <!-- end of main content -->
 <!-- Footer for end section -->
       <div class="row mt-3 border-top">
         <footer class="pt-3 d-flex justify-content-between">

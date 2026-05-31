@@ -59,39 +59,52 @@ $todos_roles = $pdo->query("SELECT * FROM roles ORDER BY nombre_rol ASC")->fetch
 $stmt4 = $pdo->prepare("SELECT id_rol FROM usuarios_roles WHERE id_usuario_sistema = ?");
 $stmt4->execute([$id]);
 $roles_actuales = $stmt4->fetchAll(PDO::FETCH_COLUMN);
+
+$i=0;
 ?>
 
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <title>Roles — Vértice</title>
-</head>
-<body>
+<?php require_once '../../modules/layouts/header.php'; ?>
 
-<h2>🔐 Roles de <?= htmlspecialchars($usuario['empleado']) ?></h2>
-<a href="index.php">← Volver a usuarios</a>
+<nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item"><a href="index.php">Usuarios</a></li>
+    <li class="breadcrumb-item active" aria-current="page">Editar Roles</li>
+  </ol>
+</nav>
 
-<br><br>
+<h2 class="mb-4 fw-semibold">🔐 Roles de : </h2>
+
+<h4 class="mb-4 fw-semibold"><?= htmlspecialchars($usuario['empleado']) ?></h4>
 
 <?php if ($exito): ?>
-    <p style="color:green"><?= $exito ?></p>
+    <div class="toast fade show align-items-center text-bg-success border-0 w-100" role="alert" aria-live="assertive" aria-atomic="true">
+      <div class="d-flex">
+        <div class="toast-body">
+          <?= $exito ?>
+        </div>
+        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+      </div>
+    </div>
 <?php endif; ?>
 
+<div class="card shadow">
+<div class="card-body">
 <form method="POST">
-    <p>Selecciona los roles para este usuario:</p>
-
+    <p class="fw-semibold">Selecciona los roles para este usuario:</p>
+    <div class="d-grid gap-2 mb-4" style="grid-template-columns: auto 1fr;">
     <?php foreach ($todos_roles as $rol): ?>
-        <label>
-            <input type="checkbox" name="roles[]" value="<?= $rol['id_rol'] ?>"
-                <?= in_array($rol['id_rol'], $roles_actuales) ? 'checked' : '' ?>>
-            <strong><?= htmlspecialchars($rol['nombre_rol']) ?></strong>
-            — <?= htmlspecialchars($rol['descripcion']) ?>
-        </label><br><br>
+      <div class="form-check form-switch">
+          <input class="form-check-input" type="checkbox" id="rol_<?= $i ?>" name="roles[]" value="<?= $rol['id_rol'] ?>"
+              <?= in_array($rol['id_rol'], $roles_actuales) ? 'checked' : '' ?> >
+          <label class="form-check-label fw-semibold" for="rol_<?= $i ?>" ><?= htmlspecialchars($rol['nombre_rol']) ?> </label>           
+      </div>
+      <div> <?= htmlspecialchars($rol['descripcion']) ?> </div>
+      <?php $i++; ?>
     <?php endforeach; ?>
-
-    <button type="submit">Guardar roles</button>
+    </div>
+    <button class="btn btn-primary" type="submit">Guardar roles</button>
 </form>
+</div>
+</div>
 
-</body>
-</html>
+<?php require_once '../../modules/layouts/footer.php'; ?>

@@ -12,17 +12,16 @@ $nombre   = $_SESSION['nombre'];
 
 <?php require_once '../layouts/header.php'; ?>
 
-<div class="p-4">
   <h3>Bienvenido, <?= htmlspecialchars($nombre) ?></h3>
   <div class="mb-2 mt-3">
-    <strong>Roles:</strong> 
+    <strong>Roles:</strong>
     <?php foreach ($roles as $r): ?>
     <span class="badge text-bg-secondary"><?= $r ?></span>
     <?php endforeach; ?>
   </div>
   <div class="mb-4">
    <strong>Permisos:</strong> <span><?= implode(', ', $permisos) ?></span>
-  </div> 
+  </div>
 
 <div class="row">
 
@@ -31,11 +30,11 @@ $nombre   = $_SESSION['nombre'];
       <div class="card shadow mb-4">
         <div class="card-header">
             <h4 class="mb-0">💰 Resumen financiero</h4>
-        </div> 
-        <div class="card-body"> 
+        </div>
+        <div class="card-body">
         <?php
         $stmt = $pdo->query("
-            SELECT 
+            SELECT
                 (SELECT COALESCE(SUM(monto),0) FROM pagos_cliente WHERE estado = 'completado') as ingresos,
                 (SELECT COALESCE(SUM(monto),0) FROM pagos_empleados WHERE estado = 'completado') as gastos_personal,
                 (SELECT COALESCE(SUM(monto),0) FROM gastos) as gastos_obra
@@ -55,8 +54,8 @@ $nombre   = $_SESSION['nombre'];
     <div class="card shadow mb-4">
       <div class="card-header">
           <h4 class="mb-0">🔄 Movimientos de Inventario</h4>
-      </div> 
-      <div class="card-body"> 
+      </div>
+      <div class="card-body">
         <p>Puedes registrar entradas, salidas y ajustes de materiales.</p>
         <a class="btn btn-primary" href="../materiales/movimientos.php">
             Registrar movimiento
@@ -65,14 +64,14 @@ $nombre   = $_SESSION['nombre'];
     </div>
   </div>
   <?php endif; ?>
-  
+
   <?php if (in_array('registrar_asistencia', $permisos)): ?>
   <div class="col-md-4 col-sm-6 col-xs-12">
     <div class="card shadow mb-4">
       <div class="card-header">
           <h4 class="mb-0">📋 Asistencia</h4>
-      </div> 
-      <div class="card-body"> 
+      </div>
+      <div class="card-body">
       <p>Registra la asistencia del personal en obra.</p>
       <a class="btn btn-primary" href="../../modules/empleados/asistencia.php">
           Registrar asistencia
@@ -87,8 +86,8 @@ $nombre   = $_SESSION['nombre'];
     <div class="card shadow mb-4">
       <div class="card-header">
           <h4 class="mb-0">🧱 Gestión de Materiales</h4>
-      </div> 
-      <div class="card-body"> 
+      </div>
+      <div class="card-body">
       <p>Administra el catálogo de materiales del sistema.</p>
       <a class="btn btn-primary" href="../../modules/materiales/index.php">
           Ver materiales
@@ -103,8 +102,8 @@ $nombre   = $_SESSION['nombre'];
     <div class="card shadow mb-4">
       <div class="card-header">
           <h4 class="mb-0">🛒 Pedidos a Proveedores</h4>
-      </div> 
-      <div class="card-body"> 
+      </div>
+      <div class="card-body">
       <p>Crea y gestiona pedidos de materiales.</p>
       <a class="btn btn-primary" href="../../modules/materiales/pedidos.php">
           Ver pedidos
@@ -119,8 +118,8 @@ $nombre   = $_SESSION['nombre'];
     <div class="card shadow mb-4">
       <div class="card-header">
           <h4 class="mb-0">📄 Contratos y Cotizaciones</h4>
-      </div> 
-      <div class="card-body"> 
+      </div>
+      <div class="card-body">
       <p>Gestiona contratos activos y cotizaciones pendientes.</p>
       <a class="btn btn-primary" href="../../modules/contratos/index.php">
          Ver contratos
@@ -138,8 +137,8 @@ $nombre   = $_SESSION['nombre'];
     <div class="card shadow mb-4">
       <div class="card-header">
           <h4 class="mb-0">💳 Pagos</h4>
-      </div> 
-      <div class="card-body"> 
+      </div>
+      <div class="card-body">
       <p>Procesa pagos a empleados y proveedores.</p>
       <a class="btn btn-primary" class="btn btn-primary" href="../../modules/pagos/empleados.php">
           Pagos empleados
@@ -151,14 +150,14 @@ $nombre   = $_SESSION['nombre'];
     </div>
   </div>
   <?php endif; ?>
-  
+
   <?php if (in_array('gestionar_empleados', $permisos)): ?>
   <div class="col-md-4 col-sm-6 col-xs-12">
     <div class="card shadow mb-4">
       <div class="card-header">
           <h4 class="mb-0">👥 Gestión de Empleados</h4>
-      </div> 
-      <div class="card-body"> 
+      </div>
+      <div class="card-body">
       <p>Administra el personal de la empresa.</p>
       <a href="../../modules/empleados/index.php">
          Ver empleados
@@ -170,14 +169,14 @@ $nombre   = $_SESSION['nombre'];
     </div>
   </div>
   <?php endif; ?>
-  
+
   <?php if (in_array('gestionar_proveedores', $permisos)): ?>
   <div class="col-md-4 col-sm-6 col-xs-12">
     <div class="card shadow mb-4">
       <div class="card-header">
           <h4 class="mb-0">🏭 Proveedores</h4>
-      </div> 
-      <div class="card-body"> 
+      </div>
+      <div class="card-body">
       <p>Administra el catálogo de proveedores.</p>
       <a class="btn btn-primary" href="../../modules/proveedores/index.php">
           Ver proveedores
@@ -186,14 +185,14 @@ $nombre   = $_SESSION['nombre'];
     </div>
   </div>
   <?php endif; ?>
-  
+
   <?php if (in_array('crear_proyectos', $permisos)): ?>
   <div class="col-md-4 col-sm-6 col-xs-12">
     <div class="card shadow mb-4">
       <div class="card-header">
           <h4 class="mb-0">➕ Nuevo Proyecto</h4>
-      </div> 
-      <div class="card-body"> 
+      </div>
+      <div class="card-body">
       <p>Crea un nuevo proyecto en el sistema.</p>
       <a class="btn btn-primary" href="../../modules/proyectos/crear.php">
           Crear proyecto
@@ -208,8 +207,8 @@ $nombre   = $_SESSION['nombre'];
     <div class="card shadow mb-4">
       <div class="card-header">
           <h4 class="mb-0">⚙️ Configuración del Sistema</h4>
-      </div> 
-      <div class="card-body"> 
+      </div>
+      <div class="card-body">
       <p>Gestiona usuarios, roles y permisos.</p>
       <a class="btn btn-primary" href="../../modules/usuarios/index.php">
           Gestionar usuarios
@@ -220,13 +219,13 @@ $nombre   = $_SESSION['nombre'];
   <?php endif; ?>
   </div> <!-- end row -->
 
-  
+
   <?php if (in_array('ver_proyectos', $permisos)): ?>
   <div class="card shadow mb-4">
       <div class="card-header">
           <h4 class="mb-0">📁 Proyectos</h4>
-      </div> 
-      <div class="card-body table-responsive"> 
+      </div>
+      <div class="card-body table-responsive">
       <?php
       // Si es gerente o director ve todos
       // Si es jefe de obras solo ve los suyos
@@ -256,7 +255,7 @@ $nombre   = $_SESSION['nombre'];
       $proyectos = $stmt->fetchAll();
       ?>
 
-      <?php if ($proyectos): ?> 
+      <?php if ($proyectos): ?>
           <table class="tabla-datos table table-striped table-bordered">
           <thead>
               <tr>
@@ -289,8 +288,8 @@ $nombre   = $_SESSION['nombre'];
       <div class="card shadow mb-4">
       <div class="card-header">
           <h4 class="mb-0">📦 Inventario con stock bajo</h4>
-      </div> 
-      <div class="card-body table-responsive"> 
+      </div>
+      <div class="card-body table-responsive">
       <?php
       $stmt = $pdo->query("
           SELECT m.nombre, i.stock, i.stock_minimo, a.nombre as almacen
@@ -330,14 +329,14 @@ $nombre   = $_SESSION['nombre'];
   </div><!-- end card-body -->
   </div><!-- end card -->
   <?php endif; ?>
-  
+
 
   <?php if (in_array('ver_empleados', $permisos)): ?>
       <div class="card shadow mb-4">
       <div class="card-header">
           <h4 class="mb-0">👷 Empleados activos</h4>
-      </div> 
-      <div class="card-body table-responsive"> 
+      </div>
+      <div class="card-body table-responsive">
       <?php
       $stmt = $pdo->query("
           SELECT e.nombre, MAX(c.nombre) as cargo
@@ -358,7 +357,7 @@ $nombre   = $_SESSION['nombre'];
               <th>Nombre</th>
               <th>Cargo actual</th>
           </tr>
-       </thead> 
+       </thead>
        <tbody>
           <?php foreach ($empleados as $emp): ?>
               <tr>
@@ -376,8 +375,8 @@ $nombre   = $_SESSION['nombre'];
       <div class="card shadow mb-4">
       <div class="card-header">
           <h4 class="mb-0">🔍 Últimas acciones en el sistema</h4>
-      </div> 
-      <div class="card-body table-responsive"> 
+      </div>
+      <div class="card-body table-responsive">
       <?php
       $stmt = $pdo->query("
           SELECT rs.accion, rs.fecha_hora, us.nombre_usuario
@@ -409,8 +408,7 @@ $nombre   = $_SESSION['nombre'];
     </div><!-- end card-body -->
     </div><!-- end card -->
   <?php endif; ?>
-  
-</div>
+
 <script>
 $(document).ready(function() {
     $('.tabla-datos').DataTable({
