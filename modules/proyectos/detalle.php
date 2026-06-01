@@ -79,23 +79,27 @@ $avance_promedio = count($etapas) > 0
 
 <?php require_once '../../modules/layouts/header.php'; ?>
 
-<div class="p-4">
+<nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item"><a href="index.php"> Proyectos</a></li>
+    <li class="breadcrumb-item active" aria-current="page"> Detalle proyecto</li>
+  </ol>
+</nav>
 
-<h2>📁 <?= htmlspecialchars($proyecto['nombre']) ?></h2>
+<h2 class="mb-4 fw-semibold">📁 <?= htmlspecialchars($proyecto['nombre']) ?></h2>
 
-<a href="index.php">← Volver a proyectos</a>
 
 <?php if (in_array('editar_proyectos', $_SESSION['permisos'])): ?>
     &nbsp;&nbsp;
-    <a href="editar.php?id=<?= $id ?>">✏️ Editar</a>
+    <a class="btn btn-secondary" href="editar.php?id=<?= $id ?>"><i class="bi bi-pencil-square"></i> Editar</a>
     &nbsp;&nbsp;
-    <a href="etapas.php?id=<?= $id ?>">📋 Gestionar etapas</a>
+    <a class="btn btn-success" href="etapas.php?id=<?= $id ?>"><i class="bi bi-clipboard-data"></i> Gestionar etapas</a>
 <?php endif; ?>
 
 <hr>
 
 <!-- INFO GENERAL -->
-<div class="card shadow mt-2">
+<div class="card shadow mt-4">
   <div class="card-header">
       <h4 class="mb-0">📌 Información general</h4>
   </div>   
@@ -113,10 +117,8 @@ $avance_promedio = count($etapas) > 0
   </div>
 </div>
 
-
-
 <!-- ETAPAS -->
-<div class="card shadow mt-2">
+<div class="card shadow mt-4">
   <div class="card-header">
       <h4 class="mb-0">📋 Etapas del proyecto</h4>
   </div>   
@@ -146,7 +148,7 @@ $avance_promedio = count($etapas) > 0
 </div>
 
 <!-- PERSONAL -->
-<div class="card shadow mt-2">
+<div class="card shadow mt-4">
   <div class="card-header">
       <h4 class="mb-0">👷 Personal asignado</h4>
   </div>   
@@ -171,7 +173,7 @@ $avance_promedio = count($etapas) > 0
 </div>
 
 <!-- MATERIALES -->
-<div class="card shadow mt-2">
+<div class="card shadow mt-4">
   <div class="card-header">
       <h4 class="mb-0">🧱 Materiales usados</h4>
   </div>   
@@ -196,7 +198,7 @@ $avance_promedio = count($etapas) > 0
 </div>
 
 <!-- GASTOS -->
-<div class="card shadow mt-2">
+<div class="card shadow mt-4">
   <div class="card-header">
       <h4 class="mb-0">💰 Gastos del proyecto</h4>
   </div>   
@@ -223,5 +225,4 @@ $avance_promedio = count($etapas) > 0
   </div>
 </div>
 
-</div>
 <?php require_once '../../modules/layouts/footer.php'; ?>

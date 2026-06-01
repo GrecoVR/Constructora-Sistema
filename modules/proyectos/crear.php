@@ -49,8 +49,6 @@ $contratos = $pdo->query("
 
 <?php require_once '../../modules/layouts/header.php'; ?>
 
-<div class="p-4">
-
 <nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
   <ol class="breadcrumb">
     <li class="breadcrumb-item"><a href="index.php"> Proyectos</a></li>
@@ -79,7 +77,7 @@ $contratos = $pdo->query("
     </div>
 <?php endif; ?>
 
-<div class="card shadow mt-2" style="width:400px;">
+<div class="card shadow mt-4" style="width:400px;">
   <div class="card-header">
       <h4 class="mb-0">➕ Nuevo Proyecto</h4>
   </div>   
@@ -136,5 +134,5 @@ $contratos = $pdo->query("
     </form>
     </div>
   </div>
-</div>
+
 <?php require_once '../../modules/layouts/footer.php'; ?>

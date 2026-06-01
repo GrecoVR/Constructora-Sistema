@@ -78,16 +78,14 @@ $etapas = $etapas->fetchAll();
 
 <?php require_once '../../modules/layouts/header.php'; ?>
 
-<div class="p-4">
-
 <nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
   <ol class="breadcrumb">
-    <li class="breadcrumb-item"><a href="index.php"> Detalle</a></li>
-    <li class="breadcrumb-item active" aria-current="page">Etapas</li>
+    <li class="breadcrumb-item"><a href="detalle.php?id=<?= $id ?>" > Detalle</a></li>
+    <li class="breadcrumb-item active" aria-current="page"> Etapas</li>
   </ol>
 </nav>
 
-<h3>📋 Etapas — <?= htmlspecialchars($proyecto['nombre']) ?></h3>
+<h2 class="mb-4 fw-semibold">📋 Etapas — <?= htmlspecialchars($proyecto['nombre']) ?></h2>
 
 <?php if ($error): ?>
     <div class="toast fade show align-items-center text-bg-danger border-0 w-100" role="alert" aria-live="assertive" aria-atomic="true">
@@ -110,8 +108,39 @@ $etapas = $etapas->fetchAll();
     </div>
 <?php endif; ?>
 
+<div class="row">
+<div class="col-md-4 col-sm-6 col-xs-12">
+<!-- NUEVA ETAPA -->
+<div class="card shadow mt-2">
+  <div class="card-header">
+      <h4 class="mb-0">➕ Agregar nueva etapa</h4>
+  </div>   
+  <div class="card-body">
+    <form method="POST">
+        <div class="mb-3">
+        <label class="form-label" for="nombre_etapa">Nombre: *</label>
+        <input class="form-control" type="text" id="nombre_etapa" name="nombre_etapa" required>
+        </div>
+        <div class="mb-3">
+        <label class="form-label" for="descripcion_etapa">Descripción: *</label>
+        <textarea class="form-control" id="descripcion_etapa" name="descripcion_etapa" rows="3" cols="50" required></textarea>
+        </div>
+        <div class="mb-3">
+        <label class="form-label" for="fecha_inicio_etapa">Fecha inicio: *</label>
+        <input class="form-control" type="date" id="fecha_inicio_etapa" name="fecha_inicio_etapa" required>
+        </div>
+        <div class="mb-3">
+        <label class="form-label" for="fecha_fin_etapa">Fecha fin: *</label>
+        <input class="form-control" type="date" name="fecha_fin_etapa" name="fecha_fin_etapa" required>
+        </div>
+        <button class="btn btn-primary" type="submit" name="nueva_etapa">Crear etapa</button>
+    </form>
+  </div>
+</div>
+</div>
+<div class="col-md-4 col-sm-6 col-xs-12">
 <!-- ETAPAS ACTUALES -->
-<div class="card shadow mt-3" style="width:400px;">
+<div class="card shadow mt-2">
   <div class="card-header">
       <h4 class="mb-0">Etapas actuales</h4>
   </div>   
@@ -149,36 +178,7 @@ $etapas = $etapas->fetchAll();
     <?php endforeach; ?>
     </div>
  </div>
+ </div><!-- end col -->
+ </div><!-- end row -->
 
-
-
-<!-- NUEVA ETAPA -->
-<div class="card shadow mt-2" style="width:400px;">
-  <div class="card-header">
-      <h4 class="mb-0">➕ Agregar nueva etapa</h4>
-  </div>   
-  <div class="card-body">
-    <form method="POST">
-        <div class="mb-3">
-        <label class="form-label" for="nombre_etapa">Nombre: *</label>
-        <input class="form-control" type="text" id="nombre_etapa" name="nombre_etapa" required>
-        </div>
-        <div class="mb-3">
-        <label class="form-label" for="descripcion_etapa">Descripción: *</label>
-        <textarea class="form-control" id="descripcion_etapa" name="descripcion_etapa" rows="3" cols="50" required></textarea>
-        </div>
-        <div class="mb-3">
-        <label class="form-label" for="fecha_inicio_etapa">Fecha inicio: *</label>
-        <input class="form-control" type="date" id="fecha_inicio_etapa" name="fecha_inicio_etapa" required>
-        </div>
-        <div class="mb-3">
-        <label class="form-label" for="fecha_fin_etapa">Fecha fin: *</label>
-        <input class="form-control" type="date" name="fecha_fin_etapa" name="fecha_fin_etapa" required>
-        </div>
-        <button class="btn btn-primary" type="submit" name="nueva_etapa">Crear etapa</button>
-    </form>
-  </div>
-</div>
-
-</div>
 <?php require_once '../../modules/layouts/footer.php'; ?>

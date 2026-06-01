@@ -48,8 +48,6 @@ $proyectos = $stmt->fetchAll();
 
 <?php require_once '../../modules/layouts/header.php'; ?>
 
-<div class="p-4">
-
 <nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
   <ol class="breadcrumb">
     <li class="breadcrumb-item"><a href="../../modules/dashboard/dashboard.php">Dashboard</a></li>
@@ -57,15 +55,14 @@ $proyectos = $stmt->fetchAll();
   </ol>
 </nav>
 
-<h2></h2>
-
-<?php if (in_array('crear_proyectos', $permisos)): ?>
-    <a class="btn btn-primary" href="crear.php">+ Nuevo proyecto</a>
-<?php endif; ?>
+<h2 class="mb-4 fw-semibold">📁 Proyectos</h2>
 
 <div class="card shadow mt-2">
   <div class="card-header d-flex justify-content-between align-items-center">
-      <h4 class="mb-0">📁 Proyectos</h4>
+      <h4 class="mb-0">Lista de Proyectos</h4>
+      <?php if (in_array('crear_proyectos', $permisos)): ?>
+    <a class="btn btn-primary" href="crear.php"><i class="bi bi-plus-lg"></i> Nuevo proyecto</a>
+<?php endif; ?>
   </div>   
   <div class="card-body table-responsive">
     <table id="tabla-datos" class="table table-striped table-bordered">
@@ -92,10 +89,12 @@ $proyectos = $stmt->fetchAll();
                 <td><?= formatoFechaCorta($p['fecha_inicio']) ?></td>
                 <td><?= estadoFecha($p['fecha_fin_estimada']) ?></td>
                 <td>
-                    <a class="btn btn-outline-success btn-sm" href="detalle.php?id=<?= $p['id_proyecto'] ?>">Ver</a>
+                    <a class="btn btn-outline-success btn-sm border-0 fw-semibold" href="detalle.php?id=<?= $p['id_proyecto'] ?>">
+                      <i class="bi bi-eye-fill"></i> Ver</a>
                     <?php if (in_array('editar_proyectos', $permisos)): ?>
                         
-                    <a class="btn btn-outline-secondary btn-sm" href="editar.php?id=<?= $p['id_proyecto'] ?>">Editar</a>
+                    <a class="btn btn-outline-secondary btn-sm border-0 fw-semibold" href="editar.php?id=<?= $p['id_proyecto'] ?>">
+                      <i class="bi bi-pencil-square"></i> Editar</a>
                     <?php endif; ?>
                 </td>
             </tr>
@@ -108,7 +107,7 @@ $proyectos = $stmt->fetchAll();
 <?php if (empty($proyectos)): ?>
     <p>No tienes proyectos asignados.</p>
 <?php endif; ?>
-</div>
+
 <script>
 $(document).ready(function() {
    var table = $('#tabla-datos').DataTable({
