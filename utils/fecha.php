@@ -13,13 +13,13 @@ function estadoFecha(string $fecha): string {
     $dias = diasRestantes($fecha);
 
     if ($dias < 0) {
-        return "<span style='color:red'>Vencido hace " . abs($dias) . " días</span>";
+        return "<span class='badge text-danger'>Vencido hace " . abs($dias) . " días</span>";
     } elseif ($dias === 0) {
-        return "<span style='color:orange'>Vence hoy</span>";
+        return "<span class='badge text-warning'>Vence hoy</span>";
     } elseif ($dias <= 7) {
-        return "<span style='color:orange'>Vence en $dias días</span>";
+        return "<span class='badge text-warning'>Vence en $dias días</span>";
     } else {
-        return "<span style='color:green'>Vence en $dias días</span>";
+        return "<span class='badge text-success'>Vence en $dias días</span>";
     }
 }
 

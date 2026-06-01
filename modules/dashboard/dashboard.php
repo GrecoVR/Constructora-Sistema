@@ -159,10 +159,10 @@ $nombre   = $_SESSION['nombre'];
       </div>
       <div class="card-body">
       <p>Administra el personal de la empresa.</p>
-      <a href="../../modules/empleados/index.php">
+      <a class="btn btn-primary" href="../../modules/empleados/index.php">
          Ver empleados
       </a>
-      <a href="../../modules/empleados/crear.php">
+      <a class="btn btn-secondary" href="../../modules/empleados/crear.php">
           Nuevo empleado
       </a>
       </div>

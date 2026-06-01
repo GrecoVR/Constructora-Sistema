@@ -50,59 +50,79 @@ $cotizaciones = $pdo->query("
 ")->fetchAll();
 ?>
 
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <title>Crear Contrato — Vértice</title>
-</head>
-<body>
+<?php require_once '../../modules/layouts/header.php'; ?>
 
-<h2>➕ Nuevo Contrato</h2>
-<a href="index.php">← Volver a contratos</a>
+<nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item"><a href="index.php"> Contratos</a></li>
+    <li class="breadcrumb-item active" aria-current="page"> Nuevo Contrato</li>
+  </ol>
+</nav>
 
-<br><br>
+<h2 class="mb-4 fw-semibold">➕ Nuevo Contrato</h2>
+
 
 <?php if ($error): ?>
-    <p style="color:red"><?= $error ?></p>
+    <div class="toast fade show align-items-center text-bg-danger border-0 w-100" role="alert" aria-live="assertive" aria-atomic="true">
+      <div class="d-flex">
+        <div class="toast-body">
+          <?= $error ?>
+        </div>
+        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+      </div>
+    </div>
 <?php endif; ?>
 <?php if ($exito): ?>
-    <p style="color:green"><?= $exito ?></p>
+    <div class="toast fade show align-items-center text-bg-success border-0 w-100" role="alert" aria-live="assertive" aria-atomic="true">
+      <div class="d-flex">
+        <div class="toast-body">
+          <?= $exito ?>
+        </div>
+        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+      </div>
+    </div>
 <?php endif; ?>
 
 <?php if (empty($cotizaciones)): ?>
     <p style="color:orange">No hay cotizaciones aprobadas sin contrato disponibles.</p>
 <?php else: ?>
 
-<form method="POST">
-    <label>Cotización aprobada: *</label><br>
-    <select name="id_cotizacion" required>
-        <option value="">-- Selecciona --</option>
-        <?php foreach ($cotizaciones as $co): ?>
-            <option value="<?= $co['id_cotizacion'] ?>">
-                #<?= $co['id_cotizacion'] ?> — <?= htmlspecialchars($co['cliente']) ?>
-                (Bs <?= number_format($co['monto_total'], 2) ?>)
-            </option>
-        <?php endforeach; ?>
-    </select><br><br>
-
-    <label>Fecha de firma: *</label><br>
-    <input type="date" name="fecha_firma" value="<?= date('Y-m-d') ?>" required><br><br>
-
-    <label>Cláusulas:</label><br>
-    <textarea name="clausulas" rows="6" cols="60"
-              placeholder="Condiciones, plazos, penalidades..."></textarea><br><br>
-
-    <label>Estado inicial:</label><br>
-    <select name="estado">
-        <option value="borrador">Borrador</option>
-        <option value="activo">Activo</option>
-    </select><br><br>
-
-    <button type="submit">Crear contrato</button>
-</form>
+<div class="card shadow mt-2" style="width:400px;">
+  <div class="card-body">
+    <form method="POST">
+        <div class="mb-3">
+        <label class="form-label" for="id_cotizacion">Cotización aprobada: *</label>
+        <select class="form-select" id="id_cotizacion" name="id_cotizacion" required>
+            <option value="">-- Selecciona --</option>
+            <?php foreach ($cotizaciones as $co): ?>
+                <option value="<?= $co['id_cotizacion'] ?>">
+                    #<?= $co['id_cotizacion'] ?> — <?= htmlspecialchars($co['cliente']) ?>
+                    (Bs <?= number_format($co['monto_total'], 2) ?>)
+                </option>
+            <?php endforeach; ?>
+        </select>
+        </div>
+        <div class="mb-3">
+        <label class="form-control" class="form-label" for="fecha_firma">Fecha de firma: *</label>
+        <input type="date" id="fecha_firma" name="fecha_firma" value="<?= date('Y-m-d') ?>" required>
+        </div>
+        <div class="mb-3">
+        <label class="form-label" for="clausulas">Cláusulas:</label>
+        <textarea class="form-control" id="clausulas" name="clausulas" rows="6" cols="60"
+                  placeholder="Condiciones, plazos, penalidades..."></textarea>
+        </div>
+        <div class="mb-3">
+        <label class="form-label" for="estado">Estado inicial:</label>
+        <select class="form-select" id="estado" name="estado">
+            <option value="borrador">Borrador</option>
+            <option value="activo">Activo</option>
+        </select>
+        </div>
+        <button class="btn btn-primary" type="submit">Crear contrato</button>
+    </form>
+  </div>
+</div>
 
 <?php endif; ?>
 
-</body>
-</html>
+<?php require_once '../../modules/layouts/footer.php'; ?>

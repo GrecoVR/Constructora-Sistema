@@ -72,21 +72,21 @@ $saldo_pendiente = $contrato['monto_total'] - $total_pagado;
 $metodos = $pdo->query("SELECT * FROM metodos_pago ORDER BY nombre ASC")->fetchAll();
 ?>
 
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <title>Pagos Contrato #<?= $id ?> — Vértice</title>
-</head>
-<body>
+<?php require_once '../../modules/layouts/header.php'; ?>
 
-<h2>💳 Pagos — Contrato #<?= $id ?></h2>
-<a href="index.php">← Volver a contratos</a>
+<nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item"><a href="index.php"> Contratos</a></li>
+    <li class="breadcrumb-item active" aria-current="page"> Pagos Cliente</li>
+  </ol>
+</nav>
 
-<br><br>
+<h2 class="mb-4 fw-semibold">💳 Pagos — Contrato #<?= $id ?></h2>
+
+
 
 <!-- RESUMEN -->
-<table border="1" cellpadding="8">
+<table class="table table-striped table-bordered">
     <tr><td><strong>Cliente</strong></td><td><?= htmlspecialchars($contrato['cliente']) ?></td></tr>
     <tr><td><strong>Monto total contrato</strong></td><td>Bs <?= number_format($contrato['monto_total'], 2) ?></td></tr>
     <tr><td><strong>Total pagado</strong></td><td style="color:green">Bs <?= number_format($total_pagado, 2) ?></td></tr>
@@ -102,67 +102,120 @@ $metodos = $pdo->query("SELECT * FROM metodos_pago ORDER BY nombre ASC")->fetchA
 <hr>
 
 <?php if ($error): ?>
-    <p style="color:red"><?= $error ?></p>
+    <div class="toast fade show align-items-center text-bg-danger border-0 w-100" role="alert" aria-live="assertive" aria-atomic="true">
+      <div class="d-flex">
+        <div class="toast-body">
+          <?= $error ?>
+        </div>
+        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+      </div>
+    </div>
 <?php endif; ?>
 <?php if ($exito): ?>
-    <p style="color:green"><?= $exito ?></p>
+    <div class="toast fade show align-items-center text-bg-success border-0 w-100" role="alert" aria-live="assertive" aria-atomic="true">
+      <div class="d-flex">
+        <div class="toast-body">
+          <?= $exito ?>
+        </div>
+        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+      </div>
+    </div>
 <?php endif; ?>
 
+<div class="row">
+<div class="col-md-4 col-sm-12">
 <!-- REGISTRAR PAGO -->
-<h3>Registrar nuevo pago</h3>
-<form method="POST">
-    <label>Método de pago: *</label><br>
-    <select name="id_metodo_pago" required>
-        <option value="">-- Selecciona --</option>
-        <?php foreach ($metodos as $m): ?>
-            <option value="<?= $m['id_metodo_pago'] ?>"><?= htmlspecialchars($m['nombre']) ?></option>
-        <?php endforeach; ?>
-    </select><br><br>
+<div class="card shadow mt-2">
+  <div class="card-header">
+      <h4 class="mb-0"> Registrar nuevo pago</h4>
+  </div>   
+  <div class="card-body">
+    <form method="POST">
+        <div class="mb-3">
+        <label class="form-label" for="id_metodo_pago">Método de pago: *</label>
+        <select class="form-select" id="id_metodo_pago" name="id_metodo_pago" required>
+            <option value="">-- Selecciona --</option>
+            <?php foreach ($metodos as $m): ?>
+                <option value="<?= $m['id_metodo_pago'] ?>"><?= htmlspecialchars($m['nombre']) ?></option>
+            <?php endforeach; ?>
+        </select>
+        </div>
+        <div class="mb-3">
+        <label class="form-label" for="monto">Monto (Bs): *</label>
+        <input class="form-control" type="number" id="monto" name="monto" step="0.01" min="0.01"
+               placeholder="<?= number_format($saldo_pendiente, 2) ?>" required>
+        </div>
+        <div class="mb-3">
+        <label class="form-label" for="fecha_pago">Fecha de pago: *</label>
+        <input class="form-control" type="date" id="fecha_pago" name="fecha_pago" value="<?= date('Y-m-d') ?>">
+        </div>
+        <div class="mb-3">
+        <label class="form-label" for="estado">Estado:</label>
+        <select class="form-select" id="estado" name="estado">
+            <option value="completado">Completado</option>
+            <option value="pendiente">Pendiente</option>
+        </select>
+        </div>
+        <button class="btn btn-primary" type="submit">Registrar pago</button>
+    </form>
+  </div>
+</div>
 
-    <label>Monto (Bs): *</label><br>
-    <input type="number" name="monto" step="0.01" min="0.01"
-           placeholder="<?= number_format($saldo_pendiente, 2) ?>" required><br><br>
-
-    <label>Fecha de pago: *</label><br>
-    <input type="date" name="fecha_pago" value="<?= date('Y-m-d') ?>"><br><br>
-
-    <label>Estado:</label><br>
-    <select name="estado">
-        <option value="completado">Completado</option>
-        <option value="pendiente">Pendiente</option>
-    </select><br><br>
-
-    <button type="submit">Registrar pago</button>
-</form>
-
-<hr>
-
+</div>
+<div class="col-md-8 col-sm-12">
 <!-- HISTORIAL -->
-<h3>Historial de pagos</h3>
-<table border="1" cellpadding="8">
-    <tr>
-        <th>ID</th>
-        <th>Fecha</th>
-        <th>Método</th>
-        <th>Monto (Bs)</th>
-        <th>Estado</th>
-    </tr>
-    <?php foreach ($pagos as $p): ?>
-        <tr>
-            <td><?= $p['id_pago_cliente'] ?></td>
-            <td><?= formatoFechaCorta($p['fecha_pago']) ?></td>
-            <td><?= htmlspecialchars($p['metodo']) ?></td>
-            <td><?= number_format($p['monto'], 2) ?></td>
-            <td style="color:<?= $p['estado'] === 'completado' ? 'green' : ($p['estado'] === 'fallido' ? 'red' : 'orange') ?>">
-                <?= ucfirst($p['estado']) ?>
-            </td>
-        </tr>
-    <?php endforeach; ?>
-</table>
+<div class="card shadow mt-2">
+  <div class="card-header">
+      <h4 class="mb-0"> Historial de pagos</h4>
+  </div>   
+  <div class="card-body table-responsive">
+  <table id="tabla-datos" class="table table-striped table-bordered">
+    <thead>
+      <tr>
+          <th>ID</th>
+          <th>Fecha</th>
+          <th>Método</th>
+          <th>Monto (Bs)</th>
+          <th>Estado</th>
+      </tr>
+    </thead>
+    <tbody>
+      <?php foreach ($pagos as $p): ?>
+          <tr>
+              <td><?= $p['id_pago_cliente'] ?></td>
+              <td><?= formatoFechaCorta($p['fecha_pago']) ?></td>
+              <td><?= htmlspecialchars($p['metodo']) ?></td>
+              <td><?= number_format($p['monto'], 2) ?></td>
+              <td style="color:<?= $p['estado'] === 'completado' ? 'green' : ($p['estado'] === 'fallido' ? 'red' : 'orange') ?>">
+                  <?= ucfirst($p['estado']) ?>
+              </td>
+          </tr>
+      <?php endforeach; ?>
+     </tbody>
+  </table>
 
-<?php if (empty($pagos)): ?>
-    <p>No hay pagos registrados para este contrato.</p>
-<?php endif; ?>
+  <?php if (empty($pagos)): ?>
+      <p>No hay pagos registrados para este contrato.</p>
+  <?php endif; ?>
+  </div>
+</div><!-- end card -->
+</div>
+</div><!-- end row -->
 
-</body>
-</html>
+<script>
+$(document).ready(function() {
+   var table = $('#tabla-datos').DataTable({
+        language: {
+            url: "https://cdn.datatables.net/plug-ins/1.11.5/i18n/es-ES.json"
+        },
+        order: [],
+        columnDefs: [
+        {
+          targets: -1,
+          orderable: false
+        }
+        ]
+    });
+});
+</script>
+<?php require_once '../../modules/layouts/footer.php'; ?>

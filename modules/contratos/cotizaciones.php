@@ -14,7 +14,7 @@ $pdo   = conectar();
 $error = '';
 $exito = '';
 
-// Cambiar estado de cotización
+// Cambiar estado de cotizacion
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['cambiar_estado'])) {
     $id_cotizacion = intval($_POST['id_cotizacion'] ?? 0);
     $nuevo_estado  = $_POST['nuevo_estado'] ?? '';
@@ -27,7 +27,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['cambiar_estado'])) {
         ");
         $stmt->execute([$nuevo_estado, $id_cotizacion]);
 
-        // Si se aprobó dispara el trigger
+        // Si se aprobo dispara el trigger
         if ($nuevo_estado === 'aprobada') {
             $manager = new TriggerManager($pdo);
             $manager->ejecutar('contratos.cotizacion_aprobada', [
@@ -35,7 +35,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['cambiar_estado'])) {
             ]);
         }
 
-        registrarAccion("Cambi estado cotización ID: $id_cotizacion a $nuevo_estado");
+        registrarAccion("Cambi estado cotizacion ID: $id_cotizacion a $nuevo_estado");
         $exito = 'Estado actualizado correctamente';
     } else {
         $error = 'Datos incorrectos';
@@ -53,7 +53,14 @@ $cotizaciones = $pdo->query("
 
 <?php require_once '../../modules/layouts/header.php'; ?>
 
-<div class="p-4">
+<nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item"><a href="index.php"> Contratos</a></li>
+    <li class="breadcrumb-item active" aria-current="page"> Cotizaciones</li>
+  </ol>
+</nav>
+
+<h2 class="mb-4 fw-semibold">📋 Cotizaciones</h2>
 
 <?php if ($error): ?>
     <div class="toast fade show align-items-center text-bg-danger border-0 w-100" role="alert" aria-live="assertive" aria-atomic="true">
@@ -76,18 +83,9 @@ $cotizaciones = $pdo->query("
     </div>
 <?php endif; ?>
 
-<nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
-  <ol class="breadcrumb">
-    <li class="breadcrumb-item"><a href="index.php"> Contratos</a></li>
-    <li class="breadcrumb-item active" aria-current="page"> Cotizaciones</li>
-  </ol>
-</nav>
-
-<h2>📋 Cotizaciones</h2>
-
 <div class="card shadow mt-2">
   <div class="card-header">
-      <h4 class="mb-0"> Información general</h4>
+      <h4 class="mb-0"> Informacion general</h4>
   </div>   
   <div class="card-body table-responsive">
   <table id="tabla-datos" class="table table-striped table-bordered">
@@ -116,23 +114,23 @@ $cotizaciones = $pdo->query("
                       default     => 'warning'
                   };
                   ?>
-                  <span class="badge text-bg-<?= $color ?>"><?= ucfirst($co['estado']) ?></span>
+                  <span class="badge bg-<?= $color ?>-subtle text-<?= $color ?>-emphasis"><?= ucfirst($co['estado']) ?></span>
               </td>
               <td>
                   <?php if ($co['estado'] === 'pendiente' && in_array('gestionar_cotizaciones', $_SESSION['permisos'])): ?>
                       <form method="POST" style="display:inline">
                           <input type="hidden" name="id_cotizacion" value="<?= $co['id_cotizacion'] ?>">
                           <input type="hidden" name="nuevo_estado" value="aprobada">
-                          <button class="btn btn-outline-success btn-sm" type="submit" name="cambiar_estado"
-                                  onclick="return confirm('¿Aprobar esta cotización?')">
+                          <button class="btn btn-outline-success btn-sm border-0 fw-semibold" type="submit" name="cambiar_estado"
+                                  onclick="return confirm('¿Aprobar esta cotizacion?')">
                               <i class="bi bi-check-square-fill"></i> Aprobar
                           </button>
                       </form>
                       <form method="POST" style="display:inline">
                           <input type="hidden" name="id_cotizacion" value="<?= $co['id_cotizacion'] ?>">
                           <input type="hidden" name="nuevo_estado" value="rechazada">
-                          <button class="btn btn-outline-danger btn-sm ms-2" type="submit" name="cambiar_estado"
-                                  onclick="return confirm('¿Rechazar esta cotización?')">
+                          <button class="btn btn-outline-danger btn-sm ms-2 border-0 fw-semibold" type="submit" name="cambiar_estado"
+                                  onclick="return confirm('¿Rechazar esta cotizacion?')">
                               <i class="bi bi-x-square-fill"></i> Rechazar
                           </button>
                       </form>
@@ -145,7 +143,6 @@ $cotizaciones = $pdo->query("
   </div>
 </div>
 
-</div>
 <script>
 $(document).ready(function() {
    var table = $('#tabla-datos').DataTable({
@@ -160,6 +157,6 @@ $(document).ready(function() {
         }
         ]
     });
-});    
+});
 </script>
 <?php require_once '../../modules/layouts/footer.php'; ?>
