@@ -56,6 +56,8 @@ $contratos = $pdo->query("
   </ol>
 </nav>
 
+<h4 class="mb-4 fw-semibold">➕ Nuevo Proyecto</h4>
+
 <?php if ($error): ?>
     <div class="toast fade show align-items-center text-bg-danger border-0 w-100" role="alert" aria-live="assertive" aria-atomic="true">
       <div class="d-flex">
@@ -77,10 +79,9 @@ $contratos = $pdo->query("
     </div>
 <?php endif; ?>
 
-<div class="card shadow mt-4" style="width:400px;">
-  <div class="card-header">
-      <h4 class="mb-0">➕ Nuevo Proyecto</h4>
-  </div>   
+<div class="row">
+<div class="col-lg-4 col-md-6 col-sm-8 col-xs-12">
+<div class="card shadow mt-2">
   <div class="card-body">
     <form method="POST">
     <div class="mb-3">
@@ -134,5 +135,7 @@ $contratos = $pdo->query("
     </form>
     </div>
   </div>
+</div><!-- end col -->
+</div><!-- end row -->
 
 <?php require_once '../../modules/layouts/footer.php'; ?>

@@ -37,35 +37,27 @@ if ($busqueda) {
 $empleados = $stmt->fetchAll();
 ?>
 
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <title>Empleados — Vértice</title>
-</head>
-<body>
+<?php require_once '../../modules/layouts/header.php'; ?>
 
-<h2>👷 Empleados</h2>
-<a href="../../dashboard.php">← Volver al dashboard</a>
-<?php if (in_array('gestionar_empleados', $_SESSION['permisos'])): ?>
-    &nbsp;&nbsp;
-    <a href="crear.php"><button>+ Nuevo empleado</button></a>
-<?php endif; ?>
+<nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item"><a href="../../modules/dashboard/dashboard.php"> Dashboard</a></li>
+    <li class="breadcrumb-item active" aria-current="page"> Empleados</li>
+  </ol>
+</nav>
 
-<br><br>
+<h2 class="mb-4 fw-semibold">👷 Empleados</h2>
 
-<form method="GET">
-    <input type="text" name="busqueda" placeholder="Buscar por nombre o CI..."
-           value="<?= htmlspecialchars($busqueda) ?>">
-    <button type="submit">Buscar</button>
-    <?php if ($busqueda): ?>
-        <a href="index.php">Limpiar</a>
-    <?php endif; ?>
-</form>
-
-<br>
-
-<table border="1" cellpadding="8">
+<div class="card shadow mt-2">
+  <div class="card-header d-flex justify-content-between align-items-center">
+      <h4 class="mb-0">Lista de Empleados</h4>
+      <?php if (in_array('gestionar_empleados', $_SESSION['permisos'])): ?>
+        <a class="btn btn-primary" href="crear.php"><i class="bi bi-plus-lg"></i> Nuevo empleado</a>
+      <?php endif; ?>
+  </div>   
+  <div class="card-body table-responsive">
+    <table id="tabla-datos" class="table table-striped table-bordered">
+    <thead>
     <tr>
         <th>ID</th>
         <th>Nombre</th>
@@ -76,6 +68,8 @@ $empleados = $stmt->fetchAll();
         <th>Estado</th>
         <th>Acciones</th>
     </tr>
+    </thead>
+    <tbody>
     <?php foreach ($empleados as $e): ?>
         <tr>
             <td><?= $e['id_empleado'] ?></td>
@@ -88,19 +82,40 @@ $empleados = $stmt->fetchAll();
                 <?= ucfirst($e['estado']) ?>
             </td>
             <td>
-                <a href="asignaciones.php?id=<?= $e['id_empleado'] ?>">Asignaciones</a>
+                <a class="btn btn-outline-dark btn-sm border-0 fw-semibold" href="asignaciones.php?id=<?= $e['id_empleado'] ?>">
+                      <i class="bi bi-clipboard-data"></i> Asignaciones</a>
                 <?php if (in_array('gestionar_empleados', $_SESSION['permisos'])): ?>
-                    &nbsp;|&nbsp;
-                    <a href="editar.php?id=<?= $e['id_empleado'] ?>">Editar</a>
+                    
+                    <a  class="btn btn-outline-secondary btn-sm border-0 fw-semibold" href="editar.php?id=<?= $e['id_empleado'] ?>">
+                        <i class="bi bi-pencil-square"></i> Editar</a>
                 <?php endif; ?>
             </td>
         </tr>
     <?php endforeach; ?>
+    </tbody>
 </table>
+</div>
+</div>
 
 <?php if (empty($empleados)): ?>
     <p>No se encontraron empleados.</p>
 <?php endif; ?>
 
-</body>
-</html>
+<script>
+$(document).ready(function() {
+   var table = $('#tabla-datos').DataTable({
+        language: {
+            url: "https://cdn.datatables.net/plug-ins/1.11.5/i18n/es-ES.json"
+        },
+        order: [],
+        columnDefs: [
+        {
+          targets: -1,
+          orderable: false
+        }
+        ]
+    });
+});    
+</script>
+
+<?php require_once '../../modules/layouts/footer.php'; ?>

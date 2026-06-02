@@ -78,7 +78,9 @@ $empleados = $pdo->query("
     </div>
 <?php endif; ?>
 
-<div class="card shadow" style="width:400px;">
+<div class="row">
+<div class="col-lg-4 col-md-6 col-sm-8 col-xs-12">
+<div class="card shadow">
 <div class="card-body">
 <form method="POST">
     <div class="mb-3">
@@ -109,5 +111,7 @@ $empleados = $pdo->query("
 </form>
 </div>
 </div>
+</div><!-- end col -->
+</div><!-- end row -->
 
 <?php require_once '../../modules/layouts/footer.php'; ?>

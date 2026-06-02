@@ -55,52 +55,76 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 ?>
 
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <title>Editar Empleado — Vértice</title>
-</head>
-<body>
+<?php require_once '../../modules/layouts/header.php'; ?>
 
-<h2>✏️ Editar Empleado</h2>
-<a href="index.php">← Volver a empleados</a>
+<nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item"><a href="index.php"> Empleados</a></li>
+    <li class="breadcrumb-item active" aria-current="page"> Editar empleado</li>
+  </ol>
+</nav>
 
-<br><br>
+<h2 class="mb-4 fw-semibold">✏️ Editar Empleado</h2>
+
 
 <?php if ($error): ?>
-    <p style="color:red"><?= $error ?></p>
+    <div class="toast fade show align-items-center text-bg-danger border-0 w-100" role="alert" aria-live="assertive" aria-atomic="true">
+      <div class="d-flex">
+        <div class="toast-body">
+          <?= $error ?>
+        </div>
+        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+      </div>
+    </div>
 <?php endif; ?>
 <?php if ($exito): ?>
-    <p style="color:green"><?= $exito ?></p>
+    <div class="toast fade show align-items-center text-bg-success border-0 w-100" role="alert" aria-live="assertive" aria-atomic="true">
+      <div class="d-flex">
+        <div class="toast-body">
+          <?= $exito ?>
+        </div>
+        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+      </div>
+    </div>
 <?php endif; ?>
 
-<form method="POST">
-    <label>Nombre completo: *</label><br>
-    <input type="text" name="nombre" value="<?= htmlspecialchars($empleado['nombre']) ?>"
-           required style="width:400px"><br><br>
+<div class="row">
+<div class="col-lg-4 col-md-6 col-sm-8 col-xs-12">
+<div class="card shadow mt-2">
+  <div class="card-body">
+  <form method="POST">
+    <div class="mb-3">
+    <label class="form-label" for="nombre">Nombre completo: *</label>
+    <input class="form-control" type="text" id="nombre" name="nombre" value="<?= htmlspecialchars($empleado['nombre']) ?>" required>
+    </div>
+    <div class="mb-3">
+    <label class="form-label" for="ci">CI: *</label>
+    <input class="form-control" type="text" id="ci" name="ci" value="<?= htmlspecialchars($empleado['ci']) ?>" required>
+    </div>
+    <div class="mb-3">
+    <label class="form-label" for="direccion">Dirección: *</label>
+    <input class="form-control" type="text" id="direccion" name="direccion" value="<?= htmlspecialchars($empleado['direccion']) ?>" required>
+    </div>
+    <div class="mb-3">
+    <label class="form-label" for="telefono">Teléfono:</label>
+    <input class="form-control" type="text" id="telefono" name="telefono" value="<?= htmlspecialchars($empleado['telefono']) ?>">
+    </div>
+    <div class="mb-3">
+    <label class="form-label" for="email">Email:</label>
+    <input class="form-control" type="email" id="email" name="email" value="<?= htmlspecialchars($empleado['email']) ?>">
+    </div>
+    <div class="mb-3">
+    <label class="form-label" for="estado">Estado:</label>
+    <select class="form-select" id="estado" name="estado" value="<?= $empleado['estado'] ?>">
+        <option value="activo">Activo</option>
+        <option value="inactivo">Inactivo</option>
+    </select>
+    </div>
+    <button class="btn btn-primary" type="submit">Guardar Cambios</button>
+  </form>
+  </div>
+</div>
+</div><!-- end col -->
+</div><!-- end row -->
 
-    <label>CI: *</label><br>
-    <input type="text" name="ci" value="<?= htmlspecialchars($empleado['ci']) ?>" required><br><br>
-
-    <label>Dirección: *</label><br>
-    <input type="text" name="direccion" value="<?= htmlspecialchars($empleado['direccion']) ?>"
-           required style="width:400px"><br><br>
-
-    <label>Teléfono:</label><br>
-    <input type="text" name="telefono" value="<?= htmlspecialchars($empleado['telefono']) ?>"><br><br>
-
-    <label>Email:</label><br>
-    <input type="email" name="email" value="<?= htmlspecialchars($empleado['email']) ?>"><br><br>
-
-    <label>Estado:</label><br>
-    <select name="estado">
-        <option value="activo" <?= $empleado['estado'] === 'activo' ? 'selected' : '' ?>>Activo</option>
-        <option value="inactivo" <?= $empleado['estado'] === 'inactivo' ? 'selected' : '' ?>>Inactivo</option>
-    </select><br><br>
-
-    <button type="submit">Guardar cambios</button>
-</form>
-
-</body>
-</html>
+<?php require_once '../../modules/layouts/footer.php'; ?>

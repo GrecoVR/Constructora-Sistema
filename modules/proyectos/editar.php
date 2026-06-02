@@ -81,7 +81,9 @@ $tipos = $pdo->query("SELECT * FROM tipos_proyecto ORDER BY nombre ASC")->fetchA
     </div>
 <?php endif; ?>
 
- <div class="card shadow mt-4" style="width:400px;">
+<div class="row">
+<div class="col-lg-4 col-md-6 col-sm-8 col-xs-12">
+ <div class="card shadow mt-4">
   <div class="card-header">
       <h4 class="mb-0">✏️ Editar Proyecto</h4>
   </div>   
@@ -132,5 +134,7 @@ $tipos = $pdo->query("SELECT * FROM tipos_proyecto ORDER BY nombre ASC")->fetchA
     </form>
   </div>
  </div>
+</div><!-- end col -->
+</div><!-- end row -->
 
 <?php require_once '../../modules/layouts/footer.php'; ?>

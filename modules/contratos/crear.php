@@ -87,7 +87,9 @@ $cotizaciones = $pdo->query("
     <p style="color:orange">No hay cotizaciones aprobadas sin contrato disponibles.</p>
 <?php else: ?>
 
-<div class="card shadow mt-2" style="width:400px;">
+<div class="row">
+<div class="col-lg-4 col-md-6 col-sm-8 col-xs-12">
+<div class="card shadow mt-2">
   <div class="card-body">
     <form method="POST">
         <div class="mb-3">
@@ -122,6 +124,8 @@ $cotizaciones = $pdo->query("
     </form>
   </div>
 </div>
+</div><!-- end col -->
+</div><!-- end row -->
 
 <?php endif; ?>
 

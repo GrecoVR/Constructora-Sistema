@@ -82,7 +82,14 @@ $registros = $registros->fetchAll();
 
 <?php require_once '../../modules/layouts/header.php'; ?>
 
-<div class="p-4">
+<nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item"><a href="../../modules/dashboard/dashboard.php"> Dashboard</a></li>
+    <li class="breadcrumb-item active" aria-current="page"> Asistencia</li>
+  </ol>
+</nav>
+
+<h2 class="mb-4 fw-semibold">📋 Registro de Asistencia</h2>
 
 <?php if ($error): ?>
     <div class="toast fade show align-items-center text-bg-danger border-0 w-100" role="alert" aria-live="assertive" aria-atomic="true">
@@ -105,19 +112,10 @@ $registros = $registros->fetchAll();
     </div>
 <?php endif; ?>
 
-<nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
-  <ol class="breadcrumb">
-    <li class="breadcrumb-item"><a href="../../modules/dashboard/dashboard.php">Dashboard</a></li>
-    <li class="breadcrumb-item active" aria-current="page">Asistencia</li>
-  </ol>
-</nav>
-
-
-<h2 class="mb-4">📋 Registro de Asistencia</h2>
-
-
+<div class="row">
+<div class="col-md-8 col-sm-6 col-xs-12">
 <!-- REGISTRAR -->
-<div class="card shadow mt-2" style="width:400px;">
+<div class="card shadow mt-2">
   <div class="card-header">
       <h4 class="mb-0">Registrar asistencia</h4>
   </div>   
@@ -152,11 +150,10 @@ $registros = $registros->fetchAll();
     </form>
   </div>
 </div>
-
-
-
+</div><!-- end col -->
+<div class="col-md-4 col-sm-6 col-xs-12">
 <!-- VER POR FECHA -->
-<div class="card shadow mt-2" style="width:400px;">
+<div class="card shadow mt-2">
   <div class="card-header">
       <h4 class="mb-0">Asistencia del día</h4>
   </div>   
@@ -167,9 +164,12 @@ $registros = $registros->fetchAll();
   </form>
   </div>
 </div>
+</div><!-- end col -->
+</div><!-- end row -->
 
 <?php if ($registros): ?>
-<div class="table-responsive">
+<div class="card shadow">
+<div class="card-body table-responsive">
     <table id="tabla-datos" class="table table-striped table-bordered">
       <thead>
         <tr>
@@ -195,11 +195,12 @@ $registros = $registros->fetchAll();
         </tbody>
     </table>
 </div>
+</div>
+
 <?php else: ?>
     <p>No hay registros de asistencia para el <?= formatoFechaCorta($fecha_filtro) ?>.</p>
 <?php endif; ?>
 
-</div>
 <script>
 $(document).ready(function() {
    var table = $('#tabla-datos').DataTable({
@@ -216,4 +217,5 @@ $(document).ready(function() {
     });
 });    
 </script>
+
 <?php require_once '../../modules/layouts/footer.php'; ?>

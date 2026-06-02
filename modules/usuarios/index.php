@@ -62,10 +62,10 @@ $usuarios = $stmt->fetchAll();
               <td><?= $u['roles'] ?? 'Sin roles' ?></td>
               <td><?= $u['estado'] ?></td>
               <td>
-                  <a class="btn btn-outline-secondary border-0 fw-semibold" href="editar.php?id=<?= $u['id_usuario_sistema'] ?>">
+                  <a class="btn btn-outline-secondary btn-sm border-0 fw-semibold" href="editar.php?id=<?= $u['id_usuario_sistema'] ?>">
                      <i class="bi bi-pencil-square"></i> Editar</a>
                   
-                  <a class="btn btn-outline-success border-0 fw-semibold" href="roles.php?id=<?= $u['id_usuario_sistema'] ?>">
+                  <a class="btn btn-outline-success  btn-sm border-0 fw-semibold" href="roles.php?id=<?= $u['id_usuario_sistema'] ?>">
                      <i class="bi bi-person-gear"></i> Roles</a>
               </td>
           </tr>

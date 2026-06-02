@@ -101,29 +101,46 @@ $proyectos = $pdo->query("
 $cargos = $pdo->query("SELECT id_cargo, nombre FROM cargos ORDER BY nombre ASC")->fetchAll();
 ?>
 
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <title>Asignaciones — <?= htmlspecialchars($empleado['nombre']) ?></title>
-</head>
-<body>
+<?php require_once '../../modules/layouts/header.php'; ?>
 
-<h2>📋 Asignaciones — <?= htmlspecialchars($empleado['nombre']) ?></h2>
-<a href="index.php">← Volver a empleados</a>
+<nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item"><a href="index.php"> Empleados</a></li>
+    <li class="breadcrumb-item active" aria-current="page"> Asignaciones</li>
+  </ol>
+</nav>
 
-<br><br>
+<h2 class="mb-4 fw-semibold">📋 Asignaciones — <?= htmlspecialchars($empleado['nombre']) ?></h2>
 
 <?php if ($error): ?>
-    <p style="color:red"><?= $error ?></p>
+    <div class="toast fade show align-items-center text-bg-danger border-0 w-100" role="alert" aria-live="assertive" aria-atomic="true">
+      <div class="d-flex">
+        <div class="toast-body">
+          <?= $error ?>
+        </div>
+        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+      </div>
+    </div>
 <?php endif; ?>
 <?php if ($exito): ?>
-    <p style="color:green"><?= $exito ?></p>
+    <div class="toast fade show align-items-center text-bg-success border-0 w-100" role="alert" aria-live="assertive" aria-atomic="true">
+      <div class="d-flex">
+        <div class="toast-body">
+          <?= $exito ?>
+        </div>
+        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+      </div>
+    </div>
 <?php endif; ?>
 
 <!-- ASIGNACIONES ACTUALES -->
-<h3>Historial de asignaciones</h3>
-<table border="1" cellpadding="8">
+<div class="card shadow mt-2">
+  <div class="card-header">
+      <h4 class="mb-0">Historial de asignaciones</h4>
+  </div>   
+  <div class="card-body table-responsive">
+    <table id="tabla-datos" class="table table-striped table-bordered">
+    <thead>
     <tr>
         <th>Proyecto</th>
         <th>Cargo</th>
@@ -131,6 +148,8 @@ $cargos = $pdo->query("SELECT id_cargo, nombre FROM cargos ORDER BY nombre ASC")
         <th>Hasta</th>
         <th>Acciones</th>
     </tr>
+    </thead>
+    <tbody>
     <?php foreach ($asignaciones as $a): ?>
         <tr>
             <td><?= htmlspecialchars($a['proyecto']) ?></td>
@@ -141,7 +160,7 @@ $cargos = $pdo->query("SELECT id_cargo, nombre FROM cargos ORDER BY nombre ASC")
                 <?php if (!$a['fecha_fin'] && in_array('gestionar_empleados', $_SESSION['permisos'])): ?>
                     <form method="POST" style="display:inline">
                         <input type="hidden" name="id_asignacion" value="<?= $a['id_asignacion'] ?>">
-                        <button type="submit" name="finalizar_asignacion"
+                        <button class="btn btn-secondary btn-sm" type="submit" name="finalizar_asignacion"
                                 onclick="return confirm('¿Finalizar esta asignación?')">
                             Finalizar
                         </button>
@@ -152,7 +171,10 @@ $cargos = $pdo->query("SELECT id_cargo, nombre FROM cargos ORDER BY nombre ASC")
             </td>
         </tr>
     <?php endforeach; ?>
+    </tbody>
 </table>
+</div>
+</div>
 
 <?php if (empty($asignaciones)): ?>
     <p>Este empleado no tiene asignaciones registradas.</p>
@@ -161,30 +183,54 @@ $cargos = $pdo->query("SELECT id_cargo, nombre FROM cargos ORDER BY nombre ASC")
 <hr>
 
 <?php if (in_array('gestionar_empleados', $_SESSION['permisos'])): ?>
-<h3>➕ Nueva asignación</h3>
+<div class="card shadow mt-2">
+  <div class="card-header">
+      <h4 class="mb-0">➕ Nueva asignación</h4>
+  </div>   
+  <div class="card-body">
 <form method="POST">
-    <label>Proyecto: *</label><br>
-    <select name="id_proyecto" required>
+    <div class="mb-3">
+    <label class="form-label" for="id_proyecto">Proyecto: *</label>
+    <select class="form-select" id="id_proyecto" name="id_proyecto" required>
         <option value="">-- Selecciona --</option>
         <?php foreach ($proyectos as $p): ?>
             <option value="<?= $p['id_proyecto'] ?>"><?= htmlspecialchars($p['nombre']) ?></option>
         <?php endforeach; ?>
-    </select><br><br>
-
-    <label>Cargo: *</label><br>
-    <select name="id_cargo" required>
+    </select>
+    </div>
+    <div class="mb-3">
+    <label class="form-label" for="id_cargo">Cargo: *</label>
+    <select class="form-select" id="id_cargo" name="id_cargo" required>
         <option value="">-- Selecciona --</option>
         <?php foreach ($cargos as $c): ?>
             <option value="<?= $c['id_cargo'] ?>"><?= htmlspecialchars($c['nombre']) ?></option>
         <?php endforeach; ?>
-    </select><br><br>
-
-    <label>Fecha de inicio:</label><br>
-    <input type="date" name="fecha_inicio" value="<?= date('Y-m-d') ?>"><br><br>
-
-    <button type="submit" name="nueva_asignacion">Asignar</button>
+    </select>
+    </div>
+    <div class="mb-3">
+    <label class="form-label" for="fecha_inicio">Fecha de inicio:</label>
+    <input class="form-control" type="date" id="fecha_inicio" name="fecha_inicio" value="<?= date('Y-m-d') ?>">
+    </div>
+    <button class="btn btn-primary" type="submit" name="nueva_asignacion">Asignar</button>
 </form>
+</div>
+</div>
 <?php endif; ?>
 
-</body>
-</html>
+<script>
+$(document).ready(function() {
+   var table = $('#tabla-datos').DataTable({
+        language: {
+            url: "https://cdn.datatables.net/plug-ins/1.11.5/i18n/es-ES.json"
+        },
+        order: [],
+        columnDefs: [
+        {
+          targets: -1,
+          orderable: false
+        }
+        ]
+    });
+});    
+</script>
+<?php require_once '../../modules/layouts/footer.php'; ?>
