@@ -11,6 +11,8 @@ registrarAccion('Vio lista de contratos');
 
 $pdo = conectar();
 
+$permisos = $_SESSION['permisos'];
+
 $contratos = $pdo->query("
     SELECT c.id_contrato, c.fecha_firma, c.estado,
            cl.nombre as cliente,

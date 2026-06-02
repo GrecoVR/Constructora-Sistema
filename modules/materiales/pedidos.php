@@ -11,6 +11,9 @@ requierePermiso('gestionar_pedidos');
 registrarAccion('Vio pedidos');
 
 $pdo   = conectar();
+
+$permisos = $_SESSION['permisos'];
+
 $error = '';
 $exito = '';
 

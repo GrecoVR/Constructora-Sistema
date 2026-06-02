@@ -10,6 +10,7 @@ requierePermiso('ver_proyectos');
 registrarAccion('Vio lista de proyectos');
 
 $pdo      = conectar();
+
 $permisos = $_SESSION['permisos'];
 
 // Gerentes ven todos, operativos solo los suyos

@@ -9,6 +9,9 @@ requierePermiso('ver_empleados');
 registrarAccion('Vio lista de empleados');
 
 $pdo      = conectar();
+
+$permisos = $_SESSION['permisos'];
+
 $busqueda = trim($_GET['busqueda'] ?? '');
 
 if ($busqueda) {

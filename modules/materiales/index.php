@@ -9,6 +9,9 @@ requierePermiso('gestionar_materiales');
 registrarAccion('Vio lista de materiales');
 
 $pdo  = conectar();
+
+$permisos = $_SESSION['permisos'];
+
 $error = '';
 $exito = '';
 

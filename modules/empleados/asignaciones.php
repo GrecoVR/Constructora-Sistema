@@ -10,6 +10,9 @@ require_once '../../triggers/TriggerManager.php';
 requierePermiso('ver_empleados');
 
 $pdo = conectar();
+
+$permisos = $_SESSION['permisos'];
+
 $id  = intval($_GET['id'] ?? 0);
 
 if (!$id) { header('Location: index.php'); exit; }

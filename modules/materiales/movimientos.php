@@ -11,6 +11,9 @@ require_once '../../triggers/TriggerManager.php';
 requierePermiso('registrar_movimientos');
 
 $pdo   = conectar();
+
+$permisos = $_SESSION['permisos'];
+
 $error = '';
 $exito = '';
 

@@ -9,6 +9,9 @@ require_once '../../utils/fecha.php';
 requierePermiso('gestionar_pagos');
 
 $pdo = conectar();
+
+$permisos = $_SESSION['permisos'];
+
 $id  = intval($_GET['id'] ?? 0);
 
 if (!$id) { header('Location: index.php'); exit; }

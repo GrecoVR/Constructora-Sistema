@@ -10,6 +10,9 @@ requierePermiso('registrar_asistencia');
 registrarAccion('Vio módulo de asistencia');
 
 $pdo   = conectar();
+
+$permisos = $_SESSION['permisos'];
+
 $error = '';
 $exito = '';
 

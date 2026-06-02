@@ -9,6 +9,9 @@ requierePermiso('configurar_sistema');
 registrarAccion('Vio lista de usuarios');
 
 $pdo  = conectar();
+
+$permisos = $_SESSION['permisos'];
+
 $stmt = $pdo->query("
     SELECT us.id_usuario_sistema, us.nombre_usuario, us.estado,
            e.nombre as empleado,
@@ -65,7 +68,7 @@ $usuarios = $stmt->fetchAll();
                   <a class="btn btn-outline-secondary btn-sm border-0 fw-semibold" href="editar.php?id=<?= $u['id_usuario_sistema'] ?>">
                      <i class="bi bi-pencil-square"></i> Editar</a>
                   
-                  <a class="btn btn-outline-success  btn-sm border-0 fw-semibold" href="roles.php?id=<?= $u['id_usuario_sistema'] ?>">
+                  <a class="btn btn-outline-success btn-sm border-0 fw-semibold" href="roles.php?id=<?= $u['id_usuario_sistema'] ?>">
                      <i class="bi bi-person-gear"></i> Roles</a>
               </td>
           </tr>

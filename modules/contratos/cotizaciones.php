@@ -11,6 +11,9 @@ requierePermiso('ver_cotizaciones');
 registrarAccion('Vio cotizaciones');
 
 $pdo   = conectar();
+
+$permisos = $_SESSION['permisos'];
+
 $error = '';
 $exito = '';
 

@@ -8,6 +8,9 @@ require_once '../../utils/permisos.php';
 requierePermiso('configurar_sistema');
 
 $pdo    = conectar();
+
+$permisos = $_SESSION['permisos'];
+
 $error  = '';
 $exito  = '';
 

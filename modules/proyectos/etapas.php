@@ -9,6 +9,9 @@ require_once '../../triggers/TriggerManager.php';
 requierePermiso('editar_proyectos');
 
 $pdo   = conectar();
+
+$permisos = $_SESSION['permisos'];
+
 $id    = intval($_GET['id'] ?? 0);
 $error = '';
 $exito = '';
