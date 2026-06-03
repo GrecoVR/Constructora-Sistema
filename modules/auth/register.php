@@ -76,9 +76,9 @@ $empleados = $pdo->query("
     </div>
   <?php endif; ?>
   </div>
-    <div class="card mt-4" style="width:350px;">
+    <div class="card mt-4" style="width:400px;">
         <div class="card-body">
-          <h5 class="card-title text-center">Crear cuenta</h5>
+          <h5 class="card-title text-center">Crear cuenta Empleado</h5>
           <form method="POST">
             <div class="mb-3">
               <label for="empleado" class="form-label">Empleado:</label>
