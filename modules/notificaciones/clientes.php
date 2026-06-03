@@ -34,7 +34,6 @@ $clientes = $pdo->query("
     SELECT id_cliente, nombre FROM clientes ORDER BY nombre ASC
 ")->fetchAll();
 
-// Historial de notificaciones enviadas
 $historial = $pdo->query("
     SELECT n.id_notificacion, n.titulo, n.contenido,
            c.nombre as cliente
@@ -49,66 +48,152 @@ $historial = $pdo->query("
 <html lang="es">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Notificaciones Clientes — Vértice</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 </head>
-<body>
+<body class="bg-light">
 
-<h2>🔔 Notificaciones a Clientes</h2>
-<a href="../../dashboard.php">← Volver al dashboard</a>
-&nbsp;&nbsp;
-<a href="empleados.php">Ver notificaciones empleados</a>
+<div class="container-fluid px-4 py-4">
 
-<br><br>
+    <!-- Encabezado -->
+    <div class="d-flex align-items-center justify-content-between mb-4 flex-wrap gap-2">
+        <div>
+            <h2 class="mb-1 fw-bold">
+                <i class="bi bi-bell-fill text-warning me-2"></i>Notificaciones a Clientes
+            </h2>
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb mb-0">
+                    <li class="breadcrumb-item">
+                        <a href="../../dashboard.php" class="text-decoration-none">
+                            <i class="bi bi-house-door me-1"></i>Dashboard
+                        </a>
+                    </li>
+                    <li class="breadcrumb-item active">Notificaciones Clientes</li>
+                </ol>
+            </nav>
+        </div>
+        <a href="empleados.php" class="btn btn-outline-secondary">
+            <i class="bi bi-person-badge me-1"></i>Ver notificaciones empleados
+        </a>
+    </div>
 
-<?php if ($error): ?>
-    <p style="color:red"><?= $error ?></p>
-<?php endif; ?>
-<?php if ($exito): ?>
-    <p style="color:green"><?= $exito ?></p>
-<?php endif; ?>
+    <div class="row g-4">
 
-<h3>Enviar notificación</h3>
-<form method="POST">
-    <label>Cliente: *</label><br>
-    <select name="id_cliente" required>
-        <option value="">-- Selecciona cliente --</option>
-        <?php foreach ($clientes as $c): ?>
-            <option value="<?= $c['id_cliente'] ?>"><?= htmlspecialchars($c['nombre']) ?></option>
-        <?php endforeach; ?>
-    </select><br><br>
+        <!-- FORMULARIO -->
+        <div class="col-lg-5">
+            <div class="card shadow-sm h-100">
+                <div class="card-header bg-success text-white d-flex align-items-center gap-2">
+                    <i class="bi bi-send-fill fs-5"></i>
+                    <h5 class="mb-0">Enviar notificación</h5>
+                </div>
+                <div class="card-body">
 
-    <label>Título: *</label><br>
-    <input type="text" name="titulo" required style="width:400px"><br><br>
+                    <?php if ($error): ?>
+                        <div class="alert alert-danger alert-dismissible fade show d-flex align-items-center gap-2" role="alert">
+                            <i class="bi bi-exclamation-triangle-fill flex-shrink-0"></i>
+                            <span><?= $error ?></span>
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+                    <?php endif; ?>
+                    <?php if ($exito): ?>
+                        <div class="alert alert-success alert-dismissible fade show d-flex align-items-center gap-2" role="alert">
+                            <i class="bi bi-check-circle-fill flex-shrink-0"></i>
+                            <span><?= $exito ?></span>
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+                    <?php endif; ?>
 
-    <label>Mensaje: *</label><br>
-    <textarea name="contenido" rows="5" cols="50" required></textarea><br><br>
+                    <form method="POST">
+                        <div class="mb-3">
+                            <label for="id_cliente" class="form-label fw-semibold">
+                                <i class="bi bi-building me-1"></i>Cliente <span class="text-danger">*</span>
+                            </label>
+                            <select name="id_cliente" id="id_cliente" class="form-select" required>
+                                <option value="">— Selecciona cliente —</option>
+                                <?php foreach ($clientes as $c): ?>
+                                    <option value="<?= $c['id_cliente'] ?>"><?= htmlspecialchars($c['nombre']) ?></option>
+                                <?php endforeach; ?>
+                            </select>
+                        </div>
 
-    <button type="submit">Enviar notificación</button>
-</form>
+                        <div class="mb-3">
+                            <label for="titulo" class="form-label fw-semibold">
+                                <i class="bi bi-fonts me-1"></i>Título <span class="text-danger">*</span>
+                            </label>
+                            <input type="text" name="titulo" id="titulo" class="form-control" required placeholder="Ej: Actualización de proyecto">
+                        </div>
 
-<hr>
+                        <div class="mb-4">
+                            <label for="contenido" class="form-label fw-semibold">
+                                <i class="bi bi-chat-left-text me-1"></i>Mensaje <span class="text-danger">*</span>
+                            </label>
+                            <textarea name="contenido" id="contenido" rows="5" class="form-control" required placeholder="Escribe el contenido de la notificación..."></textarea>
+                        </div>
 
-<h3>Historial de notificaciones enviadas</h3>
-<?php if ($historial): ?>
-    <table border="1" cellpadding="8">
-        <tr>
-            <th>#</th>
-            <th>Cliente</th>
-            <th>Título</th>
-            <th>Mensaje</th>
-        </tr>
-        <?php foreach ($historial as $h): ?>
-            <tr>
-                <td><?= $h['id_notificacion'] ?></td>
-                <td><?= htmlspecialchars($h['cliente']) ?></td>
-                <td><?= htmlspecialchars($h['titulo']) ?></td>
-                <td><?= htmlspecialchars($h['contenido']) ?></td>
-            </tr>
-        <?php endforeach; ?>
-    </table>
-<?php else: ?>
-    <p>No hay notificaciones enviadas aún.</p>
-<?php endif; ?>
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-success btn-lg">
+                                <i class="bi bi-send me-2"></i>Enviar notificación
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
 
+        <!-- HISTORIAL -->
+        <div class="col-lg-7">
+            <div class="card shadow-sm h-100">
+                <div class="card-header bg-secondary text-white d-flex align-items-center gap-2">
+                    <i class="bi bi-clock-history fs-5"></i>
+                    <h5 class="mb-0">Historial de notificaciones enviadas</h5>
+                    <?php if ($historial): ?>
+                        <span class="badge bg-light text-secondary ms-auto"><?= count($historial) ?></span>
+                    <?php endif; ?>
+                </div>
+                <div class="card-body p-0">
+                    <?php if ($historial): ?>
+                        <div class="table-responsive">
+                            <table class="table table-striped table-hover align-middle mb-0">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th class="ps-3" style="width:60px">#</th>
+                                        <th>Cliente</th>
+                                        <th>Título</th>
+                                        <th>Mensaje</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <?php foreach ($historial as $h): ?>
+                                        <tr>
+                                            <td class="ps-3 text-muted fw-semibold"><?= $h['id_notificacion'] ?></td>
+                                            <td>
+                                                <span class="badge bg-success bg-opacity-10 text-success fw-semibold">
+                                                    <i class="bi bi-building me-1"></i><?= htmlspecialchars($h['cliente']) ?>
+                                                </span>
+                                            </td>
+                                            <td class="fw-semibold"><?= htmlspecialchars($h['titulo']) ?></td>
+                                            <td class="text-muted small"><?= htmlspecialchars($h['contenido']) ?></td>
+                                        </tr>
+                                    <?php endforeach; ?>
+                                </tbody>
+                            </table>
+                        </div>
+                    <?php else: ?>
+                        <div class="text-center py-5 text-muted">
+                            <i class="bi bi-journal-x fs-1 d-block mb-2 opacity-50"></i>
+                            <p class="mb-0">No hay notificaciones enviadas aún.</p>
+                        </div>
+                    <?php endif; ?>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

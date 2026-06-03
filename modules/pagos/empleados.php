@@ -1,14 +1,8 @@
 <?php
-require_once '../../middleware/auth.php';
-require_once '../../middleware/logger.php';
-require_once '../../middleware/roles.php';
+
 require_once '../../config/database.php';
-require_once '../../utils/permisos.php';
 require_once '../../utils/fecha.php';
 require_once '../../triggers/TriggerManager.php';
-
-requierePermiso('gestionar_pagos');
-registrarAccion('Vio módulo pagos empleados');
 
 $pdo   = conectar();
 $error = '';
@@ -105,122 +99,251 @@ $pagos = $pdo->query("
 <html lang="es">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pagos Empleados — Vértice</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 </head>
-<body>
+<body class="bg-light">
 
-<h2>💳 Pagos a Empleados</h2>
-<a href="../../dashboard.php">← Volver al dashboard</a>
-&nbsp;&nbsp;
-<a href="pedidos.php">Ver pagos pedidos</a>
+<div class="container-fluid px-4 py-4">
 
-<br><br>
+    <!-- Encabezado -->
+    <div class="d-flex align-items-center justify-content-between mb-4 flex-wrap gap-2">
+        <div>
+            <h2 class="fw-bold mb-1">
+                <i class="bi bi-credit-card-fill text-primary me-2"></i>Pagos a Empleados
+            </h2>
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb mb-0">
+                    <li class="breadcrumb-item">
+                        <a href="../../dashboard.php" class="text-decoration-none">
+                            <i class="bi bi-house-door me-1"></i>Dashboard
+                        </a>
+                    </li>
+                    <li class="breadcrumb-item">
+                        <a href="index.php" class="text-decoration-none">Pagos</a>
+                    </li>
+                    <li class="breadcrumb-item active">Empleados</li>
+                </ol>
+            </nav>
+        </div>
+        <a href="pedidos.php" class="btn btn-outline-secondary">
+            <i class="bi bi-box-seam me-1"></i>Ver pagos pedidos
+        </a>
+    </div>
 
-<?php if ($error): ?>
-    <p style="color:red"><?= $error ?></p>
-<?php endif; ?>
-<?php if ($exito): ?>
-    <p style="color:green"><?= $exito ?></p>
-<?php endif; ?>
+    <!-- Alertas -->
+    <?php if ($error): ?>
+        <div class="alert alert-danger alert-dismissible fade show d-flex align-items-center gap-2" role="alert">
+            <i class="bi bi-exclamation-triangle-fill flex-shrink-0"></i>
+            <span><?= $error ?></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    <?php endif; ?>
+    <?php if ($exito): ?>
+        <div class="alert alert-success alert-dismissible fade show d-flex align-items-center gap-2" role="alert">
+            <i class="bi bi-check-circle-fill flex-shrink-0"></i>
+            <span><?= $exito ?></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    <?php endif; ?>
 
-<!-- REGISTRAR PAGO -->
-<h3>Registrar pago</h3>
-<form method="POST">
-    <label>Empleado: *</label><br>
-    <select name="id_empleado" required>
-        <option value="">-- Selecciona --</option>
-        <?php foreach ($empleados as $e): ?>
-            <option value="<?= $e['id_empleado'] ?>"><?= htmlspecialchars($e['nombre']) ?></option>
-        <?php endforeach; ?>
-    </select><br><br>
+    <div class="row g-4 mb-4">
 
-    <label>Método de pago: *</label><br>
-    <select name="id_metodo_pago" required>
-        <option value="">-- Selecciona --</option>
-        <?php foreach ($metodos as $m): ?>
-            <option value="<?= $m['id_metodo_pago'] ?>"><?= htmlspecialchars($m['nombre']) ?></option>
-        <?php endforeach; ?>
-    </select><br><br>
+        <!-- FORMULARIO REGISTRAR PAGO -->
+        <div class="col-lg-6">
+            <div class="card shadow-sm h-100">
+                <div class="card-header bg-primary text-white d-flex align-items-center gap-2">
+                    <i class="bi bi-plus-circle-fill fs-5"></i>
+                    <h5 class="mb-0">Registrar pago</h5>
+                </div>
+                <div class="card-body">
+                    <form method="POST">
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">
+                                <i class="bi bi-person me-1"></i>Empleado <span class="text-danger">*</span>
+                            </label>
+                            <select name="id_empleado" class="form-select" required>
+                                <option value="">— Selecciona —</option>
+                                <?php foreach ($empleados as $e): ?>
+                                    <option value="<?= $e['id_empleado'] ?>"><?= htmlspecialchars($e['nombre']) ?></option>
+                                <?php endforeach; ?>
+                            </select>
+                        </div>
 
-    <label>Monto (Bs): *</label><br>
-    <input type="number" name="monto" step="0.01" min="0.01" required><br><br>
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">
+                                <i class="bi bi-wallet2 me-1"></i>Método de pago <span class="text-danger">*</span>
+                            </label>
+                            <select name="id_metodo_pago" class="form-select" required>
+                                <option value="">— Selecciona —</option>
+                                <?php foreach ($metodos as $m): ?>
+                                    <option value="<?= $m['id_metodo_pago'] ?>"><?= htmlspecialchars($m['nombre']) ?></option>
+                                <?php endforeach; ?>
+                            </select>
+                        </div>
 
-    <label>Fecha de pago:</label><br>
-    <input type="date" name="fecha_pago" value="<?= date('Y-m-d') ?>"><br><br>
+                        <div class="row g-3 mb-3">
+                            <div class="col-sm-6">
+                                <label class="form-label fw-semibold">
+                                    <i class="bi bi-currency-dollar me-1"></i>Monto (Bs) <span class="text-danger">*</span>
+                                </label>
+                                <input type="number" name="monto" class="form-control" step="0.01" min="0.01" required placeholder="0.00">
+                            </div>
+                            <div class="col-sm-6">
+                                <label class="form-label fw-semibold">
+                                    <i class="bi bi-calendar3 me-1"></i>Fecha de pago
+                                </label>
+                                <input type="date" name="fecha_pago" class="form-control" value="<?= date('Y-m-d') ?>">
+                            </div>
+                        </div>
 
-    <label>Estado:</label><br>
-    <select name="estado">
-        <option value="completado">Completado</option>
-        <option value="pendiente">Pendiente</option>
-        <option value="fallido">Fallido</option>
-    </select><br><br>
+                        <div class="mb-4">
+                            <label class="form-label fw-semibold">
+                                <i class="bi bi-flag me-1"></i>Estado
+                            </label>
+                            <select name="estado" class="form-select">
+                                <option value="completado">Completado</option>
+                                <option value="pendiente">Pendiente</option>
+                                <option value="fallido">Fallido</option>
+                            </select>
+                        </div>
 
-    <button type="submit" name="registrar_pago">Registrar pago</button>
-</form>
+                        <div class="d-grid">
+                            <button type="submit" name="registrar_pago" class="btn btn-primary btn-lg">
+                                <i class="bi bi-send me-2"></i>Registrar pago
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
 
-<hr>
+        <!-- FORMULARIO REGISTRAR AJUSTE -->
+        <div class="col-lg-6">
+            <div class="card shadow-sm h-100">
+                <div class="card-header bg-warning text-dark d-flex align-items-center gap-2">
+                    <i class="bi bi-sliders fs-5"></i>
+                    <h5 class="mb-0">Registrar ajuste (bono o descuento)</h5>
+                </div>
+                <div class="card-body">
+                    <form method="POST">
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">
+                                <i class="bi bi-receipt me-1"></i>Pago a ajustar <span class="text-danger">*</span>
+                            </label>
+                            <select name="id_pago_empleado" class="form-select" required>
+                                <option value="">— Selecciona pago —</option>
+                                <?php foreach ($pagos as $p): ?>
+                                    <option value="<?= $p['id_pago_empleado'] ?>">
+                                        #<?= $p['id_pago_empleado'] ?> — <?= htmlspecialchars($p['empleado']) ?>
+                                        (<?= formatoFechaCorta($p['fecha_pago']) ?> — Bs <?= number_format($p['monto'], 2) ?>)
+                                    </option>
+                                <?php endforeach; ?>
+                            </select>
+                        </div>
 
-<!-- REGISTRAR AJUSTE -->
-<h3>Registrar ajuste (bono o descuento)</h3>
-<form method="POST">
-    <label>Pago a ajustar: *</label><br>
-    <select name="id_pago_empleado" required>
-        <option value="">-- Selecciona pago --</option>
-        <?php foreach ($pagos as $p): ?>
-            <option value="<?= $p['id_pago_empleado'] ?>">
-                #<?= $p['id_pago_empleado'] ?> — <?= htmlspecialchars($p['empleado']) ?>
-                (<?= formatoFechaCorta($p['fecha_pago']) ?> — Bs <?= number_format($p['monto'], 2) ?>)
-            </option>
-        <?php endforeach; ?>
-    </select><br><br>
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">
+                                <i class="bi bi-tag me-1"></i>Tipo de ajuste <span class="text-danger">*</span>
+                            </label>
+                            <select name="tipo_ajuste" class="form-select" required>
+                                <option value="percepcion">Bono / Percepción</option>
+                                <option value="deduccion">Descuento / Deducción</option>
+                            </select>
+                        </div>
 
-    <label>Tipo de ajuste: *</label><br>
-    <select name="tipo_ajuste" required>
-        <option value="percepcion">Bono / Percepción</option>
-        <option value="deduccion">Descuento / Deducción</option>
-    </select><br><br>
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">
+                                <i class="bi bi-chat-left-text me-1"></i>Concepto <span class="text-danger">*</span>
+                            </label>
+                            <input type="text" name="concepto" class="form-control" required placeholder="Ej: Bono productividad">
+                        </div>
 
-    <label>Concepto: *</label><br>
-    <input type="text" name="concepto" required style="width:400px"><br><br>
+                        <div class="mb-4">
+                            <label class="form-label fw-semibold">
+                                <i class="bi bi-currency-dollar me-1"></i>Monto (Bs) <span class="text-danger">*</span>
+                            </label>
+                            <input type="number" name="monto_ajuste" class="form-control" step="0.01" min="0.01" required placeholder="0.00">
+                        </div>
 
-    <label>Monto (Bs): *</label><br>
-    <input type="number" name="monto_ajuste" step="0.01" min="0.01" required><br><br>
+                        <div class="d-grid">
+                            <button type="submit" name="registrar_ajuste" class="btn btn-warning btn-lg text-dark">
+                                <i class="bi bi-check2-circle me-2"></i>Registrar ajuste
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
 
-    <button type="submit" name="registrar_ajuste">Registrar ajuste</button>
-</form>
+    </div>
 
-<hr>
+    <!-- HISTORIAL DE PAGOS -->
+    <div class="card shadow-sm">
+        <div class="card-header bg-secondary text-white d-flex align-items-center gap-2">
+            <i class="bi bi-clock-history fs-5"></i>
+            <h5 class="mb-0">Últimos 30 pagos</h5>
+            <span class="badge bg-light text-secondary ms-auto"><?= count($pagos) ?></span>
+        </div>
+        <div class="card-body p-0">
+            <?php if ($pagos): ?>
+                <div class="table-responsive">
+                    <table class="table table-striped table-hover align-middle mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th class="ps-3">ID</th>
+                                <th>Empleado</th>
+                                <th>Fecha</th>
+                                <th>Método</th>
+                                <th class="text-end">Monto (Bs)</th>
+                                <th class="text-end">Ajustes (Bs)</th>
+                                <th class="text-end">Total real (Bs)</th>
+                                <th class="text-center">Estado</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php foreach ($pagos as $p): ?>
+                                <tr>
+                                    <td class="ps-3 text-muted fw-semibold">#<?= $p['id_pago_empleado'] ?></td>
+                                    <td>
+                                        <span class="fw-semibold">
+                                            <i class="bi bi-person-fill text-primary me-1"></i><?= htmlspecialchars($p['empleado']) ?>
+                                        </span>
+                                    </td>
+                                    <td class="text-muted"><?= formatoFechaCorta($p['fecha_pago']) ?></td>
+                                    <td><span class="badge bg-secondary bg-opacity-10 text-secondary"><?= htmlspecialchars($p['metodo']) ?></span></td>
+                                    <td class="text-end"><?= number_format($p['monto'], 2) ?></td>
+                                    <td class="text-end fw-semibold <?= $p['total_ajustes'] >= 0 ? 'text-success' : 'text-danger' ?>">
+                                        <?= number_format($p['total_ajustes'], 2) ?>
+                                    </td>
+                                    <td class="text-end fw-bold"><?= number_format($p['monto'] + $p['total_ajustes'], 2) ?></td>
+                                    <td class="text-center">
+                                        <?php if ($p['estado'] === 'completado'): ?>
+                                            <span class="badge bg-success">Completado</span>
+                                        <?php elseif ($p['estado'] === 'fallido'): ?>
+                                            <span class="badge bg-danger">Fallido</span>
+                                        <?php else: ?>
+                                            <span class="badge bg-warning text-dark">Pendiente</span>
+                                        <?php endif; ?>
+                                    </td>
+                                </tr>
+                            <?php endforeach; ?>
+                        </tbody>
+                    </table>
+                </div>
+            <?php else: ?>
+                <div class="text-center py-5 text-muted">
+                    <i class="bi bi-inbox fs-1 d-block mb-2 opacity-50"></i>
+                    <p class="mb-0">No hay pagos registrados aún.</p>
+                </div>
+            <?php endif; ?>
+        </div>
+    </div>
 
-<!-- HISTORIAL -->
-<h3>Últimos 30 pagos</h3>
-<table border="1" cellpadding="8">
-    <tr>
-        <th>ID</th>
-        <th>Empleado</th>
-        <th>Fecha</th>
-        <th>Método</th>
-        <th>Monto (Bs)</th>
-        <th>Ajustes (Bs)</th>
-        <th>Total real (Bs)</th>
-        <th>Estado</th>
-    </tr>
-    <?php foreach ($pagos as $p): ?>
-        <tr>
-            <td><?= $p['id_pago_empleado'] ?></td>
-            <td><?= htmlspecialchars($p['empleado']) ?></td>
-            <td><?= formatoFechaCorta($p['fecha_pago']) ?></td>
-            <td><?= htmlspecialchars($p['metodo']) ?></td>
-            <td><?= number_format($p['monto'], 2) ?></td>
-            <td style="color:<?= $p['total_ajustes'] >= 0 ? 'green' : 'red' ?>">
-                <?= number_format($p['total_ajustes'], 2) ?>
-            </td>
-            <td><strong><?= number_format($p['monto'] + $p['total_ajustes'], 2) ?></strong></td>
-            <td style="color:<?= $p['estado'] === 'completado' ? 'green' : ($p['estado'] === 'fallido' ? 'red' : 'orange') ?>">
-                <?= ucfirst($p['estado']) ?>
-            </td>
-        </tr>
-    <?php endforeach; ?>
-</table>
+</div>
 
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
