@@ -1,8 +1,8 @@
       </div> <!-- end of main content -->
 <!-- Footer for end section -->
-      <div class="row mt-3 border-top">
-        <footer class="pt-3 d-flex justify-content-between">
-          <p class="fw-semibold">Taller de Base de Datos</p>
+      <div class="row mt-auto border-top">
+        <footer class="py-2 d-flex justify-content-between">
+          <p class="fw-semibold mt-2">Taller de Base de Datos</p>
           <ul class="nav">
             <li class="nav-item">
               <a class="nav-link text-secondary" aria-current="page" href="#">Grupo-1</a>
@@ -157,7 +157,7 @@
 
       btnToActive.classList.add('active')
       btnToActive.setAttribute('aria-pressed', 'true')
-      activeThemeIcon.className = 'bi bi-' + iconOfActiveBtn + ' me-2'
+      activeThemeIcon.className = 'bi bi-' + iconOfActiveBtn + ' mx-2'
       const themeSwitcherLabel = `${themeSwitcherText.textContent} (${btnToActive.dataset.bsThemeValue})`
       themeSwitcher.setAttribute('aria-label', themeSwitcherLabel)
 

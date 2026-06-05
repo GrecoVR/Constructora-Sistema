@@ -1,3 +1,4 @@
+    <div style="min-width:200px;">  
       <span class="d-print-block">Menu</span>
       <hr>
       <ul class="nav nav-pills flex-column">
@@ -19,6 +20,14 @@
             <i class="bi bi-grid"></i> Materiales
           </a>
         </li>
+        <?php endif; ?>
+        
+        <?php if (in_array('gestionar_pagos', $permisos)): ?>
+        <li>
+          <a href="../../modules/pagos/index.php" class="nav-link link-body-emphasis">
+            <i class="bi bi-credit-card"></i> Pagos
+          </a>
+        </li>        
         <?php endif; ?>
         
         <?php if (in_array('gestionar_empleados', $permisos)): ?>
@@ -51,3 +60,4 @@
         <?php endif; ?>
       </ul>
       <hr>
+    </div>

@@ -14,7 +14,7 @@ $nombre   = $_SESSION['nombre'];
   <title>Empresa Constructora</title>
   <link rel="icon" type="image/x-icon" href="../../public/assets/favicon.png">
   <!-- Bootstrap -->
-  <link id="themeStylesheet" rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
+  <link id="themeStylesheet" rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css">
   <!-- Iconos de bootstrap -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
   <!-- datatables -->
@@ -49,7 +49,7 @@ $nombre   = $_SESSION['nombre'];
     aside {
       position: fixed;
       overflow: auto;
-      height: calc(100vh - 12px);
+      height: 100vh;
       justify-content: flex-start;
       align-self: flex-start;
     }
@@ -62,13 +62,21 @@ $nombre   = $_SESSION['nombre'];
       position: relative;
       overflow: visible;
       margin-left: auto;
-      justify-content: flex-end;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
       align-self: flex-end;
+      min-height:100vh;
     }
 
     #sidebarshow {
       display: none;
-
+    }
+    
+    #wrapper {
+      display: flex;
+      flex-direction: column;
+      flex-grow:1;
     }
 
     @media screen and (max-width: 575px) {
@@ -106,9 +114,9 @@ $nombre   = $_SESSION['nombre'];
     <nav class="navbar sticky-top navbar-expand-lg border-bottom bg-body-tertiary">
       <div class="container-fluid">
 
-        <button class="btn btn-outline-secondary" type="button" data-bs-toggle="collapse"
+        <button class="btn btn-outline-secondary me-3 px-2 py-1" type="button" data-bs-toggle="collapse"
           data-bs-target="#collapseWidthExample" aria-expanded="true" aria-controls="collapseWidthExample"
-          style="margin-right: 10px; padding: 0px 5px 0px 5px;" id="sidebartoggle" onclick="changeclass()"> <i
+          id="sidebartoggle" onclick="changeclass()"> <i
             class="bi bi-arrows-expand-vertical"></i>
         </button>
         <button class="btn btn-outline-secondary" type="button" data-bs-toggle="offcanvas"
@@ -201,34 +209,38 @@ $nombre   = $_SESSION['nombre'];
           </ul>
           <!-- Cambiar Tema claro oscuro -->
           <div class="dropdown-center">
+          <ul class="navbar-nav ms-auto me-3">
+          <li class="nav-item dropdown">
             <button class="btn btn-bd-primary py-2 dropdown-toggle d-flex align-items-center" id="bd-theme"
               type="button" aria-expanded="false" data-bs-toggle="dropdown" aria-label="Toggle theme (auto)">
-              <i class="bi bi-circle-half me-2" id="theme-icon-active"></i>
+              Modo: <i class="bi bi-circle-half mx-2" id="theme-icon-active"></i>
               <span class="visually-hidden" id="bd-theme-text">Cambiar Tema</span>
             </button>
             <ul class="dropdown-menu dropdown-menu-end shadow" aria-labelledby="bd-theme-text">
               <li>
                 <button type="button" class="dropdown-item d-flex align-items-center" data-bs-theme-value="light"
                   data-bs-icon-value="sun-fill" aria-pressed="false">
-                  <i class="bi bi-sun-fill me-2"></i>
+                  <i class="bi bi-sun-fill mx-2"></i>
                   Claro
                 </button>
               </li>
               <li>
                 <button type="button" class="dropdown-item d-flex align-items-center" data-bs-theme-value="dark"
                   data-bs-icon-value="moon-stars-fill" aria-pressed="false">
-                  <i class="bi bi-moon-stars-fill me-2"></i>
+                  <i class="bi bi-moon-stars-fill mx-2"></i>
                   Oscuro
                 </button>
               </li>
               <li>
                 <button type="button" class="dropdown-item d-flex align-items-center active" data-bs-theme-value="auto"
                   data-bs-icon-value="circle-half" aria-pressed="true">
-                  <i class="bi bi-circle-half me-2"></i>
+                  <i class="bi bi-circle-half mx-2"></i>
                   Auto
                 </button>
               </li>
             </ul>
+            </li>
+           </ul>
           </div>
           <!-- fin Cambiar Tema -->
           <!-- dropdown -->
@@ -254,5 +266,5 @@ $nombre   = $_SESSION['nombre'];
     </nav>
     <!-- end navbar -->
 
-    <div class="container-fluid">
-    <div class="p-4">
+    <div class="container-fluid" id="wrapper">
+    <div class="p-4 flex-grow-1">
