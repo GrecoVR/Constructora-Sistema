@@ -33,7 +33,7 @@
         <?php if (in_array('gestionar_empleados', $permisos)): ?>
         <li>
           <a href="../../modules/empleados/index.php" class="nav-link link-body-emphasis">
-            <i class="bi bi-people-fill"></i> Empleados
+            <i class="bi bi-people"></i> Empleados
           </a>
         </li>
         <?php endif; ?>
@@ -51,6 +51,24 @@
           </a>
         </li>
         <?php endif; ?>
+        
+        <?php if (in_array('gestionar_empleados', $permisos)): ?>
+        <li>
+          <a href="../../modules/notificaciones/index.php" class="nav-link link-body-emphasis">
+            <i class="bi bi-envelope-at"></i> Notificaciones
+          </a>
+        </li>
+        <?php endif; ?>
+        
+        <?php if (in_array('ver_reportes_financieros', $permisos)): ?>
+        <li>
+          <a href="../../modules/reportes/dashboard.php" class="nav-link link-body-emphasis">
+            <i class="bi bi-file-bar-graph"></i> Reportes
+          </a>
+        </li>
+        <?php endif; ?>
+        
+        
         <?php if (in_array('configurar_sistema', $permisos)): ?>
         <li>
           <a href="../../modules/usuarios/index.php" class="nav-link link-body-emphasis">
@@ -58,6 +76,15 @@
           </a>
         </li>
         <?php endif; ?>
+        
+        <?php if (in_array('ver_auditoria', $permisos)): ?>
+        <li>
+          <a href="../../modules/logs/index.php" class="nav-link link-body-emphasis">
+            <i class="bi bi-clock-history"></i> Registros Sistema
+          </a>
+        </li>
+        <?php endif; ?>
+        
       </ul>
       <hr>
     </div>
