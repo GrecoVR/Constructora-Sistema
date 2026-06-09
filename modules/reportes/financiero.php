@@ -9,7 +9,7 @@ requierePermiso('ver_reportes_financieros');
 registrarAccion('Vio reporte financiero');
 
 $pdo = conectar();
-
+$permisos = $_SESSION['permisos'];
 // Filtro por proyecto
 $id_proyecto = intval($_GET['id_proyecto'] ?? 0);
 
@@ -84,103 +84,224 @@ $pendientes_clientes = $pdo->query("
 ")->fetchAll();
 ?>
 
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <title>Reporte Financiero — Vértice</title>
-</head>
-<body>
+<?php require_once '../../modules/layouts/header.php'; ?>
 
-<h2>💰 Reporte Financiero</h2>
-<a href="../../dashboard.php">← Volver al dashboard</a>
-&nbsp;&nbsp;
-<a href="dashboard.php">Ver reporte general</a>
+<div class="content">
 
-<br><br>
+    <nav aria-label="breadcrumb">
+          <ol class="breadcrumb">
+              <li class="breadcrumb-item">
+                  <a href="../../modules/dashboard/dashboard.php" class="text-decoration-none">
+                      <i class="bi bi-house-door me-1"></i>Dashboard
+                  </a>
+              </li>
+              <li class="breadcrumb-item">
+                  <a href="dashboard.php" class="text-decoration-none">
+                      Reporte general
+                  </a>
+              </li>
+              <li class="breadcrumb-item active">Reporte Financiero</li>
+          </ol>
+      </nav>
 
-<!-- FILTRO -->
-<form method="GET">
-    <label>Filtrar por proyecto:</label>
-    <select name="id_proyecto">
-        <option value="">-- Todos --</option>
-        <?php foreach ($proyectos as $p): ?>
-            <option value="<?= $p['id_proyecto'] ?>"
-                <?= $p['id_proyecto'] == $id_proyecto ? 'selected' : '' ?>>
-                <?= htmlspecialchars($p['nombre']) ?>
-            </option>
-        <?php endforeach; ?>
-    </select>
-    <button type="submit">Filtrar</button>
-    <?php if ($id_proyecto): ?>
-        <a href="financiero.php">Limpiar filtro</a>
-    <?php endif; ?>
-</form>
+    <h2 class="mb-4 fw-semibold"><i class="bi bi-cash-coin me-2"></i> Reporte Financiero</h2>
+    
+    
+    
+    <p class="mb-4">Análisis de ingresos, gastos de obra y seguimiento de pagos.</p>
+    
+    <!-- KPIs RÁPIDOS -->
+    <?php
+        $total_ingresos_sum = array_sum(array_column($ingresos, 'total_ingresos'));
+        $total_pagos_sum    = array_sum(array_column($ingresos, 'total_pagos'));
+        $total_pendiente    = array_sum(array_column($pendientes_clientes, 'monto'));
+    ?>
+    <div class="row g-3 mb-4">
+        <div class="col-6 col-lg-3">
+            <div class="card">
+                <div class="card-header d-flex gap-2"> 
+                <i class="bi bi-graph-up-arrow"></i>
+                <h6>Ingresos totales</h6>
+                </div>
+                <div class="card-body text-primary">
+                  <h5>Bs <?= number_format($total_ingresos_sum, 0, '.', ',') ?></h5>
+                </div>
+           </div>
+        </div>
+        <div class="col-6 col-lg-3">
+            <div class="card">
+                <div class="card-header d-flex gap-2 fw-semibold"> 
+                <i class="bi bi-building"></i>
+                 Gastos de obra 
+                </div>
+                <div class="card-body text-danger">
+                  <h5>Bs <?= number_format($gastos['total_gastos'], 0, '.', ',') ?></h5>
+                </div>
+           </div>
+        </div>
+        <div class="col-6 col-lg-3">
+            <div class="card">
+                <div class="card-header d-flex gap-2 fw-semibold"> 
+                <i class="bi bi-receipt"></i>
+                Pagos completados
+                </div>
+                <div class="card-body text-success">
+                  <h5><?= $total_pagos_sum ?></h5>
+                </div>
+           </div>
+        </div>
+        <div class="col-6 col-lg-3">
+            <div class="card">
+                <div class="card-header d-flex gap-2 fw-semibold"> 
+                <i class="bi bi-receipt"></i>
+                Pendiente clientes
+                </div>
+                <div class="card-body text-warning">
+                  <h5>Bs <?= number_format($total_pendiente, 0, '.', ',') ?></h5>
+                </div>
+           </div>
+        </div>
+    </div>
 
-<hr>
+    <!-- INGRESOS + PAGOS EMPLEADOS MES -->
+    <div class="row g-3 mb-4">
+        <!-- Ingresos por proyecto -->
+        <div class="col-12 col-lg-7">
+        <!-- FILTRO -->
+          <form method="GET">
+          <div class="mb-3">
+              <label class="form-label fw-semibold" for="id_proyecto"><i class="bi bi-funnel me-1"></i> Filtrar por proyecto:</label>
+              <div class="input-group mb-3">
+                  <select id="id_proyecto" name="id_proyecto" class="form-select">
+                      <option value="">— Todos los proyectos —</option>
+                      <?php foreach ($proyectos as $p): ?>
+                          <option value="<?= $p['id_proyecto'] ?>"
+                              <?= $p['id_proyecto'] == $id_proyecto ? 'selected' : '' ?>>
+                              <?= htmlspecialchars($p['nombre']) ?>
+                          </option>
+                      <?php endforeach; ?>
+                  </select>
+                  <button type="submit" class="btn btn-success"><i class="bi bi-search me-1"></i> Filtrar</button>
+                  <?php if ($id_proyecto): ?>
+                      <a href="financiero.php" class="btn btn-secondary"><i class="bi bi-x me-1"></i> Limpiar</a>
+                  <?php endif; ?>
+               </div>
+          </div>
+          </form>
+            <div class="card">
+                <div class="card-header d-flex gap-2">
+                    <i class="bi bi-check-circle"></i>
+                    <h5>Ingresos por proyecto</h5>
+                </div>
+                <div class="card-body table-responsive">
+                <table class="table table-bordered table-striped">
+                    <tr>
+                        <th>Proyecto</th>
+                        <th>Total pagos</th>
+                        <th>Ingresos (Bs)</th>
+                    </tr>
+                    <?php foreach ($ingresos as $ing): ?>
+                        <tr>
+                            <td><?= htmlspecialchars($ing['proyecto']) ?></td>
+                            <td><?= $ing['total_pagos'] ?></td>
+                            <td><?= number_format($ing['total_ingresos'], 2) ?></td>
+                        </tr>
+                    <?php endforeach; ?>
+                </table>
+                </div>
+            </div>
+        </div>
 
-<!-- INGRESOS POR PROYECTO -->
-<h3>✅ Ingresos por proyecto</h3>
-<table border="1" cellpadding="8">
-    <tr>
-        <th>Proyecto</th>
-        <th>Total pagos</th>
-        <th>Ingresos (Bs)</th>
-    </tr>
-    <?php foreach ($ingresos as $ing): ?>
-        <tr>
-            <td><?= htmlspecialchars($ing['proyecto']) ?></td>
-            <td><?= $ing['total_pagos'] ?></td>
-            <td><?= number_format($ing['total_ingresos'], 2) ?></td>
-        </tr>
-    <?php endforeach; ?>
-</table>
+        <!-- Pagos empleados por mes -->
+        <div class="col-12 col-lg-5 pt-2">
+            <div class="card mt-4">
+                <div class="card-header fw-semibold">
+                    <i class="bi bi-people"></i> Pagos a empleados por mes
+                </div>
+                <div class="card-body table-responsive">
+                    <table class="table table-striped table-bordered">
+                        <thead><tr><th>Mes</th><th class="text-end">Total (Bs)</th></tr></thead>
+                        <tbody>
+                            <?php foreach ($pagos_mes as $pm): ?>
+                            <tr>
+                                <td><i class="bi bi-calendar3 me-2" style="color:var(--blue)"></i><?= $pm['mes'] ?></td>
+                                <td class="text-end fw-semibold"><?= number_format($pm['total'], 2) ?></td>
+                            </tr>
+                            <?php endforeach; ?>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
 
-<hr>
+    <!-- PAGOS PENDIENTES CLIENTES -->
+    <div class="row g-3">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between fw-semibold">
+                    <div>
+                    <i class="bi bi-exclamation-triangle me-1"></i>
+                    Pagos pendientes de clientes
+                    </div>
+                    <?php if ($pendientes_clientes): ?>
+                        <span class="badge bg-secondary">
+                            <?= count($pendientes_clientes) ?> pendiente<?= count($pendientes_clientes) > 1 ? 's' : '' ?>
+                        </span>
+                    <?php endif; ?>
+                </div>
+                <?php if ($pendientes_clientes): ?>
+                <div class="card-body table-responsive">
+                    <table class="table table-striped table-bordered">
+                        <thead>
+                            <tr>
+                                <th>Cliente</th>
+                                <th class="text-end">Monto (Bs)</th>
+                                <th class="text-center">Fecha esperada</th>
+                                <th class="text-center">Estado</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php foreach ($pendientes_clientes as $pc):
+                                $hoy     = new DateTime();
+                                $fecha   = new DateTime($pc['fecha_pago']);
+                                $vencido = $fecha < $hoy;
+                                $dias    = (int)$hoy->diff($fecha)->days;
+                            ?>
+                            <tr>
+                                <td>
+                                    <i class="bi bi-person me-2" style="color:var(--muted)"></i>
+                                    <?= htmlspecialchars($pc['cliente']) ?>
+                                </td>
+                                <td class="text-end fw-semibold" style="color:var(--red)">
+                                    Bs <?= number_format($pc['monto'], 2) ?>
+                                </td>
+                                <td class="text-center"><?= $pc['fecha_pago'] ?></td>
+                                <td class="text-center">
+                                    <?php if ($vencido): ?>
+                                        <span class="due-badge" style="background:var(--red-dim);color:var(--red)">
+                                            <i class="bi bi-clock me-1"></i>Vencido
+                                        </span>
+                                    <?php else: ?>
+                                        <span class="due-badge" style="background:var(--yellow-dim);color:var(--yellow)">
+                                            <?= $dias ?> día<?= $dias != 1 ? 's' : '' ?>
+                                        </span>
+                                    <?php endif; ?>
+                                </td>
+                            </tr>
+                            <?php endforeach; ?>
+                        </tbody>
+                    </table>
+                </div>
+                <?php else: ?>
+                <div class="p-4 text-center">
+                    <i class="bi bi-check-circle-fill me-2" style="color:var(--green)"></i>
+                    <span style="color:var(--muted)">No hay pagos pendientes de clientes.</span>
+                </div>
+                <?php endif; ?>
+            </div>
+        </div>
+    </div>
+</div>
 
-<!-- GASTOS -->
-<h3>🏗️ Total gastos de obra</h3>
-<p><strong>Bs <?= number_format($gastos['total_gastos'], 2) ?></strong></p>
-
-<hr>
-
-<!-- PAGOS EMPLEADOS POR MES -->
-<h3>👷 Pagos a empleados por mes</h3>
-<table border="1" cellpadding="8">
-    <tr>
-        <th>Mes</th>
-        <th>Total pagado (Bs)</th>
-    </tr>
-    <?php foreach ($pagos_mes as $pm): ?>
-        <tr>
-            <td><?= $pm['mes'] ?></td>
-            <td><?= number_format($pm['total'], 2) ?></td>
-        </tr>
-    <?php endforeach; ?>
-</table>
-
-<hr>
-
-<!-- PAGOS PENDIENTES CLIENTES -->
-<h3>⚠️ Pagos pendientes de clientes</h3>
-<?php if ($pendientes_clientes): ?>
-    <table border="1" cellpadding="8">
-        <tr>
-            <th>Cliente</th>
-            <th>Monto (Bs)</th>
-            <th>Fecha esperada</th>
-        </tr>
-        <?php foreach ($pendientes_clientes as $pc): ?>
-            <tr>
-                <td><?= htmlspecialchars($pc['cliente']) ?></td>
-                <td style="color:red"><?= number_format($pc['monto'], 2) ?></td>
-                <td><?= $pc['fecha_pago'] ?></td>
-            </tr>
-        <?php endforeach; ?>
-    </table>
-<?php else: ?>
-    <p style="color:green">No hay pagos pendientes de clientes.</p>
-<?php endif; ?>
-
-</body>
-</html>
+<?php require_once '../../modules/layouts/footer.php'; ?>

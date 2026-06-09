@@ -139,9 +139,9 @@ $cotizaciones_estado = $pdo->query("
         <!-- Desglose gastos -->
         <div class="col-12 col-lg-5">
             <div class="card">
-                <div class="card-header d-flex gap-2">
+                <div class="card-header fw-semibold">
                     <i class="bi bi-pie-chart"></i>
-                    <h5>Desglose de gastos</h5>
+                    Desglose de gastos
                 </div>
                 <div class="card-body table-responsive table-bordered">
                 <table class="table table-striped">
@@ -172,18 +172,18 @@ $cotizaciones_estado = $pdo->query("
         <!-- Proyectos por estado -->
         <div class="col-12 col-lg-7">
             <div class="card">
-                <div class="card-header d-flex gap-2">
+                <div class="card-header fw-semibold">
                     <i class="bi bi-folder2-open"></i>
-                    <h5>Proyectos por estado</h5>
+                    Proyectos por estado
                 </div>
                 <div class="card-body">
                 <table class="table table-striped table-bordered">
                     <thead><tr><th>Estado</th><th class="text-end">Cantidad</th></tr></thead>
                     <tbody>
                         <?php
-                        $estado_colors = ['activo'=>'text-primary-emphasis','finalizado'=>'text-success-emphasis',
+                        $estado_colors = ['ejecucion'=>'text-primary-emphasis','finalizado'=>'text-success-emphasis',
                                           'pausado'=>'text-warning-emphasis','cancelado'=>'text-danger-emphasis'];
-                        $estado_bg     = ['activo'=>'bg-primary-subtle','finalizado'=>'bg-success-subtle',
+                        $estado_bg     = ['ejecucion'=>'bg-primary-subtle','finalizado'=>'bg-success-subtle',
                                           'pausado'=>'bg-warning-subtle','cancelado'=>'bg-danger-subtle'];
                         foreach ($proyectos_estado as $pe):
                             $e = strtolower($pe['estado']);
@@ -211,9 +211,9 @@ $cotizaciones_estado = $pdo->query("
         <!-- Top proyectos por gasto -->
         <div class="col-12 col-lg-6">
             <div class="card">
-                <div class="card-header d-flex gap-2">
+                <div class="card-header fw-semibold">
                     <i class="bi bi-trophy"></i>
-                    <h5>Top 5 proyectos con más gastos</h5>
+                    Top 5 proyectos con más gastos
                 </div>
                 <div class="card-body">
                 <ol class="list-group list-group-numbered">
@@ -235,9 +235,9 @@ $cotizaciones_estado = $pdo->query("
         <!-- Top materiales -->
         <div class="col-12 col-lg-6">
             <div class="card">
-                <div class="card-header d-flex gap-2">
+                <div class="card-header fw-semibold">
                     <i class="bi bi-boxes"></i>
-                    <h5>Top 5 materiales más usados</h5>
+                    Top 5 materiales más usados
                 </div>
                 <div class="card-body">
                 <ol class="list-group list-group-numbered">
@@ -261,9 +261,9 @@ $cotizaciones_estado = $pdo->query("
     <div class="row g-3">
         <div class="col-12">
             <div class="card">
-                <div class="card-header d-flex gap-2">
+                <div class="card-header fw-semibold">
                     <i class="bi bi-file-earmark-text"></i>
-                    <h5>Cotizaciones por estado</h5>
+                    Cotizaciones por estado
                 </div>
                 <div class="card-body table-responsive">
                     <table class="table table-striped table-bordered">
