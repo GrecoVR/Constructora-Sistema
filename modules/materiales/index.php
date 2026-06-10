@@ -117,7 +117,7 @@ $unidades = $pdo->query("SELECT * FROM unidades_medida ORDER BY descripcion ASC"
   <div class="card shadow mt-2">
       <div class="card-header d-flex justify-content-between align-items-center">
           <h4 class="mb-0">Lista de Materiales</h4>
-          <button type="button" class="btn btn-primary" id="addRowBtn"><i class="bi bi-plus-lg"></i> Nuevo Material</button>
+          <button type="button" class="btn btn-primary" id="addRowBtn"><i class="bi bi-plus-lg"> <a href="crear.php" class="text-white text-decoration-none">Nuevo Material</a></i></button>
       </div>
       <div class="card-body table-responsive">
       <table id="tabla-datos" class="table table-striped table-bordered">
