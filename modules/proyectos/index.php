@@ -10,6 +10,7 @@ requierePermiso('ver_proyectos');
 registrarAccion('Vio lista de proyectos');
 
 $pdo      = conectar();
+
 $permisos = $_SESSION['permisos'];
 
 // Gerentes ven todos, operativos solo los suyos
@@ -46,57 +47,82 @@ if (in_array('gestionar_contratos', $permisos)) {
 $proyectos = $stmt->fetchAll();
 ?>
 
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <title>Proyectos — Vértice</title>
-</head>
-<body>
+<?php require_once '../../modules/layouts/header.php'; ?>
 
-<h2>📁 Proyectos</h2>
-<a href="../../dashboard.php">← Volver al dashboard</a>
-<?php if (in_array('crear_proyectos', $permisos)): ?>
-    &nbsp;&nbsp;
-    <a href="crear.php"><button>+ Nuevo proyecto</button></a>
+<nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item"><a href="../../modules/dashboard/dashboard.php">Dashboard</a></li>
+    <li class="breadcrumb-item active" aria-current="page">Proyectos</li>
+  </ol>
+</nav>
+
+<h2 class="mb-4 fw-semibold">📁 Proyectos</h2>
+
+<div class="card shadow mt-2">
+  <div class="card-header d-flex justify-content-between align-items-center">
+      <h4 class="mb-0">Lista de Proyectos</h4>
+      <?php if (in_array('crear_proyectos', $permisos)): ?>
+    <a class="btn btn-primary" href="crear.php"><i class="bi bi-plus-lg"></i> Nuevo proyecto</a>
 <?php endif; ?>
-
-<br><br>
-
-<table border="1" cellpadding="8">
-    <tr>
-        <th>ID</th>
-        <th>Nombre</th>
-        <th>Cliente</th>
-        <th>Tipo</th>
-        <th>Estado</th>
-        <th>Fecha inicio</th>
-        <th>Fecha fin</th>
-        <th>Acciones</th>
-    </tr>
-    <?php foreach ($proyectos as $p): ?>
+  </div>   
+  <div class="card-body table-responsive">
+    <table id="tabla-datos" class="table table-striped table-bordered">
+      <thead>
         <tr>
-            <td><?= $p['id_proyecto'] ?></td>
-            <td><?= htmlspecialchars($p['nombre']) ?></td>
-            <td><?= htmlspecialchars($p['cliente']) ?></td>
-            <td><?= htmlspecialchars($p['tipo']) ?></td>
-            <td><?= ucfirst($p['estado']) ?></td>
-            <td><?= formatoFechaCorta($p['fecha_inicio']) ?></td>
-            <td><?= estadoFecha($p['fecha_fin_estimada']) ?></td>
-            <td>
-                <a href="detalle.php?id=<?= $p['id_proyecto'] ?>">Ver</a>
-                <?php if (in_array('editar_proyectos', $permisos)): ?>
-                    &nbsp;|&nbsp;
-                    <a href="editar.php?id=<?= $p['id_proyecto'] ?>">Editar</a>
-                <?php endif; ?>
-            </td>
+            <th>ID</th>
+            <th>Nombre</th>
+            <th>Cliente</th>
+            <th>Tipo</th>
+            <th>Estado</th>
+            <th>Fecha inicio</th>
+            <th>Fecha fin</th>
+            <th>Acciones</th>
         </tr>
-    <?php endforeach; ?>
-</table>
+       </thead>
+       <tbody>
+        <?php foreach ($proyectos as $p): ?>
+            <tr>
+                <td><?= $p['id_proyecto'] ?></td>
+                <td><?= htmlspecialchars($p['nombre']) ?></td>
+                <td><?= htmlspecialchars($p['cliente']) ?></td>
+                <td><?= htmlspecialchars($p['tipo']) ?></td>
+                <td><?= ucfirst($p['estado']) ?></td>
+                <td><?= formatoFechaCorta($p['fecha_inicio']) ?></td>
+                <td><?= estadoFecha($p['fecha_fin_estimada']) ?></td>
+                <td>
+                    <a class="btn btn-outline-success btn-sm border-0 fw-semibold" href="detalle.php?id=<?= $p['id_proyecto'] ?>">
+                      <i class="bi bi-eye-fill"></i> Ver</a>
+                    <?php if (in_array('editar_proyectos', $permisos)): ?>
+                        
+                    <a class="btn btn-outline-secondary btn-sm border-0 fw-semibold" href="editar.php?id=<?= $p['id_proyecto'] ?>">
+                      <i class="bi bi-pencil-square"></i> Editar</a>
+                    <?php endif; ?>
+                </td>
+            </tr>
+        <?php endforeach; ?>
+        </tbody>
+    </table>
+  </div>
+</div>
 
 <?php if (empty($proyectos)): ?>
     <p>No tienes proyectos asignados.</p>
 <?php endif; ?>
 
-</body>
-</html>
+<script>
+$(document).ready(function() {
+   var table = $('#tabla-datos').DataTable({
+        language: {
+            url: "https://cdn.datatables.net/plug-ins/1.11.5/i18n/es-ES.json"
+        },
+        order: [],
+        columnDefs: [
+        {
+          targets: -1,
+          orderable: false
+        }
+        ]
+    });
+});    
+</script>
+<?php require_once '../../modules/layouts/footer.php'; ?>

@@ -10,6 +10,9 @@ requierePermiso('registrar_asistencia');
 registrarAccion('Vio módulo de asistencia');
 
 $pdo   = conectar();
+
+$permisos = $_SESSION['permisos'];
+
 $error = '';
 $exito = '';
 
@@ -80,31 +83,50 @@ $registros->execute([$fecha_filtro]);
 $registros = $registros->fetchAll();
 ?>
 
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <title>Asistencia — Vértice</title>
-</head>
-<body>
+<?php require_once '../../modules/layouts/header.php'; ?>
 
-<h2>📋 Registro de Asistencia</h2>
-<a href="../../dashboard.php">← Volver al dashboard</a>
+<nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item"><a href="../../modules/dashboard/dashboard.php"> Dashboard</a></li>
+    <li class="breadcrumb-item active" aria-current="page"> Asistencia</li>
+  </ol>
+</nav>
 
-<br><br>
+<h2 class="mb-4 fw-semibold">📋 Registro de Asistencia</h2>
 
 <?php if ($error): ?>
-    <p style="color:red"><?= $error ?></p>
+    <div class="toast fade show align-items-center text-bg-danger border-0 w-100" role="alert" aria-live="assertive" aria-atomic="true">
+      <div class="d-flex">
+        <div class="toast-body">
+          <?= $error ?>
+        </div>
+        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+      </div>
+    </div>
 <?php endif; ?>
 <?php if ($exito): ?>
-    <p style="color:green"><?= $exito ?></p>
+    <div class="toast fade show align-items-center text-bg-success border-0 w-100" role="alert" aria-live="assertive" aria-atomic="true">
+      <div class="d-flex">
+        <div class="toast-body">
+          <?= $exito ?>
+        </div>
+        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+      </div>
+    </div>
 <?php endif; ?>
 
+<div class="row">
+<div class="col-md-8 col-sm-6 col-xs-12">
 <!-- REGISTRAR -->
-<h3>Registrar asistencia</h3>
-<form method="POST">
-    <label>Empleado / Asignación: *</label><br>
-    <select name="id_asignacion" required>
+<div class="card shadow mt-2">
+  <div class="card-header">
+      <h4 class="mb-0">Registrar asistencia</h4>
+  </div>   
+  <div class="card-body">
+  <form method="POST">
+    <div class="mb-3">
+    <label class="form-label" for="id_asignacion">Empleado / Asignación: *</label>
+    <select class="form-select" id="id_asignacion" name="id_asignacion" required>
         <option value="">-- Selecciona --</option>
         <?php foreach ($asignaciones as $a): ?>
             <option value="<?= $a['id_asignacion'] ?>">
@@ -113,33 +135,46 @@ $registros = $registros->fetchAll();
                 (<?= htmlspecialchars($a['cargo']) ?>)
             </option>
         <?php endforeach; ?>
-    </select><br><br>
-
-    <label>Fecha: *</label><br>
-    <input type="date" name="fecha" value="<?= $fecha_filtro ?>"><br><br>
-
-    <label>Hora de entrada: *</label><br>
-    <input type="time" name="hora_entrada" value="07:00"><br><br>
-
-    <label>Hora de salida:</label><br>
-    <input type="time" name="hora_salida" value="17:00"><br><br>
-
-    <button type="submit">Registrar</button>
-</form>
-
-<hr>
-
+    </select>
+    </div>
+    <div class="mb-3">
+    <label class="form-label" for="fecha">Fecha: *</label>
+    <input class="form-control" type="date" id="fecha" name="fecha" value="<?= $fecha_filtro ?>">
+    </div>
+    <div class="mb-3">
+    <label class="form-label" for="hora_entrada">Hora de entrada: *</label>
+    <input class="form-control" type="time" id="hora_entrada" name="hora_entrada" value="07:00">
+    </div>
+    <div class="mb-3">
+    <label class="form-label" for="hora_salida">Hora de salida:</label>
+    <input class="form-control" type="time" id="hora_salida" name="hora_salida" value="17:00">
+    </div>
+    <button class="btn btn-primary" type="submit">Registrar</button>
+    </form>
+  </div>
+</div>
+</div><!-- end col -->
+<div class="col-md-4 col-sm-6 col-xs-12">
 <!-- VER POR FECHA -->
-<h3>Asistencia del día</h3>
-<form method="GET">
-    <input type="date" name="fecha" value="<?= $fecha_filtro ?>">
-    <button type="submit">Ver</button>
-</form>
-
-<br>
+<div class="card shadow mt-2">
+  <div class="card-header">
+      <h4 class="mb-0">Asistencia del día</h4>
+  </div>   
+  <div class="card-body">
+  <form method="GET">
+      <input class="form-control" type="date" name="fecha" value="<?= $fecha_filtro ?>">
+      <button class="btn btn-primary mt-2" type="submit">Ver</button>
+  </form>
+  </div>
+</div>
+</div><!-- end col -->
+</div><!-- end row -->
 
 <?php if ($registros): ?>
-    <table border="1" cellpadding="8">
+<div class="card shadow">
+<div class="card-body table-responsive">
+    <table id="tabla-datos" class="table table-striped table-bordered">
+      <thead>
         <tr>
             <th>Empleado</th>
             <th>Proyecto</th>
@@ -148,6 +183,8 @@ $registros = $registros->fetchAll();
             <th>Salida</th>
             <th>Horas</th>
         </tr>
+       </thead>
+       <tbody>
         <?php foreach ($registros as $r): ?>
             <tr>
                 <td><?= htmlspecialchars($r['empleado']) ?></td>
@@ -158,10 +195,30 @@ $registros = $registros->fetchAll();
                 <td><?= $r['hora_salida'] ? $r['horas_trabajadas'] : '—' ?></td>
             </tr>
         <?php endforeach; ?>
+        </tbody>
     </table>
+</div>
+</div>
+
 <?php else: ?>
     <p>No hay registros de asistencia para el <?= formatoFechaCorta($fecha_filtro) ?>.</p>
 <?php endif; ?>
 
-</body>
-</html>
+<script>
+$(document).ready(function() {
+   var table = $('#tabla-datos').DataTable({
+        language: {
+            url: "https://cdn.datatables.net/plug-ins/1.11.5/i18n/es-ES.json"
+        },
+        order: [],
+        columnDefs: [
+        {
+          targets: -1,
+          orderable: false
+        }
+        ]
+    });
+});    
+</script>
+
+<?php require_once '../../modules/layouts/footer.php'; ?>

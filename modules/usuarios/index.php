@@ -9,6 +9,9 @@ requierePermiso('configurar_sistema');
 registrarAccion('Vio lista de usuarios');
 
 $pdo  = conectar();
+
+$permisos = $_SESSION['permisos'];
+
 $stmt = $pdo->query("
     SELECT us.id_usuario_sistema, us.nombre_usuario, us.estado,
            e.nombre as empleado,
@@ -23,45 +26,71 @@ $stmt = $pdo->query("
 $usuarios = $stmt->fetchAll();
 ?>
 
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <title>Usuarios — Vértice</title>
-</head>
-<body>
+<?php require_once '../../modules/layouts/header.php'; ?>
 
-<h2>👥 Gestión de Usuarios</h2>
-<a href="../../dashboard.php">← Volver al dashboard</a>
-&nbsp;&nbsp;
-<a href="crear.php"><button>+ Nuevo usuario</button></a>
+<nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item"><a href="../../modules/dashboard/dashboard.php">Dashboard</a></li>
+    <li class="breadcrumb-item active" aria-current="page">Gestion de Usuarios</li>
+  </ol>
+</nav>
 
-<br><br>
+<h2 class="mb-4 fw-semibold">👥 Gestión de Usuarios</h2>
 
-<table border="1" cellpadding="8">
-    <tr>
-        <th>ID</th>
-        <th>Empleado</th>
-        <th>Usuario</th>
-        <th>Roles</th>
-        <th>Estado</th>
-        <th>Acciones</th>
-    </tr>
-    <?php foreach ($usuarios as $u): ?>
-        <tr>
-            <td><?= $u['id_usuario_sistema'] ?></td>
-            <td><?= htmlspecialchars($u['empleado']) ?></td>
-            <td><?= htmlspecialchars($u['nombre_usuario']) ?></td>
-            <td><?= $u['roles'] ?? 'Sin roles' ?></td>
-            <td><?= $u['estado'] ?></td>
-            <td>
-                <a href="editar.php?id=<?= $u['id_usuario_sistema'] ?>">Editar</a>
-                &nbsp;|&nbsp;
-                <a href="roles.php?id=<?= $u['id_usuario_sistema'] ?>">Roles</a>
-            </td>
-        </tr>
-    <?php endforeach; ?>
-</table>
 
-</body>
-</html>
+
+<div class="card shadow mt-2">
+      <div class="card-header d-flex justify-content-between align-items-center">
+          <h4 class="mb-0">Lista de Usuarios</h4>
+          <a class="btn btn-primary" href="crear.php"><i class="bi bi-plus-lg"></i> Nuevo usuario</a>
+      </div>
+      <div class="card-body table-responsive">
+      <table id="tabla-datos" class="table table-striped table-bordered">
+      <thead>
+      <tr>
+          <th>ID</th>
+          <th>Empleado</th>
+          <th>Usuario</th>
+          <th>Roles</th>
+          <th>Estado</th>
+          <th>Acciones</th>
+      </tr>
+      </thead>
+      <tbody>
+      <?php foreach ($usuarios as $u): ?>
+          <tr>
+              <td><?= $u['id_usuario_sistema'] ?></td>
+              <td><?= htmlspecialchars($u['empleado']) ?></td>
+              <td><?= htmlspecialchars($u['nombre_usuario']) ?></td>
+              <td><?= $u['roles'] ?? 'Sin roles' ?></td>
+              <td><?= $u['estado'] ?></td>
+              <td>
+                  <a class="btn btn-outline-secondary btn-sm border-0 fw-semibold" href="editar.php?id=<?= $u['id_usuario_sistema'] ?>">
+                     <i class="bi bi-pencil-square"></i> Editar</a>
+                  
+                  <a class="btn btn-outline-success btn-sm border-0 fw-semibold" href="roles.php?id=<?= $u['id_usuario_sistema'] ?>">
+                     <i class="bi bi-person-gear"></i> Roles</a>
+              </td>
+          </tr>
+      <?php endforeach; ?>
+      </tbody>
+      </table>
+  </div>
+</div>
+<script>
+$(document).ready(function() {
+   var table = $('#tabla-datos').DataTable({
+        language: {
+            url: "https://cdn.datatables.net/plug-ins/1.11.5/i18n/es-ES.json"
+        },
+        order: [],
+        columnDefs: [
+        {
+          targets: -1,
+          orderable: false
+        }
+        ]
+    });
+ });
+</script>
+<?php require_once '../../modules/layouts/footer.php'; ?>

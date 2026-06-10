@@ -9,6 +9,9 @@ require_once '../../triggers/TriggerManager.php';
 requierePermiso('editar_proyectos');
 
 $pdo   = conectar();
+
+$permisos = $_SESSION['permisos'];
+
 $id    = intval($_GET['id'] ?? 0);
 $error = '';
 $exito = '';
@@ -76,74 +79,109 @@ $etapas->execute([$id]);
 $etapas = $etapas->fetchAll();
 ?>
 
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <title>Etapas — <?= htmlspecialchars($proyecto['nombre']) ?></title>
-</head>
-<body>
+<?php require_once '../../modules/layouts/header.php'; ?>
 
-<h2>📋 Etapas — <?= htmlspecialchars($proyecto['nombre']) ?></h2>
-<a href="detalle.php?id=<?= $id ?>">← Volver al detalle</a>
+<nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item"><a href="detalle.php?id=<?= $id ?>" > Detalle</a></li>
+    <li class="breadcrumb-item active" aria-current="page"> Etapas</li>
+  </ol>
+</nav>
 
-<br><br>
+<h2 class="mb-4 fw-semibold">📋 Etapas — <?= htmlspecialchars($proyecto['nombre']) ?></h2>
 
 <?php if ($error): ?>
-    <p style="color:red"><?= $error ?></p>
+    <div class="toast fade show align-items-center text-bg-danger border-0 w-100" role="alert" aria-live="assertive" aria-atomic="true">
+      <div class="d-flex">
+        <div class="toast-body">
+          <?= $error ?>
+        </div>
+        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+      </div>
+    </div>
 <?php endif; ?>
 <?php if ($exito): ?>
-    <p style="color:green"><?= $exito ?></p>
+    <div class="toast fade show align-items-center text-bg-success border-0 w-100" role="alert" aria-live="assertive" aria-atomic="true">
+      <div class="d-flex">
+        <div class="toast-body">
+          <?= $exito ?>
+        </div>
+        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+      </div>
+    </div>
 <?php endif; ?>
 
-<!-- ETAPAS ACTUALES -->
-<h3>Etapas actuales</h3>
-<?php foreach ($etapas as $e): ?>
-    <fieldset style="margin-bottom:15px">
-        <legend><strong><?= htmlspecialchars($e['nombre']) ?></strong> — <?= $e['porcentaje_avance'] ?>%</legend>
-        <p><?= htmlspecialchars($e['descripcion']) ?></p>
-        <progress value="<?= $e['porcentaje_avance'] ?>" max="100"></progress>
-
-        <form method="POST" style="display:inline">
-            <input type="hidden" name="id_etapa" value="<?= $e['id_etapa_proyecto'] ?>">
-
-            <label>Avance %:</label>
-            <input type="number" name="porcentaje_avance" min="0" max="100"
-                   value="<?= $e['porcentaje_avance'] ?>" style="width:60px">
-
-            <label>Estado:</label>
-            <select name="estado_etapa">
-                <?php foreach (['planificacion','ejecucion','pausado','finalizado','cancelado'] as $est): ?>
-                    <option value="<?= $est ?>" <?= $e['estado'] === $est ? 'selected' : '' ?>>
-                        <?= ucfirst($est) ?>
-                    </option>
-                <?php endforeach; ?>
-            </select>
-
-            <button type="submit" name="actualizar_etapa">Actualizar</button>
-        </form>
-    </fieldset>
-<?php endforeach; ?>
-
-<hr>
-
+<div class="row">
+<div class="col-md-4 col-sm-6 col-xs-12">
 <!-- NUEVA ETAPA -->
-<h3>➕ Agregar nueva etapa</h3>
-<form method="POST">
-    <label>Nombre: *</label><br>
-    <input type="text" name="nombre_etapa" required style="width:400px"><br><br>
+<div class="card shadow mt-2">
+  <div class="card-header">
+      <h4 class="mb-0">➕ Agregar nueva etapa</h4>
+  </div>   
+  <div class="card-body">
+    <form method="POST">
+        <div class="mb-3">
+        <label class="form-label" for="nombre_etapa">Nombre: *</label>
+        <input class="form-control" type="text" id="nombre_etapa" name="nombre_etapa" required>
+        </div>
+        <div class="mb-3">
+        <label class="form-label" for="descripcion_etapa">Descripción: *</label>
+        <textarea class="form-control" id="descripcion_etapa" name="descripcion_etapa" rows="3" cols="50" required></textarea>
+        </div>
+        <div class="mb-3">
+        <label class="form-label" for="fecha_inicio_etapa">Fecha inicio: *</label>
+        <input class="form-control" type="date" id="fecha_inicio_etapa" name="fecha_inicio_etapa" required>
+        </div>
+        <div class="mb-3">
+        <label class="form-label" for="fecha_fin_etapa">Fecha fin: *</label>
+        <input class="form-control" type="date" name="fecha_fin_etapa" name="fecha_fin_etapa" required>
+        </div>
+        <button class="btn btn-primary" type="submit" name="nueva_etapa">Crear etapa</button>
+    </form>
+  </div>
+</div>
+</div>
+<div class="col-md-4 col-sm-6 col-xs-12">
+<!-- ETAPAS ACTUALES -->
+<div class="card shadow mt-2">
+  <div class="card-header">
+      <h4 class="mb-0">Etapas actuales</h4>
+  </div>   
+  <div class="card-body">
+    <?php foreach ($etapas as $e): ?>
+        <fieldset style="margin-bottom:15px">
+            <legend><strong><?= htmlspecialchars($e['nombre']) ?></strong> — <?= $e['porcentaje_avance'] ?>%</legend>
+            
+            <p><?= htmlspecialchars($e['descripcion']) ?></p>
+            
+            <div class="progress" role="progressbar" aria-label="porcentaje avance" aria-valuenow="<?= $e['porcentaje_avance'] ?>" aria-valuemin="0" aria-valuemax="100">
+              <div class="progress-bar" style="width: <?= $e['porcentaje_avance'] ?>%"><?= $e['porcentaje_avance'] ?></div>
+            </div>
 
-    <label>Descripción: *</label><br>
-    <textarea name="descripcion_etapa" rows="3" cols="50" required></textarea><br><br>
+            <form method="POST" style="display:inline">
+                <input type="hidden" name="id_etapa" value="<?= $e['id_etapa_proyecto'] ?>">
+                <div class="mb-3">
+                <label class="form-label" for="porcentaje_avance">Avance %:</label>
+                <input class="form-control" type="number" id="porcentaje_avance" name="porcentaje_avance" min="0" max="100"
+                       value="<?= $e['porcentaje_avance'] ?>" style="width:60px">
+                </div>
+                <div class="mb-3">
+                <label class="form-label" for="estado_etapa">Estado:</label>
+                <select class="form-select" id="estado_etapa" name="estado_etapa">
+                    <?php foreach (['planificacion','ejecucion','pausado','finalizado','cancelado'] as $est): ?>
+                        <option value="<?= $est ?>" <?= $e['estado'] === $est ? 'selected' : '' ?>>
+                            <?= ucfirst($est) ?>
+                        </option>
+                    <?php endforeach; ?>
+                </select>
+                </div>
+                <button class="btn btn-success" type="submit" name="actualizar_etapa">Actualizar</button>
+            </form>
+        </fieldset>
+    <?php endforeach; ?>
+    </div>
+ </div>
+ </div><!-- end col -->
+ </div><!-- end row -->
 
-    <label>Fecha inicio: *</label><br>
-    <input type="date" name="fecha_inicio_etapa" required><br><br>
-
-    <label>Fecha fin: *</label><br>
-    <input type="date" name="fecha_fin_etapa" required><br><br>
-
-    <button type="submit" name="nueva_etapa">Crear etapa</button>
-</form>
-
-</body>
-</html>
+<?php require_once '../../modules/layouts/footer.php'; ?>

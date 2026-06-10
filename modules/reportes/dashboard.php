@@ -5,11 +5,9 @@ require_once '../../middleware/roles.php';
 require_once '../../config/database.php';
 require_once '../../utils/permisos.php';
 
-requierePermiso('ver_reportes_financieros');
-registrarAccion('Vio reporte dashboard');
 
 $pdo = conectar();
-
+$permisos = $_SESSION['permisos'];
 // Total proyectos por estado
 $proyectos_estado = $pdo->query("
     SELECT estado, COUNT(*) as total
@@ -64,138 +62,243 @@ $cotizaciones_estado = $pdo->query("
 ")->fetchAll();
 ?>
 
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <title>Reporte Dashboard — Vértice</title>
-</head>
-<body>
+<?php require_once '../../modules/layouts/header.php'; ?>
 
-<h2>📊 Reporte General</h2>
-<a href="../../dashboard.php">← Volver al dashboard</a>
-&nbsp;&nbsp;
-<a href="financiero.php">Ver reporte financiero</a>
-&nbsp;&nbsp;
-<a href="inventario.php">Ver reporte inventario</a>
 
-<hr>
+<div class="content">
 
-<!-- PROYECTOS POR ESTADO -->
-<h3>📁 Proyectos por estado</h3>
-<table border="1" cellpadding="8">
-    <tr>
-        <th>Estado</th>
-        <th>Total</th>
-    </tr>
-    <?php foreach ($proyectos_estado as $pe): ?>
-        <tr>
-            <td><?= ucfirst($pe['estado']) ?></td>
-            <td><?= $pe['total'] ?></td>
-        </tr>
-    <?php endforeach; ?>
-</table>
+      <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item">
+                    <a href="../../modules/dashboard/dashboard.php" class="text-decoration-none">
+                        <i class="bi bi-house-door me-1"></i>Dashboard
+                    </a>
+                </li>
+                <li class="breadcrumb-item active">Reportes</li>
+            </ol>
+        </nav>
 
-<hr>
+    <h2 class="mb-3 fw-semibold"><i class="bi bi-speedometer2 me-2"></i>Reporte General</h2>
+    
+    <p class="mb-3">Resumen ejecutivo del estado operativo y financiero de la empresa.</p>
+    
+    <a class="btn btn-secondary me-2 mb-4" href="financiero.php" class="btn-nav"><i class="bi bi-cash-coin me-1"></i> Financiero</a>
+    <a class="btn btn-success mb-4" href="inventario.php" class="btn-nav"><i class="bi bi-boxes me-1"></i> Inventario</a>
+    
+    
 
-<!-- RESUMEN FINANCIERO -->
-<h3>💰 Resumen Financiero</h3>
-<table border="1" cellpadding="8">
-    <tr>
-        <th>Concepto</th>
-        <th>Monto (Bs)</th>
-    </tr>
-    <tr>
-        <td>✅ Ingresos recibidos</td>
-        <td><?= number_format($financiero['ingresos'], 2) ?></td>
-    </tr>
-    <tr>
-        <td>👷 Gastos personal</td>
-        <td><?= number_format($financiero['gastos_personal'], 2) ?></td>
-    </tr>
-    <tr>
-        <td>🏗️ Gastos de obra</td>
-        <td><?= number_format($financiero['gastos_obra'], 2) ?></td>
-    </tr>
-    <tr>
-        <td>🛒 Gastos pedidos</td>
-        <td><?= number_format($financiero['gastos_pedidos'], 2) ?></td>
-    </tr>
-    <tr>
-        <td><strong>📊 Balance</strong></td>
-        <td style="color: <?= $balance >= 0 ? 'green' : 'red' ?>">
-            <strong><?= number_format($balance, 2) ?></strong>
-        </td>
-    </tr>
-</table>
+    <!-- MÉTRICAS FINANCIERAS -->
+    <div class="row g-3 mb-4">
+        <div class="col-6 col-lg-3">
+            <div class="card">
+            <div class="card-header">
+                <i class="bi bi-arrow-down-circle-fill"></i> Ingresos recibidos
+            </div>
+            <div class="card-body text-primary">
+                Bs <?= number_format($financiero['ingresos'], 0, '.', ',') ?>
+            </div>
+            </div>
+        </div>
+        <div class="col-6 col-lg-3">
+            <div class="card">
+            <div class="card-header">
+                <i class="bi bi-arrow-up-circle-fill"></i> Total gastos
+            </div> 
+            <div class="card-body text-danger">
+                Bs <?= number_format($total_gastos, 0, '.', ',') ?>
+            </div>
+            </div>
+        </div>
+        <div class="col-6 col-lg-3">
+            <div class="card">
+                <div class="card-header">
+                    <i class="bi bi-wallet2"></i>
+                    Balance neto
+                </div>
+                <div class="card-body" style="color:<?= $balance >= 0 ? 'green' : 'red' ?>">
+                    Bs <?= number_format($balance, 0, '.', ',') ?>
+                </div>
+            </div>
+        </div>
+        <div class="col-6 col-lg-3">
+            <div class="card">
+                <div class="card-header">
+                    <i class="bi bi-clock-history"></i>
+                    Pagos pendientes
+                </div>
+                <div class="card-body text-warning d-flex justify-content-between">
+                Bs <?= number_format($pagos_pendientes['monto_total'], 0, '.', ',') ?>
+                <div class="small text-muted"><?= $pagos_pendientes['total'] ?> pagos</div>
+                </div>
+            </div>
+        </div>
+    </div><!-- end row-->
 
-<hr>
+    <!-- DESGLOSE GASTOS + PROYECTOS ESTADO -->
+    <div class="row g-3 mb-4">
+        <!-- Desglose gastos -->
+        <div class="col-12 col-lg-5">
+            <div class="card">
+                <div class="card-header fw-semibold">
+                    <i class="bi bi-pie-chart"></i>
+                    Desglose de gastos
+                </div>
+                <div class="card-body table-responsive table-bordered">
+                <table class="table table-striped">
+                    <thead><tr><th>Concepto</th><th class="text-end">Monto (Bs)</th></tr></thead>
+                    <tbody>
+                        <tr>
+                            <td><i class="bi bi-people me-2"></i>Personal</td>
+                            <td class="text-end"><?= number_format($financiero['gastos_personal'], 2) ?></td>
+                        </tr>
+                        <tr>
+                            <td><i class="bi bi-building me-2"></i>Obra</td>
+                            <td class="text-end"><?= number_format($financiero['gastos_obra'], 2) ?></td>
+                        </tr>
+                        <tr>
+                            <td><i class="bi bi-cart me-2"></i>Pedidos</td>
+                            <td class="text-end"><?= number_format($financiero['gastos_pedidos'], 2) ?></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Total</strong></td>
+                            <td class="text-end"><strong style="color:red"><?= number_format($total_gastos, 2) ?></strong></td>
+                        </tr>
+                    </tbody>
+                </table>
+                </div>
+            </div>
+        </div>
 
-<!-- TOP PROYECTOS -->
-<h3>🏆 Top 5 proyectos con más gastos</h3>
-<table border="1" cellpadding="8">
-    <tr>
-        <th>Proyecto</th>
-        <th>Total gastos (Bs)</th>
-    </tr>
-    <?php foreach ($top_proyectos as $tp): ?>
-        <tr>
-            <td><?= htmlspecialchars($tp['nombre']) ?></td>
-            <td><?= number_format($tp['total_gastos'], 2) ?></td>
-        </tr>
-    <?php endforeach; ?>
-</table>
+        <!-- Proyectos por estado -->
+        <div class="col-12 col-lg-7">
+            <div class="card">
+                <div class="card-header fw-semibold">
+                    <i class="bi bi-folder2-open"></i>
+                    Proyectos por estado
+                </div>
+                <div class="card-body">
+                <table class="table table-striped table-bordered">
+                    <thead><tr><th>Estado</th><th class="text-end">Cantidad</th></tr></thead>
+                    <tbody>
+                        <?php
+                        $estado_colors = ['ejecucion'=>'text-primary-emphasis','finalizado'=>'text-success-emphasis',
+                                          'pausado'=>'text-warning-emphasis','cancelado'=>'text-danger-emphasis'];
+                        $estado_bg     = ['ejecucion'=>'bg-primary-subtle','finalizado'=>'bg-success-subtle',
+                                          'pausado'=>'bg-warning-subtle','cancelado'=>'bg-danger-subtle'];
+                        foreach ($proyectos_estado as $pe):
+                            $e = strtolower($pe['estado']);
+                            $c = $estado_colors[$e] ?? 'text-secondary-emphasis';
+                            $bg= $estado_bg[$e]     ?? 'bg-secondary-subtle';
+                        ?>
+                        <tr>
+                            <td>
+                                <span class="badge <?= $bg ?> <?= $c ?>">
+                                    <?= ucfirst($pe['estado']) ?>
+                                </span>
+                            </td>
+                            <td class="text-end fw-semibold"><?= $pe['total'] ?></td>
+                        </tr>
+                        <?php endforeach; ?>
+                    </tbody>
+                </table>
+                </div>
+            </div>
+        </div>
+    </div><!-- end row -->
 
-<hr>
+    <!-- TOP PROYECTOS + TOP MATERIALES -->
+    <div class="row g-3 mb-4">
+        <!-- Top proyectos por gasto -->
+        <div class="col-12 col-lg-6">
+            <div class="card">
+                <div class="card-header fw-semibold">
+                    <i class="bi bi-trophy"></i>
+                    Top 5 proyectos con más gastos
+                </div>
+                <div class="card-body">
+                <ol class="list-group list-group-numbered">
+                <?php
+                $max_gasto = max(array_column($top_proyectos, 'total_gastos')) ?: 1;
+                foreach ($top_proyectos as $i => $tp):
+                    $pct = round(($tp['total_gastos'] / $max_gasto) * 100);
+                ?>
+                <li class="list-group-item d-flex justify-content-between">
+                    <span><?= htmlspecialchars($tp['nombre']) ?></span>
+                    <span>Bs <?= number_format($tp['total_gastos'], 2) ?></span>
+                </li>
+                <?php endforeach; ?>
+                </ol>
+                </div>
+            </div>
+        </div>
 
-<!-- TOP MATERIALES -->
-<h3>🧱 Top 5 materiales más usados</h3>
-<table border="1" cellpadding="8">
-    <tr>
-        <th>Material</th>
-        <th>Cantidad total usada</th>
-    </tr>
-    <?php foreach ($top_materiales as $tm): ?>
-        <tr>
-            <td><?= htmlspecialchars($tm['nombre']) ?></td>
-            <td><?= number_format($tm['total_usado'], 2) ?></td>
-        </tr>
-    <?php endforeach; ?>
-</table>
+        <!-- Top materiales -->
+        <div class="col-12 col-lg-6">
+            <div class="card">
+                <div class="card-header fw-semibold">
+                    <i class="bi bi-boxes"></i>
+                    Top 5 materiales más usados
+                </div>
+                <div class="card-body">
+                <ol class="list-group list-group-numbered">
+                <?php
+                $max_mat = max(array_column($top_materiales, 'total_usado')) ?: 1;
+                foreach ($top_materiales as $tm):
+                    $pct = round(($tm['total_usado'] / $max_mat) * 100);
+                ?>
+                <li class="list-group-item d-flex justify-content-between">
+                      <span><?= htmlspecialchars($tm['nombre']) ?></span>
+                      <span><?= number_format($tm['total_usado'], 2) ?> unid.</span>
+                </li>
+                <?php endforeach; ?>
+                </ol>
+                </div>
+            </div>
+        </div>
+    </div>
 
-<hr>
+    <!-- COTIZACIONES -->
+    <div class="row g-3">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header fw-semibold">
+                    <i class="bi bi-file-earmark-text"></i>
+                    Cotizaciones por estado
+                </div>
+                <div class="card-body table-responsive">
+                    <table class="table table-striped table-bordered">
+                        <thead>
+                            <tr>
+                                <th>Estado</th>
+                                <th class="text-center">Cantidad</th>
+                                <th class="text-end">Monto total (Bs)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php foreach ($cotizaciones_estado as $ce):
+                            $estado_colors = ['aprobada'=>'text-success-emphasis','rechazada'=>'text-danger-emphasis'];
+                            $estado_bg     = ['aprobada'=>'bg-success-subtle','rechazada'=>'bg-danger-subtle'];
+                                $e  = strtolower($ce['estado']);
+                                $c  = $estado_colors[$e] ?? 'text-secondary-emphasis';
+                                $bg = $estado_bg[$e]     ?? 'bg-secondary-subtle';
+                            ?>
+                            <tr>
+                                <td>
+                                    <span class="badge <?= $bg ?> <?= $c ?>">
+                                        <?= ucfirst($ce['estado']) ?>
+                                    </span>
+                                </td>
+                                <td class="text-center"><?= $ce['total'] ?></td>
+                                <td class="text-end">Bs <?= number_format($ce['monto'], 2) ?></td>
+                            </tr>
+                            <?php endforeach; ?>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div><!-- end row -->
 
-<!-- PAGOS PENDIENTES -->
-<h3>⏳ Pagos empleados pendientes</h3>
-<table border="1" cellpadding="8">
-    <tr>
-        <th>Total pagos pendientes</th>
-        <th>Monto total (Bs)</th>
-    </tr>
-    <tr>
-        <td><?= $pagos_pendientes['total'] ?></td>
-        <td style="color:red"><?= number_format($pagos_pendientes['monto_total'], 2) ?></td>
-    </tr>
-</table>
+</div><!-- /content -->
 
-<hr>
-
-<!-- COTIZACIONES -->
-<h3>📋 Cotizaciones por estado</h3>
-<table border="1" cellpadding="8">
-    <tr>
-        <th>Estado</th>
-        <th>Total</th>
-        <th>Monto (Bs)</th>
-    </tr>
-    <?php foreach ($cotizaciones_estado as $ce): ?>
-        <tr>
-            <td><?= ucfirst($ce['estado']) ?></td>
-            <td><?= $ce['total'] ?></td>
-            <td><?= number_format($ce['monto'], 2) ?></td>
-        </tr>
-    <?php endforeach; ?>
-</table>
-
-</body>
-</html>
+<?php require_once '../../modules/layouts/footer.php'; ?>

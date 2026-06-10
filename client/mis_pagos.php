@@ -78,6 +78,5 @@ $total_pendiente = array_sum(array_column(
 <?php if (empty($pagos)): ?>
     <p>No tienes pagos registrados.</p>
 <?php endif; ?>
-
 </body>
 </html>

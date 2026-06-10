@@ -8,6 +8,9 @@ require_once '../../utils/permisos.php';
 requierePermiso('configurar_sistema');
 
 $pdo    = conectar();
+
+$permisos = $_SESSION['permisos'];
+
 $error  = '';
 $exito  = '';
 
@@ -46,49 +49,72 @@ $empleados = $pdo->query("
 ")->fetchAll();
 ?>
 
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <title>Crear Usuario — Vértice</title>
-</head>
-<body>
+<?php require_once '../../modules/layouts/header.php'; ?>
 
-<h2>➕ Crear Usuario</h2>
-<a href="index.php">← Volver a usuarios</a>
+<nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item"><a href="index.php">Usuarios</a></li>
+    <li class="breadcrumb-item active" aria-current="page">Crear Usuario</li>
+  </ol>
+</nav>
 
-<br><br>
+<h2 class="mb-4 fw-semibold">➕ Crear Usuario</h2>
 
 <?php if ($error): ?>
-    <p style="color:red"><?= $error ?></p>
+    <div class="toast fade show align-items-center text-bg-danger border-0 w-100" role="alert" aria-live="assertive" aria-atomic="true">
+      <div class="d-flex">
+        <div class="toast-body">
+          <?= $error ?>
+        </div>
+        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+      </div>
+    </div>
 <?php endif; ?>
 <?php if ($exito): ?>
-    <p style="color:green"><?= $exito ?></p>
+    <div class="toast fade show align-items-center text-bg-success border-0 w-100" role="alert" aria-live="assertive" aria-atomic="true">
+      <div class="d-flex">
+        <div class="toast-body">
+          <?= $exito ?>
+        </div>
+        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+      </div>
+    </div>
 <?php endif; ?>
 
+<div class="row">
+<div class="col-lg-4 col-md-6 col-sm-8 col-xs-12">
+<div class="card shadow">
+<div class="card-body">
 <form method="POST">
-    <label>Empleado:</label><br>
-    <select name="id_empleado" required>
+    <div class="mb-3">
+    <label class="form-label" for="id_empleado" >Empleado:</label>
+    <select class="form-select" id="id_empleado" name="id_empleado" required>
         <option value="">-- Selecciona empleado --</option>
         <?php foreach ($empleados as $emp): ?>
             <option value="<?= $emp['id_empleado'] ?>"><?= htmlspecialchars($emp['nombre']) ?></option>
         <?php endforeach; ?>
-    </select><br><br>
-
-    <label>Nombre de usuario:</label><br>
-    <input type="text" name="usuario" required><br><br>
-
-    <label>Contraseña:</label><br>
-    <input type="password" name="contrasena" required><br><br>
-
-    <label>Estado:</label><br>
-    <select name="estado">
+    </select>
+    </div>
+    <div class="mb-3">
+    <label class="form-label" for="usuario" >Nombre de usuario:</label>
+    <input class="form-control" type="text" id="usuario" name="usuario" required>
+    </div>
+    <div class="mb-3">
+    <label class="form-label" for="contrasena">Contraseña:</label>
+    <input class="form-control" type="password" id="contrasena" name="contrasena" required>
+    </div>
+    <div class="mb-3">
+    <label class="form-label" for="estado">Estado:</label>
+    <select class="form-select" id="estado" name="estado">
         <option value="activo">Activo</option>
         <option value="inactivo">Inactivo</option>
-    </select><br><br>
-
-    <button type="submit">Crear usuario</button>
+    </select>
+    </div>
+    <button class="btn btn-primary" type="submit">Crear usuario</button>
 </form>
+</div>
+</div>
+</div><!-- end col -->
+</div><!-- end row -->
 
-</body>
-</html>
+<?php require_once '../../modules/layouts/footer.php'; ?>

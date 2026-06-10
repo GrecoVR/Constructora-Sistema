@@ -3,7 +3,7 @@ require_once '../../config/session.php';
 require_once '../../config/database.php';
 
 if (isset($_SESSION['id_usuario'])) {
-    header('Location: ../../dashboard.php');
+    header('Location: ../../modules/dashboard/dashboard.php');
     exit;
 }
 
@@ -23,6 +23,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         ");
         $stmt->execute([$usuario]);
         $user = $stmt->fetch();
+        
+        if ($user && $user['estado'] === 'activo' && password_verify($contrasena, $user['password_hash'])) {
 
         if ($user && $user['estado'] === 'activo' && password_verify($contrasena, $user['password_hash'])) {
             $stmt2 = $pdo->prepare("
@@ -50,7 +52,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $_SESSION['roles']       = $roles;
             $_SESSION['tipo_sesion'] = 'empleado';
 
-            header('Location: ../../dashboard.php');
+            header('Location: ../../modules/dashboard/dashboard.php');
             exit;
         } else {
             $error = 'Usuario o contraseña incorrectos';

@@ -9,6 +9,9 @@ require_once '../../utils/fecha.php';
 requierePermiso('ver_proyectos');
 
 $pdo = conectar();
+
+$permisos = $_SESSION['permisos'];
+
 $id  = intval($_GET['id'] ?? 0);
 
 if (!$id) { header('Location: index.php'); exit; }
@@ -77,129 +80,152 @@ $avance_promedio = count($etapas) > 0
     : 0;
 ?>
 
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <title><?= htmlspecialchars($proyecto['nombre']) ?> — Vértice</title>
-</head>
-<body>
+<?php require_once '../../modules/layouts/header.php'; ?>
 
-<h2>📁 <?= htmlspecialchars($proyecto['nombre']) ?></h2>
-<a href="index.php">← Volver a proyectos</a>
+<nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item"><a href="index.php"> Proyectos</a></li>
+    <li class="breadcrumb-item active" aria-current="page"> Detalle proyecto</li>
+  </ol>
+</nav>
+
+<h2 class="mb-4 fw-semibold">📁 <?= htmlspecialchars($proyecto['nombre']) ?></h2>
+
+
 <?php if (in_array('editar_proyectos', $_SESSION['permisos'])): ?>
     &nbsp;&nbsp;
-    <a href="editar.php?id=<?= $id ?>">✏️ Editar</a>
+    <a class="btn btn-secondary" href="editar.php?id=<?= $id ?>"><i class="bi bi-pencil-square"></i> Editar</a>
     &nbsp;&nbsp;
-    <a href="etapas.php?id=<?= $id ?>">📋 Gestionar etapas</a>
+    <a class="btn btn-success" href="etapas.php?id=<?= $id ?>"><i class="bi bi-clipboard-data"></i> Gestionar etapas</a>
 <?php endif; ?>
 
 <hr>
 
 <!-- INFO GENERAL -->
-<h3>📌 Información general</h3>
-<table border="1" cellpadding="8">
-    <tr><td><strong>Tipo</strong></td><td><?= htmlspecialchars($proyecto['tipo']) ?></td></tr>
-    <tr><td><strong>Cliente</strong></td><td><?= htmlspecialchars($proyecto['cliente']) ?></td></tr>
-    <tr><td><strong>Contacto</strong></td><td><?= $proyecto['telefono'] ?> — <?= $proyecto['email'] ?></td></tr>
-    <tr><td><strong>Ubicación</strong></td><td><?= htmlspecialchars($proyecto['ubicacion']) ?></td></tr>
-    <tr><td><strong>Estado</strong></td><td><?= ucfirst($proyecto['estado']) ?></td></tr>
-    <tr><td><strong>Inicio</strong></td><td><?= formatoFechaCorta($proyecto['fecha_inicio']) ?></td></tr>
-    <tr><td><strong>Fin estimado</strong></td><td><?= estadoFecha($proyecto['fecha_fin_estimada']) ?></td></tr>
-    <tr><td><strong>Avance promedio</strong></td><td><?= $avance_promedio ?>%</td></tr>
-</table>
-
-<hr>
+<div class="card shadow mt-4">
+  <div class="card-header">
+      <h4 class="mb-0">📌 Información general</h4>
+  </div>   
+  <div class="card-body table-responsive">
+  <table class="table table-striped table-bordered">
+      <tr><td><strong>Tipo</strong></td><td><?= htmlspecialchars($proyecto['tipo']) ?></td></tr>
+      <tr><td><strong>Cliente</strong></td><td><?= htmlspecialchars($proyecto['cliente']) ?></td></tr>
+      <tr><td><strong>Contacto</strong></td><td><?= $proyecto['telefono'] ?> — <?= $proyecto['email'] ?></td></tr>
+      <tr><td><strong>Ubicación</strong></td><td><?= htmlspecialchars($proyecto['ubicacion']) ?></td></tr>
+      <tr><td><strong>Estado</strong></td><td><?= ucfirst($proyecto['estado']) ?></td></tr>
+      <tr><td><strong>Inicio</strong></td><td><?= formatoFechaCorta($proyecto['fecha_inicio']) ?></td></tr>
+      <tr><td><strong>Fin estimado</strong></td><td><?= estadoFecha($proyecto['fecha_fin_estimada']) ?></td></tr>
+      <tr><td><strong>Avance promedio</strong></td><td><?= $avance_promedio ?>%</td></tr>
+  </table>
+  </div>
+</div>
 
 <!-- ETAPAS -->
-<h3>📋 Etapas del proyecto</h3>
-<table border="1" cellpadding="8">
-    <tr>
-        <th>Etapa</th>
-        <th>Estado</th>
-        <th>Avance</th>
-        <th>Fecha inicio</th>
-        <th>Fecha fin</th>
-    </tr>
-    <?php foreach ($etapas as $e): ?>
+<div class="card shadow mt-4">
+  <div class="card-header">
+      <h4 class="mb-0">📋 Etapas del proyecto</h4>
+  </div>   
+  <div class="card-body table-responsive">
+    <table class="table table-striped table-bordered">
         <tr>
-            <td><?= htmlspecialchars($e['nombre']) ?></td>
-            <td><?= ucfirst($e['estado']) ?></td>
-            <td>
-                <?= $e['porcentaje_avance'] ?>%
-                <progress value="<?= $e['porcentaje_avance'] ?>" max="100"></progress>
-            </td>
-            <td><?= formatoFechaCorta($e['fecha_inicio']) ?></td>
-            <td><?= estadoFecha($e['fecha_fin']) ?></td>
+            <th>Etapa</th>
+            <th>Estado</th>
+            <th>Avance</th>
+            <th>Fecha inicio</th>
+            <th>Fecha fin</th>
         </tr>
-    <?php endforeach; ?>
-</table>
-
-<hr>
+        <?php foreach ($etapas as $e): ?>
+            <tr>
+                <td><?= htmlspecialchars($e['nombre']) ?></td>
+                <td><?= ucfirst($e['estado']) ?></td>
+                <td>
+                    <?= $e['porcentaje_avance'] ?>%
+                    <progress value="<?= $e['porcentaje_avance'] ?>" max="100"></progress>
+                </td>
+                <td><?= formatoFechaCorta($e['fecha_inicio']) ?></td>
+                <td><?= estadoFecha($e['fecha_fin']) ?></td>
+            </tr>
+        <?php endforeach; ?>
+    </table>
+  </div>
+</div>
 
 <!-- PERSONAL -->
-<h3>👷 Personal asignado</h3>
-<table border="1" cellpadding="8">
-    <tr>
-        <th>Empleado</th>
-        <th>Cargo</th>
-        <th>Desde</th>
-        <th>Hasta</th>
-    </tr>
-    <?php foreach ($personal as $p): ?>
+<div class="card shadow mt-4">
+  <div class="card-header">
+      <h4 class="mb-0">👷 Personal asignado</h4>
+  </div>   
+  <div class="card-body table-responsive">
+    <table class="table table-striped table-bordered">
         <tr>
-            <td><?= htmlspecialchars($p['nombre']) ?></td>
-            <td><?= htmlspecialchars($p['cargo']) ?></td>
-            <td><?= formatoFechaCorta($p['fecha_inicio']) ?></td>
-            <td><?= $p['fecha_fin'] ? formatoFechaCorta($p['fecha_fin']) : 'Activo' ?></td>
+            <th>Empleado</th>
+            <th>Cargo</th>
+            <th>Desde</th>
+            <th>Hasta</th>
         </tr>
-    <?php endforeach; ?>
-</table>
-
-<hr>
+        <?php foreach ($personal as $p): ?>
+            <tr>
+                <td><?= htmlspecialchars($p['nombre']) ?></td>
+                <td><?= htmlspecialchars($p['cargo']) ?></td>
+                <td><?= formatoFechaCorta($p['fecha_inicio']) ?></td>
+                <td><?= $p['fecha_fin'] ? formatoFechaCorta($p['fecha_fin']) : 'Activo' ?></td>
+            </tr>
+        <?php endforeach; ?>
+    </table>
+  </div>
+</div>
 
 <!-- MATERIALES -->
-<h3>🧱 Materiales usados</h3>
-<table border="1" cellpadding="8">
-    <tr>
-        <th>Material</th>
-        <th>Almacén</th>
-        <th>Cantidad</th>
-        <th>Fecha</th>
-    </tr>
-    <?php foreach ($materiales as $m): ?>
+<div class="card shadow mt-4">
+  <div class="card-header">
+      <h4 class="mb-0">🧱 Materiales usados</h4>
+  </div>   
+  <div class="card-body table-responsive">
+    <table class="table table-striped table-bordered">
         <tr>
-            <td><?= htmlspecialchars($m['nombre']) ?></td>
-            <td><?= htmlspecialchars($m['almacen']) ?></td>
-            <td><?= $m['cantidad'] ?></td>
-            <td><?= formatoFechaCorta($m['fecha']) ?></td>
+            <th>Material</th>
+            <th>Almacén</th>
+            <th>Cantidad</th>
+            <th>Fecha</th>
         </tr>
-    <?php endforeach; ?>
-</table>
-
-<hr>
+        <?php foreach ($materiales as $m): ?>
+            <tr>
+                <td><?= htmlspecialchars($m['nombre']) ?></td>
+                <td><?= htmlspecialchars($m['almacen']) ?></td>
+                <td><?= $m['cantidad'] ?></td>
+                <td><?= formatoFechaCorta($m['fecha']) ?></td>
+            </tr>
+        <?php endforeach; ?>
+    </table>
+   </div>
+</div>
 
 <!-- GASTOS -->
-<h3>💰 Gastos del proyecto</h3>
-<table border="1" cellpadding="8">
-    <tr>
-        <th>Concepto</th>
-        <th>Monto (Bs)</th>
-        <th>Fecha</th>
-    </tr>
-    <?php foreach ($gastos as $g): ?>
+<div class="card shadow mt-4">
+  <div class="card-header">
+      <h4 class="mb-0">💰 Gastos del proyecto</h4>
+  </div>   
+  <div class="card-body table-responsive">
+    <table class="table table-striped table-bordered">
         <tr>
-            <td><?= htmlspecialchars($g['concepto']) ?></td>
-            <td><?= number_format($g['monto'], 2) ?></td>
-            <td><?= formatoFechaCorta($g['fecha']) ?></td>
+            <th>Concepto</th>
+            <th>Monto (Bs)</th>
+            <th>Fecha</th>
         </tr>
-    <?php endforeach; ?>
-    <tr>
-        <td><strong>TOTAL</strong></td>
-        <td><strong>Bs <?= number_format($total_gastos, 2) ?></strong></td>
-        <td></td>
-    </tr>
-</table>
+        <?php foreach ($gastos as $g): ?>
+            <tr>
+                <td><?= htmlspecialchars($g['concepto']) ?></td>
+                <td><?= number_format($g['monto'], 2) ?></td>
+                <td><?= formatoFechaCorta($g['fecha']) ?></td>
+            </tr>
+        <?php endforeach; ?>
+        <tr>
+            <td><strong>TOTAL</strong></td>
+            <td><strong>Bs <?= number_format($total_gastos, 2) ?></strong></td>
+            <td></td>
+        </tr>
+    </table>
+  </div>
+</div>
 
-</body>
-</html>
+<?php require_once '../../modules/layouts/footer.php'; ?>
