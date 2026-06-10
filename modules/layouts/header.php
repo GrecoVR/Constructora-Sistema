@@ -41,12 +41,53 @@ $cargo_actual = $emp_info['cargo'] ?? ($roles[0] ?? 'Sin cargo');
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Vértice Constructora</title>
+    <!-- ANTI-PARPADEO: aplicar tema guardado ANTES de renderizar -->
+<script>
+(function () {
+    var theme = localStorage.getItem('bootswatch-theme') || 'bootstrap';
+    var url = theme === 'bootstrap'
+        ? 'https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css'
+        : 'https://cdn.jsdelivr.net/npm/bootswatch@5.3.8/dist/' + theme + '/bootstrap.min.css';
+
+    // Poner el href correcto ANTES de que el browser pinte
+    document.write(
+        '<link id="themeStylesheet" rel="stylesheet" href="' + url + '">'
+    );
+})();
+</script>
+<!-- ANTI-PARPADEO sidebar: ocultar hasta que JS restaure estado -->
+<script>
+(function () {
+    var saved = localStorage.getItem('sidebar_open');
+    var isMobile = window.innerWidth < 768;
+
+    if (!isMobile && saved === '0') {
+        // Inyectar estilos inline antes de pintar
+        document.write(
+            '<style>' +
+            '#sidebar { width: 60px !important; min-width: 60px !important; }' +
+            '#main-content { margin-left: 60px !important; }' +
+            '.sb-item-label, .sb-logo-text, .sb-user-info, .sb-footer-label ' +
+            '{ opacity: 0 !important; width: 0 !important; }' +
+            '</style>'
+        );
+    }
+})();
+</script>
+<!-- ANTI-PARPADEO modo claro/oscuro -->
+<script>
+(function () {
+    var t = localStorage.getItem('theme') || 'auto';
+    var val = t;
+    if (t === 'auto') {
+        val = window.matchMedia('(prefers-color-scheme: dark)').matches
+            ? 'dark' : 'light';
+    }
+    document.documentElement.setAttribute('data-bs-theme', val);
+})();
+</script>
     <link rel="icon" type="image/x-icon" href="../../public/assets/favicon.png">
 
-    <!-- Bootstrap -->
-    <link id="themeStylesheet"
-          rel="stylesheet"
-          href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css">
     <!-- Bootstrap Icons -->
     <link rel="stylesheet"
           href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
@@ -157,10 +198,19 @@ $cargo_actual = $emp_info['cargo'] ?? ($roles[0] ?? 'Sin cargo');
                         box-shadow 0.38s ease;
             box-shadow: 4px 0 20px rgba(0,0,0,0.18);
         }
+        /* NUEVO: colapsa a 60px mostrando solo iconos */
         #sidebar.collapsed {
-            width: 0;
-            min-width: 0;
-            box-shadow: none;
+            width: 60px;
+            min-width: 60px;
+            box-shadow: 2px 0 12px rgba(0,0,0,0.12);
+        }
+        /* En móvil sí se oculta del todo */
+        @media (max-width: 767px) {
+            #sidebar.collapsed {
+                width: 0;
+                min-width: 0;
+                box-shadow: none;
+            }
         }
 
         /* Logo dentro del sidebar */
@@ -200,8 +250,57 @@ $cargo_actual = $emp_info['cargo'] ?? ($roles[0] ?? 'Sin cargo');
         }
 
         /* Mini-perfil en sidebar */
+        /* Logo dentro del sidebar */
+        .sb-logo {
+            padding: 22px 14px 18px;
+            border-bottom: 1px solid rgba(255,255,255,0.07);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            white-space: nowrap;
+            overflow: hidden;
+            flex-shrink: 0;
+            min-height: 72px;
+        }
+        .sb-logo-icon {
+            width: 38px;
+            min-width: 38px;   /* ← no se encoge */
+            height: 38px;
+            border-radius: 10px;
+            background: linear-gradient(135deg, #3498DB, #E67E22);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            font-weight: 900;
+            color: #fff;
+            flex-shrink: 0;
+        }
+        .sb-logo-text {
+            overflow: hidden;
+            transition: opacity 0.25s ease, width 0.38s ease;
+            white-space: nowrap;
+        }
+        /* Ocultar texto cuando colapsa */
+        #sidebar.collapsed .sb-logo-text {
+            opacity: 0;
+            width: 0;
+        }
+        .sb-logo-text strong {
+            display: block;
+            color: #fff;
+            font-size: 15px;
+            font-weight: 800;
+        }
+        .sb-logo-text span {
+            color: rgba(255,255,255,0.4);
+            font-size: 10px;
+            letter-spacing: 2px;
+        }
+
+        /* Mini-perfil en sidebar */
         .sb-user {
-            padding: 14px 18px;
+            padding: 12px 11px;
             border-bottom: 1px solid rgba(255,255,255,0.06);
             display: flex;
             align-items: center;
@@ -211,10 +310,12 @@ $cargo_actual = $emp_info['cargo'] ?? ($roles[0] ?? 'Sin cargo');
             overflow: hidden;
             flex-shrink: 0;
             transition: background 0.18s;
+            min-height: 62px;
         }
         .sb-user:hover { background: rgba(255,255,255,0.05); }
         .sb-avatar {
             width: 38px;
+            min-width: 38px;   /* ← no se encoge */
             height: 38px;
             border-radius: 50%;
             background: linear-gradient(135deg, #E67E22, #3498DB);
@@ -224,6 +325,15 @@ $cargo_actual = $emp_info['cargo'] ?? ($roles[0] ?? 'Sin cargo');
             font-size: 20px;
             flex-shrink: 0;
             border: 2px solid rgba(255,255,255,0.18);
+        }
+        .sb-user-info {
+            overflow: hidden;
+            transition: opacity 0.25s ease, width 0.38s ease;
+            white-space: nowrap;
+        }
+        #sidebar.collapsed .sb-user-info {
+            opacity: 0;
+            width: 0;
         }
         .sb-user-name {
             color: #fff;
@@ -240,16 +350,19 @@ $cargo_actual = $emp_info['cargo'] ?? ($roles[0] ?? 'Sin cargo');
             flex: 1;
             overflow-y: auto;
             overflow-x: hidden;
-            padding: 10px 10px;
+            padding: 10px 8px;
         }
         .sb-nav::-webkit-scrollbar { width: 3px; }
-        .sb-nav::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 99px; }
+        .sb-nav::-webkit-scrollbar-thumb {
+            background: rgba(255,255,255,0.1);
+            border-radius: 99px;
+        }
 
         .sb-item {
             display: flex;
             align-items: center;
             gap: 11px;
-            padding: 10px 13px;
+            padding: 10px 11px;
             border-radius: 10px;
             color: rgba(255,255,255,0.52);
             font-size: 13.5px;
@@ -260,6 +373,7 @@ $cargo_actual = $emp_info['cargo'] ?? ($roles[0] ?? 'Sin cargo');
             margin-bottom: 2px;
             border-left: 3px solid transparent;
             transition: background 0.18s, color 0.18s, border-color 0.18s;
+            position: relative;    /* para tooltip */
         }
         .sb-item:hover {
             background: rgba(255,255,255,0.06);
@@ -272,15 +386,50 @@ $cargo_actual = $emp_info['cargo'] ?? ($roles[0] ?? 'Sin cargo');
             border-left-color: #3498DB;
         }
         .sb-item i {
-            font-size: 16px;
+            font-size: 17px;
             flex-shrink: 0;
-            width: 20px;
+            min-width: 20px;
             text-align: center;
+        }
+        /* Texto del item: se oculta al colapsar */
+        .sb-item-label {
+            overflow: hidden;
+            transition: opacity 0.25s ease, width 0.38s ease;
+            white-space: nowrap;
+        }
+        #sidebar.collapsed .sb-item-label {
+            opacity: 0;
+            width: 0;
+        }
+
+        /* Tooltip que aparece al colapsar */
+        .sb-item::after {
+            content: attr(data-tooltip);
+            position: absolute;
+            left: 68px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: #1a2535;
+            color: #fff;
+            font-size: 12.5px;
+            font-weight: 600;
+            padding: 5px 12px;
+            border-radius: 8px;
+            white-space: nowrap;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.18s ease;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.25);
+            z-index: 200;
+            border: 1px solid rgba(255,255,255,0.08);
+        }
+        #sidebar.collapsed .sb-item:hover::after {
+            opacity: 1;
         }
 
         /* Footer sidebar */
         .sb-footer {
-            padding: 10px 14px 16px;
+            padding: 10px 8px 16px;
             border-top: 1px solid rgba(255,255,255,0.06);
             white-space: nowrap;
             overflow: hidden;
@@ -288,23 +437,32 @@ $cargo_actual = $emp_info['cargo'] ?? ($roles[0] ?? 'Sin cargo');
         .sb-footer a {
             display: flex;
             align-items: center;
-            gap: 9px;
+            gap: 10px;
             color: rgba(255,255,255,0.38);
             font-size: 12.5px;
             text-decoration: none;
-            padding: 8px 10px;
+            padding: 8px 11px;
             border-radius: 8px;
             transition: color 0.15s, background 0.15s;
         }
-        .sb-footer a:hover { color: #E74C3C; background: rgba(231,76,60,0.08); }
-
-        /* Overlay para móvil */
-        #sb-overlay {
-            display: none;
-            position: fixed;
-            inset: 0;
-            background: rgba(0,0,0,0.4);
-            z-index: 99;
+        .sb-footer a:hover {
+            color: #E74C3C;
+            background: rgba(231,76,60,0.08);
+        }
+        .sb-footer a i {
+            font-size: 16px;
+            flex-shrink: 0;
+            min-width: 20px;
+            text-align: center;
+        }
+        .sb-footer-label {
+            overflow: hidden;
+            transition: opacity 0.25s ease, width 0.38s ease;
+            white-space: nowrap;
+        }
+        #sidebar.collapsed .sb-footer-label {
+            opacity: 0;
+            width: 0;
         }
 
         /* ══════════════════════════════════════════
@@ -319,7 +477,13 @@ $cargo_actual = $emp_info['cargo'] ?? ($roles[0] ?? 'Sin cargo');
             transition: margin-left 0.38s cubic-bezier(.4,0,.2,1);
         }
         #main-content.expanded {
-            margin-left: 0;
+            margin-left: 60px;  /* ← ya no es 0, es 60px */
+        }
+        @media (max-width: 767px) {
+            #main-content,
+            #main-content.expanded {
+                margin-left: 0 !important;
+            }
         }
 
         /* ══════════════════════════════════════════
@@ -869,6 +1033,7 @@ $cargo_actual = $emp_info['cargo'] ?? ($roles[0] ?? 'Sin cargo');
 <div id="app-wrapper">
 
     <!-- SIDEBAR -->
+ <!-- SIDEBAR -->
     <aside id="sidebar">
         <!-- Logo -->
         <div class="sb-logo">
@@ -884,7 +1049,7 @@ $cargo_actual = $emp_info['cargo'] ?? ($roles[0] ?? 'Sin cargo');
             <div class="sb-avatar" id="sb-avatar-display">
                 <?= htmlspecialchars($avatar) ?>
             </div>
-            <div>
+            <div class="sb-user-info">
                 <div class="sb-user-name">
                     <?= htmlspecialchars(explode(' ', $nombre)[0]) ?>
                 </div>
@@ -902,7 +1067,8 @@ $cargo_actual = $emp_info['cargo'] ?? ($roles[0] ?? 'Sin cargo');
         <!-- Footer -->
         <div class="sb-footer">
             <a href="../../modules/auth/logout.php">
-                <i class="bi bi-box-arrow-right"></i> Cerrar sesión
+                <i class="bi bi-box-arrow-right"></i>
+                <span class="sb-footer-label">Cerrar sesión</span>
             </a>
         </div>
     </aside>

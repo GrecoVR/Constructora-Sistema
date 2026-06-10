@@ -27,8 +27,9 @@
     setTimeout(() => splash.remove(), 2350);
 })();
 
+
 // ══════════════════════════════════════════
-// SIDEBAR TOGGLE
+// SIDEBAR TOGGLE — iconos visibles al colapsar
 // ══════════════════════════════════════════
 const sidebar     = document.getElementById('sidebar');
 const mainContent = document.getElementById('main-content');
@@ -39,24 +40,26 @@ function toggleSidebar() {
 
     if (isMobile) {
         sidebar.classList.toggle('mobile-open');
+        // en móvil quitar collapsed si existía
+        sidebar.classList.remove('collapsed');
         overlay.style.display =
             sidebar.classList.contains('mobile-open') ? 'block' : 'none';
     } else {
-        sidebar.classList.toggle('collapsed');
-        mainContent.classList.toggle('expanded');
-        localStorage.setItem(
-            'sidebar_open',
-            sidebar.classList.contains('collapsed') ? '0' : '1'
-        );
+        const isCollapsed = sidebar.classList.toggle('collapsed');
+        mainContent.classList.toggle('expanded', isCollapsed);
+        localStorage.setItem('sidebar_open', isCollapsed ? '0' : '1');
     }
 }
 
-// Restaurar estado del sidebar
+// Restaurar estado guardado
 (function () {
-    const saved = localStorage.getItem('sidebar_open');
-    if (saved === '0') {
-        sidebar.classList.add('collapsed');
-        mainContent.classList.add('expanded');
+    const isMobile = window.innerWidth < 768;
+    if (!isMobile) {
+        const saved = localStorage.getItem('sidebar_open');
+        if (saved === '0') {
+            sidebar.classList.add('collapsed');
+            mainContent.classList.add('expanded');
+        }
     }
 })();
 
@@ -187,6 +190,48 @@ function selectAvatar(emoji, el) {
         });
     });
 })();
+// ══════════════════════════════════════════
+// DATATABLES GLOBAL — buscador + orden en
+// todas las tablas que no tengan ya DT
+// ══════════════════════════════════════════
+$(document).ready(function () {
+    // Idioma compartido
+    const dtLang = {
+        url: 'https://cdn.datatables.net/plug-ins/1.11.5/i18n/es-ES.json'
+    };
+
+    // Tablas que ya fueron inicializadas manualmente en su propia página
+    // las saltamos para no duplicar
+    const yaIniciadas = $.fn.dataTable.tables({ visible: true, api: true })
+        .nodes()
+        .map(function(n){ return n.id; });
+
+    $('table.table').each(function () {
+        const id  = this.id;
+        const $t  = $(this);
+
+        // Si ya tiene DataTable, saltar
+        if (id && $.fn.dataTable.isDataTable('#' + id)) return;
+        // Si tiene clase "no-dt", saltar
+        if ($t.hasClass('no-dt')) return;
+        // Si tiene menos de 2 filas de body, saltar (no vale la pena)
+        if ($t.find('tbody tr').length < 2) return;
+
+        $t.DataTable({
+            language:  { url: dtLang.url },
+            order:     [],
+            pageLength: 15,
+            lengthMenu: [10, 15, 25, 50, 100],
+            // Layout más limpio
+            dom: '<"d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2"lf>rtip',
+            columnDefs: [
+                // La última columna (Acciones) nunca es ordenable
+                { orderable: false, targets: -1 }
+            ],
+            responsive: true,
+        });
+    });
+});
 </script>
 </body>
 </html>
