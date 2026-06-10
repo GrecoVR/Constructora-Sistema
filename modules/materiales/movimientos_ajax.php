@@ -123,7 +123,7 @@ $(document).ready(function() {
         serverSide: true,
         order: [],
         ajax: {
-            url: 'movimientos_acciones.php',
+            url: 'movimientos_acciones_ajax.php',
             type: 'POST'
         },
         columnDefs: [
@@ -146,7 +146,7 @@ $(document).ready(function() {
     $('#dataForm').on('submit', function(e) {
         e.preventDefault();
         $.ajax({
-            url: "movimientos_acciones.php",
+            url: "movimientos_acciones_ajax.php",
             type: "POST",
             data: $(this).serialize(),
             dataType: "JSON",
@@ -167,7 +167,7 @@ $(document).ready(function() {
     $(document).on('click', '.editBtn', function() {
         var id = $(this).data('id');
         $.ajax({
-            url: "movimientos_acciones.php",
+            url: "movimientos_acciones_ajax.php",
             type: "POST",
             data: { id: id, fetch_single: true },
             dataType: "JSON",
@@ -191,7 +191,7 @@ $(document).ready(function() {
         var id = $(this).data('id');
         if(confirm("Estas seguro que deseas eliminar este movimiento?")) {
             $.ajax({
-                url: "movimientos_acciones.php",
+                url: "movimientos_acciones_ajax.php",
                 type: "POST",
                 data: { id: id, delete_user: true },
                 dataType: "JSON",
