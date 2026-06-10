@@ -143,9 +143,8 @@ $unidades = $pdo->query("SELECT * FROM unidades_medida ORDER BY descripcion ASC"
                   <td><?= number_format($m['precio_unitario_base'], 2) ?></td>
                   <td>
                       <button class="btn btn-sm btn-outline-secondary border-0 fw-semibold editBtn" data-id="<?= $m['id_material'] ?>">
-                        <i class="bi bi-pencil-square"></i> Editar</button>
-                     <!--<button class="btn btn-sm btn-outline-danger deleteBtn" data-id="<?= $m['id_material'] ?>">
-                     Eliminar</button>-->
+                        <i class="bi bi-pencil-square" href="editar.php"></i> Editar</button>
+                        <button class="btn btn-sm btn-outline-danger border-0 fw-semibold deleteBtn" data-id="<?= $m['id_material'] ?>">
                       <a class="btn btn-outline-success btn-sm border-0 fw-semibold" href="movimientos.php?id_material=<?= $m['id_material'] ?>">
                        <i class="bi bi-eye-fill"></i> Ver stock</a>
                   </td>
