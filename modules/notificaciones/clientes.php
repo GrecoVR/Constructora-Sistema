@@ -6,7 +6,7 @@ require_once '../../config/database.php';
 require_once '../../utils/permisos.php';
 
 requierePermiso('ver_dashboard');
-registrarAccion('Vio notificaciones de clientes');
+registrarAccion(LOG_VER_NOTIFICACIONES_CLIENTES);
 
 $pdo   = conectar();
 $permisos = $_SESSION['permisos'];
@@ -24,7 +24,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             VALUES (?, ?, ?)
         ");
         $stmt->execute([$id_cliente, $titulo, $contenido]);
-        registrarAccion("Envió notificación al cliente ID: $id_cliente");
+        registrarAccion(LOG_ENVIAR_NOTIF_CLI . ' — cliente ID:' . $id_cliente . ' "' . $titulo . '"');
         $exito = 'Notificación enviada correctamente';
     } else {
         $error = 'Completa todos los campos';

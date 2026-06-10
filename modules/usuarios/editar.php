@@ -68,7 +68,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 ");
                 $stmt3->execute([$nuevo_usuario, $estado, $id]);
             }
-            registrarAccion("Editó usuario ID: $id");
+            registrarAccion(LOG_EDITAR_USUARIO . ' — ID:' . $id . ' usuario: ' . $nuevo_usuario);
             $exito = 'Usuario actualizado correctamente';
             // Recarga datos
             $stmt->execute([$id]);

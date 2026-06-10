@@ -45,7 +45,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['actualizar_etapa'])) 
             'porcentaje_avance' => $porcentaje
         ]);
 
-        registrarAccion("Actualizó etapa ID: $id_etapa al $porcentaje%");
+        registrarAccion(LOG_ACTUALIZAR_ETAPA . ' — etapa ID:' . $id_etapa . ' al ' . $porcentaje . '%');
         $exito = 'Etapa actualizada correctamente';
     } else {
         $error = 'Datos incorrectos';
@@ -66,7 +66,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['nueva_etapa'])) {
             VALUES (?, ?, ?, 0, ?, ?, 'planificacion')
         ");
         $stmt3->execute([$id, $nombre, $descripcion, $fecha_ini, $fecha_fin]);
-        registrarAccion("Creó nueva etapa en proyecto ID: $id");
+        registrarAccion(LOG_CREAR_ETAPA . ' — "' . $nombre . '" en proyecto ID:' . $id);
         $exito = 'Etapa creada correctamente';
     } else {
         $error = 'Completa todos los campos de la nueva etapa';

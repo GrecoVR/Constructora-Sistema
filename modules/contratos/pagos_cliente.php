@@ -33,7 +33,7 @@ $contrato = $stmt->fetch();
 
 if (!$contrato) { header('Location: index.php'); exit; }
 
-registrarAccion("Vio pagos contrato ID: $id");
+registrarAccion(LOG_VER_PAGOS_CLIENTE . ' — contrato ID:' . $id);
 
 // Registrar nuevo pago
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -43,12 +43,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $estado    = $_POST['estado'] ?? 'pendiente';
 
     if ($id_metodo && $monto > 0) {
-        $stmt2 = $pdo->prepare("
-            INSERT INTO pagos_cliente (id_contrato, id_metodo_pago, fecha_pago, monto, estado)
-            VALUES (?, ?, ?, ?, ?)
-        ");
+        $stmt2 = $pdo->prepare(
+            "INSERT INTO pagos_cliente (id_contrato, id_metodo_pago, fecha_pago, monto, estado) VALUES (?, ?, ?, ?, ?)"
+        );
         $stmt2->execute([$id, $id_metodo, $fecha, $monto, $estado]);
-        registrarAccion("Registró pago cliente contrato ID: $id por Bs $monto");
+        registrarAccion(LOG_REG_PAGO_CLIENTE . ' — contrato ID:' . $id . ' por Bs ' . number_format($monto, 2));
         $exito = 'Pago registrado correctamente';
     } else {
         $error = 'Completa todos los campos';

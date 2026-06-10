@@ -40,7 +40,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             WHERE id_proyecto=?
         ");
         $stmt2->execute([$nombre, $descripcion, $ubicacion, $fecha_inicio, $fecha_fin, $estado, $id_tipo, $id]);
-        registrarAccion("Editó proyecto ID: $id");
+        registrarAccion(LOG_EDITAR_PROYECTO . ' — ID:' . $id);
         $exito = 'Proyecto actualizado correctamente';
         $stmt->execute([$id]);
         $proyecto = $stmt->fetch();

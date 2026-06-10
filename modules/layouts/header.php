@@ -3,268 +3,1005 @@ require_once '../../middleware/auth.php';
 require_once '../../middleware/logger.php';
 require_once '../../config/database.php';
 
-$pdo      = conectar();
-$nombre   = $_SESSION['nombre'];
+$pdo    = conectar();
+$nombre = $_SESSION['nombre'];
+$roles  = $_SESSION['roles'] ?? [];
+
+// Avatar guardado en sesión (se puede cambiar desde el perfil)
+if (!isset($_SESSION['avatar'])) {
+    $_SESSION['avatar'] = '🏗️';
+}
+$avatar = $_SESSION['avatar'];
+
+// Splash: solo se muestra una vez al iniciar sesión
+$show_splash = $_SESSION['show_splash'] ?? false;
+if ($show_splash) {
+    $_SESSION['show_splash'] = false;
+}
+
+// Info del empleado para el perfil
+$stmt_emp = $pdo->prepare("
+    SELECT e.email, e.telefono, e.ci, e.direccion,
+           c.nombre as cargo
+    FROM empleados e
+    JOIN usuarios_sistema us ON us.id_empleado = e.id_empleado
+    LEFT JOIN asignaciones a ON a.id_empleado = e.id_empleado AND a.fecha_fin IS NULL
+    LEFT JOIN cargos c ON c.id_cargo = a.id_cargo
+    WHERE us.id_usuario_sistema = ?
+    LIMIT 1
+");
+$stmt_emp->execute([$_SESSION['id_usuario']]);
+$emp_info = $stmt_emp->fetch();
+
+$cargo_actual = $emp_info['cargo'] ?? ($roles[0] ?? 'Sin cargo');
 ?>
-<!doctype html>
-<html lang="en" data-bs-theme="auto">
+<!DOCTYPE html>
+<html lang="es" data-bs-theme="auto">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Empresa Constructora</title>
-  <link rel="icon" type="image/x-icon" href="../../public/assets/favicon.png">
-  <!-- Bootstrap -->
-  <link id="themeStylesheet" rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css">
-  <!-- Iconos de bootstrap -->
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
-  <!-- datatables -->
-  <link rel="stylesheet" href="https://cdn.datatables.net/2.3.8/css/dataTables.bootstrap5.min.css">
-  <!-- Custom styles for this template -->
-  <style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vértice Constructora</title>
+    <link rel="icon" type="image/x-icon" href="../../public/assets/favicon.png">
 
-  body {
-     height: 100%;
-     transition:
-       background-color 0.35s ease,
-       color 0.35s ease,
-       opacity 0.25s ease;
-    }
+    <!-- Bootstrap -->
+    <link id="themeStylesheet"
+          rel="stylesheet"
+          href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet"
+          href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
+    <!-- DataTables -->
+    <link rel="stylesheet"
+          href="https://cdn.datatables.net/2.3.8/css/dataTables.bootstrap5.min.css">
 
-    body.theme-loading {
-      opacity: 0.4;
-      pointer-events: none;
-    }
+    <style>
+        /* ── Fuente base ── */
+        * { box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: #F4F6F9;
+            margin: 0;
+        }
 
-    .theme-check {
-      width: 18px;
-      display: inline-block;
-      opacity: 0;
-      transition: opacity 0.2s ease;
-    }
+        /* ══════════════════════════════════════════
+           SPLASH SCREEN
+        ══════════════════════════════════════════ */
+        #splash-screen {
+            position: fixed;
+            inset: 0;
+            background: linear-gradient(135deg, #2C3E50 0%, #1a2535 60%, #0d1520 100%);
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            transition: opacity 0.5s ease, visibility 0.5s ease;
+        }
+        #splash-screen.hidden {
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+        }
+        .splash-logo {
+            width: 90px;
+            height: 90px;
+            border-radius: 24px;
+            background: linear-gradient(135deg, #3498DB, #E67E22);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 42px;
+            font-weight: 900;
+            color: #fff;
+            box-shadow: 0 0 60px rgba(52,152,219,0.5);
+            animation: splashPop 0.65s cubic-bezier(.22,1,.36,1) both;
+        }
+        .splash-title {
+            color: #fff;
+            font-size: 26px;
+            font-weight: 800;
+            letter-spacing: 3px;
+            margin-top: 18px;
+            animation: splashPop 0.65s cubic-bezier(.22,1,.36,1) 0.1s both;
+        }
+        .splash-sub {
+            color: rgba(255,255,255,0.45);
+            font-size: 11px;
+            letter-spacing: 5px;
+            text-transform: uppercase;
+            margin-top: 5px;
+            animation: splashPop 0.65s cubic-bezier(.22,1,.36,1) 0.2s both;
+        }
+        .splash-bar {
+            width: 0;
+            height: 3px;
+            border-radius: 99px;
+            background: linear-gradient(90deg, #3498DB, #E67E22);
+            margin-top: 22px;
+            animation: growBar 1.2s ease 0.35s forwards;
+        }
+        @keyframes splashPop {
+            from { transform: scale(0.75) translateY(16px); opacity: 0; }
+            to   { transform: scale(1) translateY(0);       opacity: 1; }
+        }
+        @keyframes growBar {
+            from { width: 0; }
+            to   { width: 60px; }
+        }
 
-    .dropdown-item.active .theme-check {
-      opacity: 1;
-    }
+        /* ══════════════════════════════════════════
+           LAYOUT
+        ══════════════════════════════════════════ */
+        #app-wrapper {
+            display: flex;
+            min-height: 100vh;
+        }
 
-    aside {
-      position: fixed;
-      overflow: auto;
-      height: 100vh;
-      justify-content: flex-start;
-      align-self: flex-start;
-    }
+        /* ══════════════════════════════════════════
+           SIDEBAR
+        ══════════════════════════════════════════ */
+        #sidebar {
+            width: 245px;
+            min-width: 245px;
+            height: 100vh;
+            position: fixed;
+            left: 0;
+            top: 0;
+            z-index: 100;
+            background: linear-gradient(160deg, #2C3E50 0%, #1a2535 100%);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            transition: width 0.38s cubic-bezier(.4,0,.2,1),
+                        min-width 0.38s cubic-bezier(.4,0,.2,1),
+                        box-shadow 0.38s ease;
+            box-shadow: 4px 0 20px rgba(0,0,0,0.18);
+        }
+        #sidebar.collapsed {
+            width: 0;
+            min-width: 0;
+            box-shadow: none;
+        }
 
-    nav {
-      position: sticky;
-    }
+        /* Logo dentro del sidebar */
+        .sb-logo {
+            padding: 24px 20px 18px;
+            border-bottom: 1px solid rgba(255,255,255,0.07);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            white-space: nowrap;
+            overflow: hidden;
+            flex-shrink: 0;
+        }
+        .sb-logo-icon {
+            width: 38px;
+            height: 38px;
+            border-radius: 10px;
+            background: linear-gradient(135deg, #3498DB, #E67E22);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            font-weight: 900;
+            color: #fff;
+            flex-shrink: 0;
+        }
+        .sb-logo-text strong {
+            display: block;
+            color: #fff;
+            font-size: 15px;
+            font-weight: 800;
+        }
+        .sb-logo-text span {
+            color: rgba(255,255,255,0.4);
+            font-size: 10px;
+            letter-spacing: 2px;
+        }
 
-    main {
-      position: relative;
-      overflow: visible;
-      margin-left: auto;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      align-self: flex-end;
-      min-height:100vh;
-    }
+        /* Mini-perfil en sidebar */
+        .sb-user {
+            padding: 14px 18px;
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+            white-space: nowrap;
+            overflow: hidden;
+            flex-shrink: 0;
+            transition: background 0.18s;
+        }
+        .sb-user:hover { background: rgba(255,255,255,0.05); }
+        .sb-avatar {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #E67E22, #3498DB);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            flex-shrink: 0;
+            border: 2px solid rgba(255,255,255,0.18);
+        }
+        .sb-user-name {
+            color: #fff;
+            font-size: 13px;
+            font-weight: 600;
+        }
+        .sb-user-role {
+            color: rgba(255,255,255,0.42);
+            font-size: 11px;
+        }
 
-    #sidebarshow {
-      display: none;
-    }
-    
-    #wrapper {
-      display: flex;
-      flex-direction: column;
-      flex-grow:1;
-    }
+        /* Nav items */
+        .sb-nav {
+            flex: 1;
+            overflow-y: auto;
+            overflow-x: hidden;
+            padding: 10px 10px;
+        }
+        .sb-nav::-webkit-scrollbar { width: 3px; }
+        .sb-nav::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 99px; }
 
-    @media screen and (max-width: 575px) {
-      #sidebarshow {
-        display: inline;
-      }
+        .sb-item {
+            display: flex;
+            align-items: center;
+            gap: 11px;
+            padding: 10px 13px;
+            border-radius: 10px;
+            color: rgba(255,255,255,0.52);
+            font-size: 13.5px;
+            font-weight: 500;
+            text-decoration: none;
+            white-space: nowrap;
+            overflow: hidden;
+            margin-bottom: 2px;
+            border-left: 3px solid transparent;
+            transition: background 0.18s, color 0.18s, border-color 0.18s;
+        }
+        .sb-item:hover {
+            background: rgba(255,255,255,0.06);
+            color: rgba(255,255,255,0.85);
+        }
+        .sb-item.active {
+            background: rgba(52,152,219,0.18);
+            color: #fff;
+            font-weight: 700;
+            border-left-color: #3498DB;
+        }
+        .sb-item i {
+            font-size: 16px;
+            flex-shrink: 0;
+            width: 20px;
+            text-align: center;
+        }
 
-      #sidebartoggle, aside {
-        display: none;
-      }
-    }
-  </style>
-  <!-- Script de bootstap  -->
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
-    integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
+        /* Footer sidebar */
+        .sb-footer {
+            padding: 10px 14px 16px;
+            border-top: 1px solid rgba(255,255,255,0.06);
+            white-space: nowrap;
+            overflow: hidden;
+        }
+        .sb-footer a {
+            display: flex;
+            align-items: center;
+            gap: 9px;
+            color: rgba(255,255,255,0.38);
+            font-size: 12.5px;
+            text-decoration: none;
+            padding: 8px 10px;
+            border-radius: 8px;
+            transition: color 0.15s, background 0.15s;
+        }
+        .sb-footer a:hover { color: #E74C3C; background: rgba(231,76,60,0.08); }
 
-  <!-- Jquery -->
-  <script src="https://code.jquery.com/jquery-3.7.1.min.js"
-    integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
-  <!-- datatables -->
-  <script src="https://cdn.datatables.net/2.3.8/js/dataTables.min.js" crossorigin="anonymous"></script>
-  <script src="https://cdn.datatables.net/2.3.8/js/dataTables.bootstrap5.min.js" crossorigin="anonymous"></script>
+        /* Overlay para móvil */
+        #sb-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.4);
+            z-index: 99;
+        }
+
+        /* ══════════════════════════════════════════
+           MAIN CONTENT
+        ══════════════════════════════════════════ */
+        #main-content {
+            margin-left: 245px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            transition: margin-left 0.38s cubic-bezier(.4,0,.2,1);
+        }
+        #main-content.expanded {
+            margin-left: 0;
+        }
+
+        /* ══════════════════════════════════════════
+           TOPBAR
+        ══════════════════════════════════════════ */
+        #topbar {
+            height: 62px;
+            background: #fff;
+            border-bottom: 1px solid #E8ECF0;
+            display: flex;
+            align-items: center;
+            padding: 0 22px;
+            gap: 12px;
+            position: sticky;
+            top: 0;
+            z-index: 90;
+            box-shadow: 0 1px 8px rgba(0,0,0,0.04);
+        }
+
+        .topbar-toggle {
+            width: 38px;
+            height: 38px;
+            border-radius: 10px;
+            border: 1.5px solid #E8ECF0;
+            background: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 19px;
+            color: #7F8C8D;
+            transition: background 0.15s, border-color 0.15s;
+            flex-shrink: 0;
+        }
+        .topbar-toggle:hover { background: #F4F6F9; border-color: #CCD1D9; }
+
+        .topbar-brand {
+            font-size: 15px;
+            font-weight: 800;
+            color: #1C1C1E;
+            letter-spacing: 0.2px;
+            display: none;
+        }
+
+        .topbar-search {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: #F4F6F9;
+            border-radius: 10px;
+            padding: 8px 14px;
+            font-size: 13.5px;
+            color: #95A5A6;
+            max-width: 340px;
+            flex: 1;
+            border: 1.5px solid transparent;
+            transition: border-color 0.18s, background 0.18s;
+            cursor: text;
+        }
+        .topbar-search:hover { border-color: #CCD1D9; }
+
+        .topbar-right {
+            margin-left: auto;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .topbar-icon-btn {
+            width: 38px;
+            height: 38px;
+            border-radius: 10px;
+            border: 1.5px solid #E8ECF0;
+            background: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            color: #7F8C8D;
+            position: relative;
+            transition: background 0.15s;
+        }
+        .topbar-icon-btn:hover { background: #F4F6F9; }
+
+        .notif-dot {
+            position: absolute;
+            top: 7px;
+            right: 7px;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #E74C3C;
+            border: 2px solid #fff;
+        }
+
+        .topbar-user {
+            display: flex;
+            align-items: center;
+            gap: 9px;
+            padding: 5px 10px 5px 6px;
+            border-radius: 12px;
+            cursor: pointer;
+            border: 1.5px solid #E8ECF0;
+            background: none;
+            transition: background 0.15s;
+        }
+        .topbar-user:hover { background: #F4F6F9; }
+        .topbar-user-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #E67E22, #3498DB);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 17px;
+        }
+        .topbar-user-name {
+            font-size: 13px;
+            font-weight: 700;
+            color: #1C1C1E;
+            line-height: 1.2;
+        }
+        .topbar-user-role {
+            font-size: 11px;
+            color: #95A5A6;
+        }
+
+        /* ══════════════════════════════════════════
+           MODAL PERFIL
+        ══════════════════════════════════════════ */
+        #profile-modal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.45);
+            z-index: 500;
+            align-items: center;
+            justify-content: center;
+            animation: fadeIn 0.2s ease;
+        }
+        #profile-modal.open { display: flex; }
+
+        @keyframes fadeIn { from{opacity:0} to{opacity:1} }
+
+        .profile-card {
+            background: #fff;
+            border-radius: 20px;
+            width: 430px;
+            max-width: 95vw;
+            box-shadow: 0 24px 80px rgba(0,0,0,0.22);
+            overflow: hidden;
+            animation: slideUp 0.32s cubic-bezier(.22,1,.36,1) both;
+        }
+        @keyframes slideUp {
+            from { transform: translateY(40px); opacity: 0; }
+            to   { transform: translateY(0);    opacity: 1; }
+        }
+
+        .profile-header {
+            background: linear-gradient(135deg, #2C3E50, #1a2535);
+            padding: 28px 28px 22px;
+            text-align: center;
+            position: relative;
+        }
+        .profile-close {
+            position: absolute;
+            top: 14px;
+            right: 14px;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.12);
+            border: none;
+            color: #fff;
+            font-size: 17px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.15s;
+        }
+        .profile-close:hover { background: rgba(255,255,255,0.22); }
+
+        .profile-avatar-wrap {
+            width: 74px;
+            height: 74px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #E67E22, #3498DB);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 36px;
+            margin: 0 auto 12px;
+            border: 3px solid rgba(255,255,255,0.22);
+        }
+        .profile-name {
+            color: #fff;
+            font-size: 16px;
+            font-weight: 700;
+        }
+        .profile-role {
+            color: rgba(255,255,255,0.5);
+            font-size: 12px;
+            margin-top: 3px;
+        }
+
+        /* Tabs del modal */
+        .profile-tabs {
+            display: flex;
+            border-bottom: 1px solid #E8ECF0;
+        }
+        .profile-tab {
+            flex: 1;
+            padding: 12px 4px;
+            border: none;
+            background: none;
+            font-size: 12.5px;
+            font-weight: 600;
+            color: #95A5A6;
+            cursor: pointer;
+            border-bottom: 2.5px solid transparent;
+            transition: color 0.18s, border-color 0.18s;
+        }
+        .profile-tab.active {
+            color: #3498DB;
+            border-bottom-color: #3498DB;
+        }
+
+        .profile-body {
+            padding: 20px 24px 24px;
+        }
+
+        /* Avatares */
+        .avatar-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+        }
+        .avatar-option {
+            padding: 14px 8px;
+            border-radius: 12px;
+            border: 2px solid #E8ECF0;
+            background: #F8F9FA;
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.18s;
+        }
+        .avatar-option:hover {
+            border-color: #3498DB;
+            background: #EBF5FB;
+        }
+        .avatar-option.selected {
+            border-color: #3498DB;
+            background: #EBF5FB;
+        }
+        .avatar-option .av-emoji { font-size: 28px; display: block; }
+        .avatar-option .av-label {
+            font-size: 10px;
+            color: #95A5A6;
+            font-weight: 600;
+            margin-top: 4px;
+        }
+
+        /* Toggle switch config */
+        .config-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 13px 0;
+            border-bottom: 1px solid #F0F2F4;
+            font-size: 13.5px;
+            color: #1C1C1E;
+        }
+        .config-row:last-child { border-bottom: none; }
+
+        .toggle-sw {
+            width: 42px;
+            height: 24px;
+            border-radius: 99px;
+            background: #CCD1D9;
+            position: relative;
+            cursor: pointer;
+            border: none;
+            transition: background 0.2s;
+            flex-shrink: 0;
+        }
+        .toggle-sw.on { background: #3498DB; }
+        .toggle-knob {
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: #fff;
+            position: absolute;
+            top: 3px;
+            left: 3px;
+            transition: left 0.2s;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.18);
+        }
+        .toggle-sw.on .toggle-knob { left: 21px; }
+
+        /* Info row */
+        .info-row {
+            margin-bottom: 14px;
+        }
+        .info-row label {
+            font-size: 10.5px;
+            font-weight: 700;
+            color: #95A5A6;
+            letter-spacing: 0.8px;
+            text-transform: uppercase;
+            display: block;
+            margin-bottom: 3px;
+        }
+        .info-row .val {
+            font-size: 14px;
+            font-weight: 600;
+            color: #1C1C1E;
+        }
+
+        /* ══════════════════════════════════════════
+           CONTENIDO PRINCIPAL
+        ══════════════════════════════════════════ */
+        #page-content {
+            flex: 1;
+            padding: 28px;
+        }
+
+        /* Breadcrumb mejorado */
+        .breadcrumb { font-size: 13px; }
+        .breadcrumb-item a { color: #3498DB; text-decoration: none; }
+        .breadcrumb-item.active { color: #95A5A6; }
+
+        /* Cards generales */
+        .card {
+            border: none;
+            border-radius: 14px;
+            box-shadow: 0 2px 14px rgba(0,0,0,0.06);
+        }
+        .card-header {
+            background: #fff;
+            border-bottom: 1px solid #F0F2F4;
+            border-radius: 14px 14px 0 0 !important;
+            padding: 16px 20px;
+            font-weight: 700;
+            font-size: 14.5px;
+        }
+
+        /* Tables */
+        .table { font-size: 13.5px; }
+        .table thead th {
+            font-size: 11px;
+            font-weight: 700;
+            color: #95A5A6;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border-bottom: 2px solid #E8ECF0;
+            padding: 10px 12px;
+        }
+        .table tbody td { padding: 11px 12px; vertical-align: middle; }
+
+        /* Botones */
+        .btn { border-radius: 9px; font-size: 13.5px; font-weight: 600; }
+        .btn-primary {
+            background: #3498DB;
+            border-color: #3498DB;
+        }
+        .btn-primary:hover { background: #2980B9; border-color: #2980B9; }
+
+        /* Toast de alertas */
+        .toast { border-radius: 12px; }
+
+        /* Footer */
+        #page-footer {
+            border-top: 1px solid #E8ECF0;
+            padding: 14px 28px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 12px;
+            color: #95A5A6;
+            background: #fff;
+        }
+
+        /* ── Responsive ── */
+        @media (max-width: 767px) {
+            #sidebar { width: 0; }
+            #sidebar.mobile-open { width: 245px; }
+            #main-content { margin-left: 0 !important; }
+            #sb-overlay { display: block; }
+            .topbar-brand { display: block; }
+            .topbar-search { display: none; }
+        }
+
+        /* ── Theme loading ── */
+        body.theme-loading { opacity: 0.4; pointer-events: none; }
+        .theme-check { width: 18px; display: inline-block; opacity: 0; transition: opacity 0.2s; }
+        .dropdown-item.active .theme-check { opacity: 1; }
+    </style>
 </head>
-<!-- Body of dashboard - inside is all content-->
 <body>
-  <!-- Aside menu orginal -->
-  <aside class="collapse show collapse-horizontal col-lg-2 col-md-3 col-sm-4 p-3 border-end bg-body-tertiary" id="collapseWidthExample">
-     <?php require 'menu.php'; ?>
-  </aside>
-  <!-- End aside -->
-  <!-- Content of the main body - heres the main content like graph, tables, etc... -->
-  <main class="col-lg-10 col-md-9 col-sm-8 bg-body-tertiary" id="main">
 
-    <!-- Start navbar - here is inside of the main  -->
-    <nav class="navbar sticky-top navbar-expand-lg border-bottom bg-body-tertiary">
-      <div class="container-fluid">
+<!-- ══════════════════════════════════════
+     SPLASH SCREEN (solo primer login)
+══════════════════════════════════════ -->
+<?php if ($show_splash): ?>
+<div id="splash-screen">
+    <div class="splash-logo">V</div>
+    <div class="splash-title">VÉRTICE</div>
+    <div class="splash-sub">Constructora</div>
+    <div class="splash-bar"></div>
+</div>
+<?php endif; ?>
 
-        <button class="btn btn-outline-secondary me-3 px-2 py-1" type="button" data-bs-toggle="collapse"
-          data-bs-target="#collapseWidthExample" aria-expanded="true" aria-controls="collapseWidthExample"
-          id="sidebartoggle" onclick="changeclass()"> <i
-            class="bi bi-arrows-expand-vertical"></i>
-        </button>
-        <button class="btn btn-outline-secondary" type="button" data-bs-toggle="offcanvas"
-          data-bs-target="#offcanvasExample" aria-controls="offcanvasExample"
-          style="margin-right: 10px; padding: 2px 6px 2px 6px;" id="sidebarshow">
-          <i class="bi bi-arrow-bar-right"></i>
-        </button>
-        <a class="navbar-brand" href="#">Empresa Constructora</a>
+<!-- ══════════════════════════════════════
+     MODAL DE PERFIL
+══════════════════════════════════════ -->
+<div id="profile-modal">
+    <div class="profile-card">
 
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
-          aria-controls="navbarSupportedContent" aria-expanded="true" aria-label="Toggle navigation">
-          <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarSupportedContent">
-          <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-            <!-- Cambiar Tema -->
-            <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
-              Tema:
-              <span id="activeThemeLabel">Bootstrap</span>
-            </a>
-            <ul class="dropdown-menu dropdown-menu-end">
-              <li>
-                <a class="dropdown-item theme-option" data-theme="bootstrap" href="#">
-                  <span class="theme-check">✓</span> Bootstrap
-                </a>
-              </li>
-              <li>
-                <a class="dropdown-item theme-option" data-theme="cerulean" href="#">
-                  <span class="theme-check">✓</span> Cerulean
-                </a>
-              </li>
-              <li>
-                <a class="dropdown-item theme-option" data-theme="cosmo" href="#">
-                  <span class="theme-check">✓</span> Cosmo
-                </a>
-              </li>
-              <li>
-                <a class="dropdown-item theme-option" data-theme="flatly" href="#">
-                  <span class="theme-check">✓</span> Flatly
-                </a>
-              </li>
-              <li>
-                <a class="dropdown-item theme-option" data-theme="journal" href="#">
-                  <span class="theme-check">✓</span> Journal
-                </a>
-              </li>
-              <li>
-                <a class="dropdown-item theme-option" data-theme="litera" href="#">
-                  <span class="theme-check">✓</span> Litera
-                </a>
-              </li>
-              <li>
-                <a class="dropdown-item theme-option" data-theme="lumen" href="#">
-                  <span class="theme-check">✓</span> Lumen
-                </a>
-              </li>
-              <li>
-                <a class="dropdown-item theme-option" data-theme="pulse" href="#">
-                  <span class="theme-check">✓</span> Pulse
-                </a>
-              </li>
-              <li>
-                <a class="dropdown-item theme-option" data-theme="sandstone" href="#">
-                  <span class="theme-check">✓</span> Sandstone
-                </a>
-              </li>
-              <li>
-                <a class="dropdown-item theme-option" data-theme="simplex" href="#">
-                  <span class="theme-check">✓</span> Simplex
-                </a>
-              </li>
-              <li>
-                <a class="dropdown-item theme-option" data-theme="spacelab" href="#">
-                  <span class="theme-check">✓</span> Spacelab
-                </a>
-              </li>
-              <li>
-                <a class="dropdown-item theme-option" data-theme="united" href="#">
-                  <span class="theme-check">✓</span> United
-                </a>
-              </li>
-              <li>
-                <a class="dropdown-item theme-option" data-theme="zephyr" href="#">
-                  <span class="theme-check">✓</span> Zephyr
-                </a>
-              </li>
-            </ul>
-          </li>
-          </ul>
-          <!-- Cambiar Tema claro oscuro -->
-          <div class="dropdown-center">
-          <ul class="navbar-nav ms-auto me-3">
-          <li class="nav-item dropdown">
-            <button class="btn btn-bd-primary py-2 dropdown-toggle d-flex align-items-center" id="bd-theme"
-              type="button" aria-expanded="false" data-bs-toggle="dropdown" aria-label="Toggle theme (auto)">
-              Modo: <i class="bi bi-circle-half mx-2" id="theme-icon-active"></i>
-              <span class="visually-hidden" id="bd-theme-text">Cambiar Tema</span>
-            </button>
-            <ul class="dropdown-menu dropdown-menu-end shadow" aria-labelledby="bd-theme-text">
-              <li>
-                <button type="button" class="dropdown-item d-flex align-items-center" data-bs-theme-value="light"
-                  data-bs-icon-value="sun-fill" aria-pressed="false">
-                  <i class="bi bi-sun-fill mx-2"></i>
-                  Claro
-                </button>
-              </li>
-              <li>
-                <button type="button" class="dropdown-item d-flex align-items-center" data-bs-theme-value="dark"
-                  data-bs-icon-value="moon-stars-fill" aria-pressed="false">
-                  <i class="bi bi-moon-stars-fill mx-2"></i>
-                  Oscuro
-                </button>
-              </li>
-              <li>
-                <button type="button" class="dropdown-item d-flex align-items-center active" data-bs-theme-value="auto"
-                  data-bs-icon-value="circle-half" aria-pressed="true">
-                  <i class="bi bi-circle-half mx-2"></i>
-                  Auto
-                </button>
-              </li>
-            </ul>
-            </li>
-           </ul>
-          </div>
-          <!-- fin Cambiar Tema -->
-          <!-- dropdown -->
-          <div id="navbarNavDropdown">
-            <ul class="navbar-nav ms-auto me-3">
-              <!-- Dropdown Item Start -->
-              <li class="nav-item dropdown">
-                <a class="nav-link dropdown-toggle fw-semibold" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                  <?= htmlspecialchars($nombre) ?>
-                </a>
-                <ul class="dropdown-menu dropdown-menu-end">
-                  <li><a class="dropdown-item" href="#">Configurar</a></li>
-                  <li><a class="dropdown-item" href="#">Ver Perfil</a></li>
-                  <li><hr class="dropdown-divider"></li>
-                  <li><a class="dropdown-item" href="../../modules/auth/logout.php">Cerrar Sesion</a></li>
-                </ul>
-              </li>
-            </ul>
-          </div>
-          <!-- fin dropdown -->
+        <div class="profile-header">
+            <button class="profile-close" onclick="closeProfile()">×</button>
+            <div class="profile-avatar-wrap" id="modal-avatar-display">
+                <?= htmlspecialchars($avatar) ?>
+            </div>
+            <div class="profile-name"><?= htmlspecialchars($nombre) ?></div>
+            <div class="profile-role"><?= htmlspecialchars($cargo_actual) ?></div>
         </div>
-      </div>
-    </nav>
-    <!-- end navbar -->
 
-    <div class="container-fluid" id="wrapper">
-    <div class="p-4 flex-grow-1">
+        <div class="profile-tabs">
+            <button class="profile-tab active" onclick="switchTab('info', this)">Mi perfil</button>
+            <button class="profile-tab" onclick="switchTab('avatar', this)">Avatar</button>
+            <button class="profile-tab" onclick="switchTab('config', this)">Configuración</button>
+        </div>
+
+        <div class="profile-body">
+
+            <!-- TAB: Info -->
+            <div id="tab-info">
+                <div class="info-row">
+                    <label>Nombre completo</label>
+                    <div class="val"><?= htmlspecialchars($nombre) ?></div>
+                </div>
+                <div class="info-row">
+                    <label>Cargo actual</label>
+                    <div class="val"><?= htmlspecialchars($cargo_actual) ?></div>
+                </div>
+                <div class="info-row">
+                    <label>Correo electrónico</label>
+                    <div class="val"><?= htmlspecialchars($emp_info['email'] ?? '—') ?></div>
+                </div>
+                <div class="info-row">
+                    <label>Teléfono</label>
+                    <div class="val"><?= htmlspecialchars($emp_info['telefono'] ?? '—') ?></div>
+                </div>
+                <div class="info-row">
+                    <label>Roles en el sistema</label>
+                    <div class="val">
+                        <?php foreach ($roles as $r): ?>
+                            <span style="display:inline-block;background:#EBF5FB;color:#2980B9;font-size:11px;font-weight:700;padding:3px 9px;border-radius:99px;margin:2px;">
+                                <?= htmlspecialchars($r) ?>
+                            </span>
+                        <?php endforeach; ?>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB: Avatar -->
+            <div id="tab-avatar" style="display:none;">
+                <p style="font-size:13px;color:#95A5A6;margin-bottom:14px;">
+                    Elige tu avatar de perfil:
+                </p>
+                <div class="avatar-grid">
+                    <?php
+                    $avatars = [
+                        ['emoji' => '🏗️', 'label' => 'Constructor'],
+                        ['emoji' => '🏢', 'label' => 'Arquitecto'],
+                        ['emoji' => '⚙️', 'label' => 'Ingeniero'],
+                        ['emoji' => '📐', 'label' => 'Diseñador'],
+                        ['emoji' => '🪖', 'label' => 'Jefe de Obra'],
+                        ['emoji' => '📊', 'label' => 'Director'],
+                    ];
+                    foreach ($avatars as $av):
+                        $sel = ($av['emoji'] === $avatar) ? 'selected' : '';
+                    ?>
+                    <div class="avatar-option <?= $sel ?>"
+                         onclick="selectAvatar('<?= $av['emoji'] ?>', this)">
+                        <span class="av-emoji"><?= $av['emoji'] ?></span>
+                        <div class="av-label"><?= $av['label'] ?></div>
+                    </div>
+                    <?php endforeach; ?>
+                </div>
+
+                <form method="POST" action="../../modules/auth/save_avatar.php"
+                      id="avatar-form" style="margin-top:16px;">
+                    <input type="hidden" name="avatar" id="avatar-input"
+                           value="<?= htmlspecialchars($avatar) ?>">
+                    <button type="submit" class="btn btn-primary w-100">
+                        Guardar avatar
+                    </button>
+                </form>
+            </div>
+
+            <!-- TAB: Configuración -->
+            <div id="tab-config" style="display:none;">
+                <div class="config-row">
+                    <span>Notificaciones en sistema</span>
+                    <button class="toggle-sw on" onclick="this.classList.toggle('on')">
+                        <div class="toggle-knob"></div>
+                    </button>
+                </div>
+                <div class="config-row">
+                    <span>Notificaciones por correo</span>
+                    <button class="toggle-sw on" onclick="this.classList.toggle('on')">
+                        <div class="toggle-knob"></div>
+                    </button>
+                </div>
+                <div class="config-row">
+                    <span>Mostrar stock bajo en dashboard</span>
+                    <button class="toggle-sw" onclick="this.classList.toggle('on')">
+                        <div class="toggle-knob"></div>
+                    </button>
+                </div>
+                <div style="margin-top:18px;">
+                    <a href="../../modules/auth/logout.php"
+                       style="display:flex;align-items:center;gap:8px;color:#E74C3C;font-size:13.5px;font-weight:600;text-decoration:none;padding:10px 14px;border-radius:10px;border:1.5px solid #FDECEA;background:#FDECEA22;transition:background 0.15s;"
+                       onmouseover="this.style.background='#FDECEA'"
+                       onmouseout="this.style.background='#FDECEA22'">
+                        <i class="bi bi-box-arrow-right"></i> Cerrar sesión
+                    </a>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     OVERLAY MÓVIL
+══════════════════════════════════════ -->
+<div id="sb-overlay" onclick="toggleSidebar()"></div>
+
+<!-- ══════════════════════════════════════
+     LAYOUT PRINCIPAL
+══════════════════════════════════════ -->
+<div id="app-wrapper">
+
+    <!-- SIDEBAR -->
+    <aside id="sidebar">
+        <!-- Logo -->
+        <div class="sb-logo">
+            <div class="sb-logo-icon">V</div>
+            <div class="sb-logo-text">
+                <strong>Vértice</strong>
+                <span>CONSTRUCTORA</span>
+            </div>
+        </div>
+
+        <!-- Mini perfil -->
+        <div class="sb-user" onclick="openProfile()">
+            <div class="sb-avatar" id="sb-avatar-display">
+                <?= htmlspecialchars($avatar) ?>
+            </div>
+            <div>
+                <div class="sb-user-name">
+                    <?= htmlspecialchars(explode(' ', $nombre)[0]) ?>
+                </div>
+                <div class="sb-user-role">
+                    <?= htmlspecialchars($cargo_actual) ?>
+                </div>
+            </div>
+        </div>
+
+        <!-- Navegación -->
+        <nav class="sb-nav">
+            <?php require 'menu.php'; ?>
+        </nav>
+
+        <!-- Footer -->
+        <div class="sb-footer">
+            <a href="../../modules/auth/logout.php">
+                <i class="bi bi-box-arrow-right"></i> Cerrar sesión
+            </a>
+        </div>
+    </aside>
+
+    <!-- MAIN -->
+    <div id="main-content">
+
+        <!-- TOPBAR -->
+        <header id="topbar">
+            <button class="topbar-toggle" onclick="toggleSidebar()" title="Menú">
+                <i class="bi bi-list"></i>
+            </button>
+
+            <span class="topbar-brand">Vértice</span>
+
+            <div class="topbar-search">
+                <i class="bi bi-search" style="font-size:14px;"></i>
+                Buscar proyectos, materiales…
+            </div>
+
+            <div class="topbar-right">
+                <!-- Tema -->
+                <div class="dropdown">
+                    <button class="topbar-icon-btn dropdown-toggle"
+                            data-bs-toggle="dropdown"
+                            title="Cambiar tema"
+                            style="font-size:14px;">
+                        <i class="bi bi-palette" id="theme-icon-active"></i>
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end shadow-sm">
+                        <?php
+                        $themes = ['bootstrap','cerulean','cosmo','flatly',
+                                   'journal','litera','lumen','pulse',
+                                   'sandstone','simplex','spacelab','united','zephyr'];
+                        foreach ($themes as $t):
+                        ?>
+                        <li>
+                            <a class="dropdown-item theme-option d-flex align-items-center gap-2"
+                               data-theme="<?= $t ?>" href="#">
+                                <span class="theme-check">✓</span>
+                                <?= ucfirst($t) ?>
+                            </a>
+                        </li>
+                        <?php endforeach; ?>
+                    </ul>
+                </div>
+
+                <!-- Modo claro/oscuro -->
+                <div class="dropdown">
+                    <button class="topbar-icon-btn dropdown-toggle"
+                            data-bs-toggle="dropdown"
+                            id="bd-theme"
+                            title="Modo de color">
+                        <i class="bi bi-circle-half"></i>
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end shadow-sm">
+                        <li>
+                            <button class="dropdown-item d-flex align-items-center gap-2"
+                                    data-bs-theme-value="light">
+                                <i class="bi bi-sun-fill"></i> Claro
+                            </button>
+                        </li>
+                        <li>
+                            <button class="dropdown-item d-flex align-items-center gap-2"
+                                    data-bs-theme-value="dark">
+                                <i class="bi bi-moon-stars-fill"></i> Oscuro
+                            </button>
+                        </li>
+                        <li>
+                            <button class="dropdown-item d-flex align-items-center gap-2 active"
+                                    data-bs-theme-value="auto">
+                                <i class="bi bi-circle-half"></i> Auto
+                            </button>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Notificaciones -->
+                <button class="topbar-icon-btn" title="Notificaciones">
+                    <i class="bi bi-bell"></i>
+                    <span class="notif-dot"></span>
+                </button>
+
+                <!-- Usuario -->
+                <button class="topbar-user" onclick="openProfile()">
+                    <div class="topbar-user-avatar" id="topbar-avatar-display">
+                        <?= htmlspecialchars($avatar) ?>
+                    </div>
+                    <div>
+                        <div class="topbar-user-name">
+                            <?= htmlspecialchars(explode(' ', $nombre)[0]) ?>
+                        </div>
+                        <div class="topbar-user-role">
+                            <?= htmlspecialchars($cargo_actual) ?>
+                        </div>
+                    </div>
+                </button>
+            </div>
+        </header>
+
+        <!-- Contenido de la página -->
+        <div id="page-content">

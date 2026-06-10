@@ -6,7 +6,7 @@ require_once '../../config/database.php';
 require_once '../../utils/permisos.php';
 
 requierePermiso('gestionar_materiales');
-registrarAccion('Vio lista de materiales');
+registrarAccion(LOG_VER_MATERIALES);
 
 $pdo  = conectar();
 
@@ -32,7 +32,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
               VALUES (?, ?, ?, ?, ?)
           ");
           $stmt->execute([$id_tipo, $id_unidad, $nombre, $descripcion, $precio]);
-          registrarAccion("Creó material: $nombre");
+          registrarAccion(LOG_CREAR_MATERIAL . ' — "' . $nombre . '"');
           $exito = 'Material creado correctamente';
       } else {
           $error = 'Completa todos los campos obligatorios';
@@ -50,7 +50,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             WHERE id_material = ?
         ");
         $stmt2->execute([$nombre, $descripcion, $precio, $id_tipo, $id_unidad, $id]);
-        registrarAccion("Editó material ID: $id");
+        registrarAccion(LOG_EDITAR_MATERIAL . ' — ID:' . $id);
         $exito = 'Material actualizado correctamente';
 
      } else {

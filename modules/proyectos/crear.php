@@ -32,7 +32,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         ");
         $stmt->execute([$id_tipo_proyecto, $id_contrato, $nombre, $descripcion, $ubicacion, $fecha_inicio, $fecha_fin, $estado]);
         $id_nuevo = $pdo->lastInsertId();
-        registrarAccion("Creó proyecto: $nombre (ID: $id_nuevo)");
+        registrarAccion(LOG_CREAR_PROYECTO . ' — "' . $nombre . '" (ID: ' . $id_nuevo . ')');
         $exito = 'Proyecto creado correctamente';
     } else {
         $error = 'Completa todos los campos obligatorios';

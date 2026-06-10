@@ -8,6 +8,7 @@ require_once '../../utils/permisos.php';
 
 $pdo = conectar();
 $permisos = $_SESSION['permisos'];
+registrarAccion(LOG_VER_REPORTES);
 // Total proyectos por estado
 $proyectos_estado = $pdo->query("
     SELECT estado, COUNT(*) as total

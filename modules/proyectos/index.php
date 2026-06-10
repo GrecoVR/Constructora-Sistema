@@ -7,7 +7,7 @@ require_once '../../utils/permisos.php';
 require_once '../../utils/fecha.php';
 
 requierePermiso('ver_proyectos');
-registrarAccion('Vio lista de proyectos');
+registrarAccion(LOG_VER_PROYECTOS);
 
 $pdo      = conectar();
 

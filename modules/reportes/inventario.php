@@ -6,7 +6,7 @@ require_once '../../config/database.php';
 require_once '../../utils/permisos.php';
 
 requierePermiso('ver_inventarios');
-registrarAccion('Vio reporte inventario');
+registrarAccion(LOG_VER_INVENTARIO);
 
 $pdo = conectar();
 $permisos = $_SESSION['permisos'];

@@ -8,7 +8,7 @@ require_once '../../utils/fecha.php';
 require_once '../../triggers/TriggerManager.php';
 
 requierePermiso('ver_cotizaciones');
-registrarAccion('Vio cotizaciones');
+registrarAccion(LOG_VER_COTIZACIONES);
 
 $pdo   = conectar();
 
@@ -38,7 +38,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['cambiar_estado'])) {
             ]);
         }
 
-        registrarAccion("Cambi estado cotizacion ID: $id_cotizacion a $nuevo_estado");
+        registrarAccion(LOG_CAMBIAR_ESTADO_COTIZ . ' — cotización ID:' . $id_cotizacion . ' a ' . $nuevo_estado);
         $exito = 'Estado actualizado correctamente';
     } else {
         $error = 'Datos incorrectos';

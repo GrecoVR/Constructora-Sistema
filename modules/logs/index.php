@@ -9,6 +9,7 @@ require_once '../../utils/permisos.php';
 require_once '../../triggers/TriggerManager.php';
 
 requierePermiso('registrar_movimientos');
+registrarAccion(LOG_VER_LOGS);
 
 $pdo   = conectar();
 

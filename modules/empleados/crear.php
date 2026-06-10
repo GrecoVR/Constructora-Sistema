@@ -36,7 +36,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             ");
             $stmt2->execute([$nombre, $ci, $direccion, $telefono, $email, $estado]);
             $id_nuevo = $pdo->lastInsertId();
-            registrarAccion("Creó empleado: $nombre (ID: $id_nuevo)");
+            registrarAccion(LOG_CREAR_EMPLEADO . ' — ' . $nombre . ' CI:' . $ci . ' (ID:' . $id_nuevo . ')');
             $exito = 'Empleado creado correctamente';
         }
     } else {

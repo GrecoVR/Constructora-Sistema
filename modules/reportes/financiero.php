@@ -6,7 +6,7 @@ require_once '../../config/database.php';
 require_once '../../utils/permisos.php';
 
 requierePermiso('ver_reportes_financieros');
-registrarAccion('Vio reporte financiero');
+registrarAccion(LOG_VER_REPORTES_FINANCIEROS);
 
 $pdo = conectar();
 $permisos = $_SESSION['permisos'];

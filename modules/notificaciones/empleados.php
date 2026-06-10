@@ -6,7 +6,7 @@ require_once '../../config/database.php';
 require_once '../../utils/permisos.php';
 
 requierePermiso('ver_dashboard');
-registrarAccion('Vio notificaciones de empleados');
+registrarAccion(LOG_VER_NOTIFICACIONES_EMPLEADOS);
 
 $pdo   = conectar();
 $permisos = $_SESSION['permisos'];
@@ -32,7 +32,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             foreach ($empleados_activos as $emp) {
                 $stmt->execute([$emp['id_empleado'], $titulo, $contenido]);
             }
-            registrarAccion("Envió notificación masiva a todos los empleados");
+            registrarAccion(LOG_ENVIAR_NOTIF_EMP . ' — "' . $titulo . '"' . ($todos ? ' (masiva a todos)' : ' empleado ID:' . $id_empleado));
             $exito = 'Notificación enviada a todos los empleados';
 
         } elseif ($id_empleado) {
@@ -41,7 +41,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 VALUES (?, ?, ?)
             ");
             $stmt->execute([$id_empleado, $titulo, $contenido]);
-            registrarAccion("Envió notificación al empleado ID: $id_empleado");
+            registrarAccion(LOG_ENVIAR_NOTIF_EMP . ' — "' . $titulo . '"' . ($todos ? ' (masiva a todos)' : ' empleado ID:' . $id_empleado));
             $exito = 'Notificación enviada correctamente';
         } else {
             $error = 'Selecciona un empleado o marca enviar a todos';

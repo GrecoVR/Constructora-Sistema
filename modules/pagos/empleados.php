@@ -37,7 +37,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['registrar_pago'])) {
             ]);
         }
 
-        registrarAccion("Registró pago empleado ID: $id_empleado por Bs $monto");
+        registrarAccion(LOG_REG_PAGO_EMPLEADO . ' — empleado ID:' . $id_empleado . ' Bs ' . number_format($monto, 2));
         $exito = 'Pago registrado correctamente';
     } else {
         $error = 'Completa todos los campos';
@@ -69,7 +69,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['registrar_ajuste'])) 
             'monto'            => $monto_real
         ]);
 
-        registrarAccion("Registró ajuste en pago ID: $id_pago_empleado");
+        registrarAccion(LOG_REG_AJUSTE_PAGO . ' — pago ID:' . $id_pago_empleado . ' ' . $tipo_ajuste . ' Bs ' . number_format(abs($monto_real), 2));
         $exito = 'Ajuste registrado correctamente';
     } else {
         $error = 'Completa todos los campos del ajuste';

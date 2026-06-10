@@ -51,7 +51,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     }
 
-    registrarAccion("Actualizó roles del usuario ID: $id");
+    registrarAccion(LOG_CAMBIAR_ROLES . ' — usuario ID:' . $id . ' roles: ' . implode(', ', $roles_seleccionados));
     $exito = 'Roles actualizados correctamente';
 }
 

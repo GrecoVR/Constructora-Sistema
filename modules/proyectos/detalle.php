@@ -32,7 +32,7 @@ $proyecto = $stmt->fetch();
 
 if (!$proyecto) { header('Location: index.php'); exit; }
 
-registrarAccion("Vio detalle proyecto ID: $id");
+registrarAccion(LOG_VER_DETALLE_PROY . ' — proyecto ID:' . $id);
 
 // Etapas
 $etapas = $pdo->prepare("

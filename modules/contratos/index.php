@@ -7,7 +7,7 @@ require_once '../../utils/permisos.php';
 require_once '../../utils/fecha.php';
 
 requierePermiso('ver_contratos');
-registrarAccion('Vio lista de contratos');
+registrarAccion(LOG_VER_CONTRATOS);
 
 $pdo = conectar();
 

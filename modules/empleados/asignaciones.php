@@ -59,7 +59,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['nueva_asignacion'])) 
                 'id_cargo'    => $id_cargo
             ]);
 
-            registrarAccion("Asignó empleado ID: $id al proyecto ID: $id_proyecto");
+            registrarAccion(LOG_ASIGNAR_EMPLEADO . ' — empleado ID:' . $id . ' → proyecto ID:' . $id_proyecto);
             $exito = 'Asignación registrada correctamente';
         }
     } else {
@@ -76,7 +76,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['finalizar_asignacion'
             UPDATE asignaciones SET fecha_fin = CURDATE() WHERE id_asignacion = ?
         ");
         $stmt4->execute([$id_asignacion]);
-        registrarAccion("Finalizó asignación ID: $id_asignacion");
+        registrarAccion(LOG_FINALIZAR_ASIG . ' — asignación ID:' . $id_asignacion);
         $exito = 'Asignación finalizada';
     }
 }

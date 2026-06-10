@@ -33,7 +33,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 VALUES (?, ?, ?, ?)
             ");
             $stmt2->execute([$id_empleado, $usuario, $hash, $estado]);
-            registrarAccion("Creó usuario: $usuario");
+           registrarAccion(LOG_CREAR_USUARIO . ' — usuario: ' . $usuario);
             $exito = 'Usuario creado correctamente';
         }
     } else {

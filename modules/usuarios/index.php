@@ -6,7 +6,7 @@ require_once '../../config/database.php';
 require_once '../../utils/permisos.php';
 
 requierePermiso('configurar_sistema');
-registrarAccion('Vio lista de usuarios');
+registrarAccion(LOG_VER_USUARIOS);
 
 $pdo  = conectar();
 

@@ -9,6 +9,7 @@ require_once '../../utils/permisos.php';
 require_once '../../triggers/TriggerManager.php';
 
 requierePermiso('registrar_movimientos');
+registrarAccion(LOG_VER_MOVIMIENTOS);
 
 $pdo   = conectar();
 
@@ -73,7 +74,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $manager->ejecutar('inventario.ajuste', $datos);
             }
 
-            registrarAccion("Registró movimiento $tipo_movimiento — material ID: $id_material");
+            registrarAccion(LOG_REGISTRAR_MOVIMIENTO . ' — ' . $tipo_movimiento . ' — material ID:' . $id_material);
             $exito = 'Movimiento registrado correctamente';
         }
     } else {
@@ -127,7 +128,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $manager->ejecutar('inventario.ajuste', $datos);
             }
 
-            registrarAccion("Actualizo movimiento $tipo_movimiento — material ID: $id_material");
+            registrarAccion(LOG_ACTUALIZAR_MOVIMIENTO . ' — ' . $tipo_movimiento . ' — material ID:' . $id_material);
             $exito = 'Movimiento Actualizado correctamente';
         }
     } else {

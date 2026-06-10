@@ -7,8 +7,7 @@ require_once '../../utils/permisos.php';
 require_once '../../utils/fecha.php';
 
 requierePermiso('registrar_asistencia');
-registrarAccion('Vio módulo de asistencia');
-
+registrarAccion(LOG_REG_ASISTENCIA . ' — asignación ID:' . $id_asignacion . ' fecha:' . $fecha);
 $pdo   = conectar();
 
 $permisos = $_SESSION['permisos'];

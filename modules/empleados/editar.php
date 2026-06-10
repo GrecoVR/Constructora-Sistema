@@ -47,7 +47,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 WHERE id_empleado=?
             ");
             $stmt3->execute([$nombre, $ci, $direccion, $telefono, $email, $estado, $id]);
-            registrarAccion("Editó empleado ID: $id");
+            registrarAccion(LOG_EDITAR_EMPLEADO . ' — ID:' . $id);
             $exito = 'Empleado actualizado correctamente';
             $stmt->execute([$id]);
             $empleado = $stmt->fetch();
