@@ -26,17 +26,13 @@ $proyectos = $proyectos->fetchAll();
 <head>
     <meta charset="UTF-8">
     <title>Mis Proyectos — Portal Cliente</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" 
-        integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
 </head>
 <body>
-<div class="container-fluid bg-light">
- <div class="wrapper d-flex flex-column align-items-center vh-100">
-  <div class="p-4">
 
-<h2 class="mb-4 fw-semibodl">📁 Mis Proyectos</h2>
+<h2>📁 Mis Proyectos</h2>
 <a href="index.php">← Volver al portal</a>
+
+<br><br>
 
 <?php foreach ($proyectos as $p): ?>
     <?php
@@ -53,7 +49,7 @@ $proyectos = $proyectos->fetchAll();
         : 0;
     ?>
 
-    <fieldset class="my-5">
+    <fieldset style="margin-bottom:20px">
         <legend><strong><?= htmlspecialchars($p['nombre']) ?></strong></legend>
 
         <p><?= htmlspecialchars($p['descripcion']) ?></p>
@@ -67,7 +63,7 @@ $proyectos = $proyectos->fetchAll();
         </p>
 
         <h4>Etapas:</h4>
-        <table class="table table-striped table-bordered">
+        <table border="1" cellpadding="6">
             <tr>
                 <th>Etapa</th>
                 <th>Estado</th>
@@ -93,8 +89,6 @@ $proyectos = $proyectos->fetchAll();
 <?php if (empty($proyectos)): ?>
     <p>No tienes proyectos registrados.</p>
 <?php endif; ?>
-</div>
-</div>
-</div>
+
 </body>
 </html>

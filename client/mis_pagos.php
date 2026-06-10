@@ -33,19 +33,15 @@ $total_pendiente = array_sum(array_column(
 <head>
     <meta charset="UTF-8">
     <title>Mis Pagos — Portal Cliente</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" 
-        integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
 </head>
 <body>
-<div class="container-fluid bg-light">
- <div class="wrapper d-flex flex-column align-items-center vh-100">
-  <div class="p-4">
 
-<h2 class="mb-4 fw-semibold">💳 Mis Pagos</h2>
+<h2>💳 Mis Pagos</h2>
 <a href="index.php">← Volver al portal</a>
 
-<table class="table table-striped table-bordered my-4">
+<br><br>
+
+<table border="1" cellpadding="8">
     <tr>
         <td><strong>Total pagado</strong></td>
         <td style="color:green">Bs <?= number_format($total_pagado, 2) ?></td>
@@ -56,7 +52,9 @@ $total_pendiente = array_sum(array_column(
     </tr>
 </table>
 
-<table class="table table-striped table-bordered mb-4">
+<br>
+
+<table border="1" cellpadding="8">
     <tr>
         <th>Proyecto</th>
         <th>Fecha</th>
@@ -80,8 +78,5 @@ $total_pendiente = array_sum(array_column(
 <?php if (empty($pagos)): ?>
     <p>No tienes pagos registrados.</p>
 <?php endif; ?>
-</div>
-</div>
-</div>
 </body>
 </html>

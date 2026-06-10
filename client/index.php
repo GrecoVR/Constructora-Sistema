@@ -53,30 +53,25 @@ $notificaciones = $notificaciones->fetchAll();
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Portal Cliente</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" 
-        integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+    <title>Portal Cliente — Vértice</title>
 </head>
 <body>
-  <div class="container-fluid bg-light">
-  <div class="wrapper d-flex flex-column align-items-center vh-100">
-  <div class="p-4">
-  <h2 class="mb-4 fw-semibold">🏗️ Bienvenido, <?= htmlspecialchars($_SESSION['nombre_cliente']) ?></h2>
-  <a class="btn btn-primary me-2" href="mis_proyectos.php">Mis proyectos</a>
 
-<a class="btn btn-secondary me-2" href="mis_pagos.php">Mis pagos</a>
-
-<a class="btn btn-success me-2" href="mis_notificaciones.php">Mis notificaciones</a>
-
-<a class="btn btn-light" href="../modules/auth/logout_cliente.php">Cerrar sesión</a>
+<h2>🏗️ Bienvenido, <?= htmlspecialchars($_SESSION['nombre_cliente']) ?></h2>
+<a href="mis_proyectos.php">Mis proyectos</a>
+&nbsp;|&nbsp;
+<a href="mis_pagos.php">Mis pagos</a>
+&nbsp;|&nbsp;
+<a href="mis_notificaciones.php">Mis notificaciones</a>
+&nbsp;|&nbsp;
+<a href="../modules/auth/logout_cliente.php">Cerrar sesión</a>
 
 <hr>
 
 <!-- PROYECTOS -->
-<h3 class="mb-4">📁 Mis proyectos</h3>
+<h3>📁 Mis proyectos</h3>
 <?php if ($proyectos): ?>
-    <table class="table table-striped table-bordered">
+    <table border="1" cellpadding="8">
         <tr>
             <th>Proyecto</th>
             <th>Tipo</th>
@@ -104,9 +99,9 @@ $notificaciones = $notificaciones->fetchAll();
 <hr>
 
 <!-- PAGOS PENDIENTES -->
-<h3 class="mb-4">💳 Pagos pendientes</h3>
+<h3>💳 Pagos pendientes</h3>
 <?php if ($pagos_pendientes): ?>
-    <table class="table table-striped table-bordered">
+    <table border="1" cellpadding="8">
         <tr>
             <th>Monto (Bs)</th>
             <th>Fecha esperada</th>
@@ -125,10 +120,10 @@ $notificaciones = $notificaciones->fetchAll();
 <hr>
 
 <!-- NOTIFICACIONES RECIENTES -->
-<h3 class="mb-4">🔔 Últimas notificaciones</h3>
+<h3>🔔 Últimas notificaciones</h3>
 <?php if ($notificaciones): ?>
     <?php foreach ($notificaciones as $n): ?>
-        <div class="border p-4 mb-4">
+        <div style="border:1px solid #ccc; padding:10px; margin-bottom:10px">
             <strong><?= htmlspecialchars($n['titulo']) ?></strong><br>
             <?= htmlspecialchars($n['contenido']) ?>
         </div>
@@ -137,8 +132,6 @@ $notificaciones = $notificaciones->fetchAll();
 <?php else: ?>
     <p>No tienes notificaciones.</p>
 <?php endif; ?>
-</div>
-</div>
-</div>
+
 </body>
 </html>

@@ -78,38 +78,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Recuperar Cuenta — Empleado</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" 
-        integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+    <title>Recuperar Cuenta — Vértice</title>
 </head>
 <body>
-  <div class="container-fluid bg-light">
-  <div class="wrapper d-flex flex-column align-items-center vh-100">
-  <div class="p-4">
 
-<h2 class="my-4 fw-semibold">🔑 Recuperar Cuenta — Empleados</h2>
+<h2>🔑 Recuperar Cuenta — Empleados</h2>
 <a href="login.php">← Volver al login</a>
 
+<br><br>
+
 <?php if ($error): ?>
-    <div class="toast fade show align-items-center text-bg-danger border-0 w-100" role="alert" aria-live="assertive" aria-atomic="true">
-      <div class="d-flex">
-        <div class="toast-body">
-          <?= $error ?>
-        </div>
-        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
-      </div>
-    </div>
+    <p style="color:red"><?= $error ?></p>
 <?php endif; ?>
 
 <?php if (!$user): ?>
     <!-- PASO 1 — buscar usuario -->
     <form method="POST">
-        <div class="my-3">
-        <label class="form-label" for="usuario">Ingresa tu nombre de usuario:</label>
-        <input class="form-control" type="text" id="usuario" name="usuario" required>
-        </div>
-        <button class="btn btn-success" type="submit" name="buscar">Buscar</button>
+        <label>Ingresa tu nombre de usuario:</label><br>
+        <input type="text" name="usuario" required><br><br>
+        <button type="submit" name="buscar">Buscar</button>
     </form>
 
 <?php else: ?>
@@ -120,7 +107,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <?php endif; ?>
 
     <h3>Tus datos de acceso</h3>
-    <table class="table table-striped table-bordered">
+    <table border="1" cellpadding="10">
         <tr>
             <td><strong>Nombre</strong></td>
             <td><?= htmlspecialchars($user['nombre']) ?></td>
@@ -141,27 +128,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     <br>
 
-    <h3 class="mb-4">Cambiar contraseña</h3>
+    <h3>Cambiar contraseña</h3>
     <form method="POST">
         <input type="hidden" name="id_usuario" value="<?= $user['id_usuario_sistema'] ?>">
-        <div class="mb-3">
-        <label class="form-label" for="nueva_contrasena">Nueva contraseña:</label>
-        <input class="form-control" type="text" id="nueva_contrasena" name="nueva_contrasena" required>
-        </div>
-        <div class="mb-3">        
-        <label class="form-label" for="confirmar_contrasena">Confirmar contraseña:</label>
-        <input class="form-control" type="text" id="confirmar_contrasena" name="confirmar_contrasena" required>
-        </div>
-        <button class="btn btn-primary" type="submit" name="cambiar">Cambiar contraseña</button>
+
+        <label>Nueva contraseña:</label><br>
+        <input type="text" name="nueva_contrasena" required><br><br>
+
+        <label>Confirmar contraseña:</label><br>
+        <input type="text" name="confirmar_contrasena" required><br><br>
+
+        <button type="submit" name="cambiar">Cambiar contraseña</button>
     </form>
 
     <br>
-    
     <a href="login.php"><button>Ir al login</button></a>
 
 <?php endif; ?>
-</div>
-</div>
-</div>
+
 </body>
 </html>

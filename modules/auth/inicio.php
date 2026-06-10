@@ -16,23 +16,25 @@ if (isset($_SESSION['tipo_sesion'])) {
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Empresa Constructora</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
-<body>
-     <div class="container-fluid bg-light">
-        <div class="wrapper d-flex flex-column align-items-center justify-content-center vh-100">
+<body style="text-align:center; margin-top:100px">
 
-        <h2 class="mb-4 fw-semibold">🏗️ Empresa Constructora</h2>
-        
-        <h5 class="mb-4 fw-semibold">Selecciona cómo deseas ingresar al sistema</h5>
+    <h1>🏗️ Empresa Constructora</h1>
+    <p>Selecciona cómo deseas ingresar al sistema</p>
 
-        <div>
-        <a class="btn btn-primary btn-lg me-4" href="login.php">👷 Soy Empleado</a>
-        <a class="btn btn-secondary btn-lg" href="login_cliente.php">🏢 Soy Cliente</a>
-        </div>
-      </div>
-   </div>
+    <br><br>
+
+    <a href="login.php">
+        <button style="padding:20px 40px; font-size:18px; margin:10px">
+            👷 Soy Empleado
+        </button>
+    </a>
+    <a href="login_cliente.php">
+        <button style="padding:20px 40px; font-size:18px; margin:10px">
+            🏢 Soy Cliente
+        </button>
+    </a>
+
 </body>
 </html>
