@@ -2,7 +2,7 @@
 
         <!-- Footer -->
         <footer id="page-footer">
-            <span>Vértice Constructora &copy; <?= date('Y') ?></span>
+            <span>Empresa Constructora &copy; <?= date('Y') ?></span>
             <span>Taller de Base de Datos — Gestión 2026</span>
         </footer>
 

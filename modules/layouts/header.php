@@ -40,7 +40,7 @@ $cargo_actual = $emp_info['cargo'] ?? ($roles[0] ?? 'Sin cargo');
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Vértice Constructora</title>
+    <title>Empresa Constructora</title>
     <!-- ANTI-PARPADEO: aplicar tema guardado ANTES de renderizar -->
 <script>
 (function () {
@@ -892,9 +892,9 @@ $cargo_actual = $emp_info['cargo'] ?? ($roles[0] ?? 'Sin cargo');
 ══════════════════════════════════════ -->
 <?php if ($show_splash): ?>
 <div id="splash-screen">
-    <div class="splash-logo">V</div>
-    <div class="splash-title">VÉRTICE</div>
-    <div class="splash-sub">Constructora</div>
+    <div class="splash-logo">EC</div>
+    <div class="splash-title">Empresa Constructora</div>
+    <div class="splash-sub">Sistema de Gestión</div>
     <div class="splash-bar"></div>
 </div>
 <?php endif; ?>

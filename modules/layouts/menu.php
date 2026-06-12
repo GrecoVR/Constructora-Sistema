@@ -6,8 +6,8 @@ $current_dir = basename(dirname($_SERVER['PHP_SELF']));
 <a href="../../modules/dashboard/dashboard.php"
    class="sb-item <?= $current_dir === 'dashboard' ? 'active' : '' ?>"
    data-tooltip="Dashboard">
-    <i class="bi bi-speedometer2"></i>
-    <span class="sb-item-label">Dashboard</span>
+    <i class="bi bi-house"></i>
+    <span class="sb-item-label">Inicio</span>
 </a>
 
 <?php if (in_array('ver_proyectos', $permisos)): ?>
