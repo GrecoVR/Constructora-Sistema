@@ -240,12 +240,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <div class="login-card">
 
     <div style="text-align:center;">
-        <div class="portal-badge">Portal Cliente</div>
+        <div class="portal-badge"> Cliente</div>
     </div>
 
-    <div class="brand-logo">V</div>
-    <div class="brand-name">Vértice</div>
-    <div class="brand-sub">Constructora</div>
+    <div class="brand-logo">EC</div>
+    <div class="brand-name">Empresa Constructora</div>
+    <div class="brand-sub">Sistema de Usuarios</div>
 
     <?php if ($error): ?>
     <div class="error-box">
@@ -270,7 +270,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                    type="password"
                    id="contrasena"
                    name="contrasena"
-                   placeholder="••••••••"
+                   placeholder="Contraseña"
                    required>
         </div>
         <button class="btn-login" type="submit">
@@ -286,11 +286,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <a href="register_cliente.php" class="link-small">
         ¿Primera vez? Crear cuenta
     </a>
-
-    <div class="switch-link">
-        ¿Eres empleado?
-        <a href="login.php">Ingresa aquí</a>
-    </div>
+    
+    <a href="inicio.php" class="link-small" style="margin-top:6px">← Volver al inicio</a>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>

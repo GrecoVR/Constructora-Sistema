@@ -191,44 +191,46 @@ function selectAvatar(emoji, el) {
     });
 })();
 // ══════════════════════════════════════════
-// DATATABLES GLOBAL — buscador + orden en
-// todas las tablas que no tengan ya DT
+// DATATABLES GLOBAL — buscador tiempo real
 // ══════════════════════════════════════════
 $(document).ready(function () {
-    // Idioma compartido
     const dtLang = {
         url: 'https://cdn.datatables.net/plug-ins/1.11.5/i18n/es-ES.json'
     };
 
-    // Tablas que ya fueron inicializadas manualmente en su propia página
-    // las saltamos para no duplicar
-    const yaIniciadas = $.fn.dataTable.tables({ visible: true, api: true })
-        .nodes()
-        .map(function(n){ return n.id; });
-
     $('table.table').each(function () {
-        const id  = this.id;
-        const $t  = $(this);
-
-        // Si ya tiene DataTable, saltar
-        if (id && $.fn.dataTable.isDataTable('#' + id)) return;
-        // Si tiene clase "no-dt", saltar
+        const $t = $(this);
         if ($t.hasClass('no-dt')) return;
-        // Si tiene menos de 2 filas de body, saltar (no vale la pena)
-        if ($t.find('tbody tr').length < 2) return;
+        if ($.fn.dataTable.isDataTable($t)) return;
+        if ($t.find('tbody tr').length < 1) return;
 
         $t.DataTable({
-            language:  { url: dtLang.url },
-            order:     [],
-            pageLength: 15,
-            lengthMenu: [10, 15, 25, 50, 100],
-            // Layout más limpio
-            dom: '<"d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2"lf>rtip',
+            language:    { url: dtLang.url },
+            order:       [],
+            pageLength:  15,
+            lengthMenu:  [10, 15, 25, 50, 100],
+            searchDelay: 0,        // ← tiempo real sin delay
+            dom: '<"dt-toolbar d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2"lf>rtip',
             columnDefs: [
-                // La última columna (Acciones) nunca es ordenable
                 { orderable: false, targets: -1 }
             ],
             responsive: true,
+            initComplete: function() {
+                // Buscador con ícono y estilo custom
+                const wrapper = $(this.api().table().container());
+                const input   = wrapper.find('input[type="search"]');
+                input.addClass('dt-search-custom');
+                input.attr('placeholder', 'Buscar...');
+
+                // Forzar búsqueda en cada keystroke sin delay
+                input.off('keyup.DT search.DT input.DT paste.DT cut.DT');
+                input.on('input', function() {
+                    $(this).closest('.dataTables_wrapper')
+                           .find('table').DataTable()
+                           .search(this.value)
+                           .draw();
+                });
+            }
         });
     });
 });

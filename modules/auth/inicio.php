@@ -15,7 +15,7 @@ if (isset($_SESSION['tipo_sesion'])) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Vértice Constructora</title>
+    <title>Empresa Constructora</title>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -165,8 +165,8 @@ if (isset($_SESSION['tipo_sesion'])) {
 <body>
 
 <div class="hero">
-    <div class="logo-box">V</div>
-    <div class="hero-title">VÉRTICE</div>
+    <div class="logo-box">EC</div>
+    <div class="hero-title">EMPRESA CONSTRUCTORA</div>
     <div class="hero-sub">Sistema de Gestión de Obras</div>
 
     <div class="cards-row">
@@ -197,11 +197,11 @@ if (isset($_SESSION['tipo_sesion'])) {
             </div>
             <div class="card-title">Clientes</div>
             <div class="card-desc">
-                Portal de seguimiento de proyectos y pagos
+                Seguimiento de proyectos y pagos
             </div>
             <span class="card-btn"
                   style="background:#27AE60;color:#fff;">
-                Portal cliente
+                Ingresar
             </span>
         </a>
 

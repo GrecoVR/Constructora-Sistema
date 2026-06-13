@@ -68,7 +68,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Vértice Constructora — Iniciar sesión</title>
+    <title>Empresa Constructora — Iniciar sesión</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -230,7 +230,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <div class="login-card">
     <div class="brand-logo">EC</div>
     <div class="brand-name">Empresa Constructora</div>
-    <div class="brand-sub">Sistema de Gestión</div>
+    <div class="brand-sub">Sistema de Empleados</div>
 
     <?php if ($error): ?>
         <div class="error-box">
@@ -270,6 +270,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <div class="divider"></div>
 
     <a href="recuperar.php" class="link-small">¿Olvidaste tu contraseña?</a>
+    <a href="register.php" class="link-small">¿Primera vez? Crear cuenta</a>
     <a href="inicio.php" class="link-small" style="margin-top:6px">← Volver al inicio</a>
 </div>
 
