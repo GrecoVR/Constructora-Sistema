@@ -18,7 +18,7 @@
     <!-- End container -->
   </main>
   <!-- end main -->
-  <div class="offcanvas offcanvas-start" data-bs-scroll="true" tabindex="-1" id="offcanvasExample"
+  <div class="offcanvas offcanvas-start" data-bs-theme="dark" data-bs-scroll="true" tabindex="-1" id="offcanvasExample"
     aria-labelledby="offcanvasExampleLabel">
     <div class="offcanvas-header">
       <h5 class="offcanvas-title" id="offcanvasExampleLabel">Menu</h5>
@@ -111,8 +111,71 @@
     $("#main").toggleClass('col-lg-10 col-md-9 col-sm-8');
   }
 
-  // Color mode toggler
+  //barra de busqueda
+  const searchInput = document.getElementById('search');
+const suggestions = document.getElementById('suggestions');
 
+function debounce(fn, delay) {
+    let timeout;
+
+    return function (...args) {
+        clearTimeout(timeout);
+        timeout = setTimeout(() => fn.apply(this, args), delay);
+    };
+}
+
+searchInput.addEventListener('keyup', debounce(function () {
+
+    let keyword = this.value.trim();
+
+    if (keyword.length < 2) {
+        suggestions.style.display = 'none';
+        return;
+    }
+
+    fetch('../../modules/layouts/autocomplete.php?q=' + encodeURIComponent(keyword))
+        .then(response => response.json())
+        .then(data => {
+
+            suggestions.innerHTML = '';
+
+            if (data.length > 0) {
+
+                data.forEach(item => {
+
+                    let link = document.createElement('a');
+
+                    link.href = item.enlace;
+                    link.className = 'autocomplete-item list-group-item list-group-item-action text-start link-body-emphasis';
+                    link.textContent = item.nombre;
+
+                    suggestions.appendChild(link);
+                });
+
+                suggestions.style.display = 'block';
+
+            } else {
+                suggestions.style.display = 'none';
+            }
+        })
+        .catch(error => {
+            console.error('Autocomplete error:', error);
+            suggestions.style.display = 'none';
+        });
+
+}, 300));
+
+  document.addEventListener('click', function(e){
+
+      if(!searchInput.contains(e.target) &&
+         !suggestions.contains(e.target))
+      {
+          suggestions.style.display = 'none';
+      }
+
+  });
+
+  // Color mode toggler
   (() => {
     'use strict'
 
