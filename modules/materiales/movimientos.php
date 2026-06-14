@@ -164,9 +164,9 @@ $historial = $historial_stmt->fetchAll();
 
 <?php require_once '../../modules/layouts/header.php'; ?>
 
-<nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
+<nav aria-label="breadcrumb">
   <ol class="breadcrumb">
-    <li class="breadcrumb-item"><a href="../../modules/dashboard/dashboard.php">Dashboard</a></li>
+    <li class="breadcrumb-item"><a class="text-decoration-none" href="../../modules/dashboard/dashboard.php">Dashboard</a></li>
     <li class="breadcrumb-item active" aria-current="page">Movimientos</li>
   </ol>
 </nav>
@@ -199,7 +199,7 @@ $historial = $historial_stmt->fetchAll();
   <div class="card shadow mt-2">
       <div class="card-header d-flex justify-content-between align-items-center">
           <h4 class="mb-0">Últimos 20 movimientos</h4>
-          <button type="button" class="btn btn-primary" id="addRowBtn"><i class="bi bi-plus-lg"></i> Registrar Movimiento</button>
+          <button type="button" class="btn btn-success" id="addRowBtn"><i class="bi bi-plus-lg"></i> Registrar Movimiento</button>
       </div>
       <div class="card-body table-responsive">
       <table id="tabla-datos" class="table table-striped table-bordered">
@@ -224,9 +224,9 @@ $historial = $historial_stmt->fetchAll();
                   <td><?= htmlspecialchars($h['proyecto'] ?? '') ?></td>
                   <td><?= $h['cantidad'] ?></td>
                   <td>
-                  <button class="btn btn-sm btn-outline-secondary border-0 fw-semibold editBtn" data-id="<?= $h['id_movimiento'] ?>">
+                  <button type="button" class="btn btn-sm btn-outline-primary border-0 fw-semibold editBtn" data-id="<?= $h['id_movimiento'] ?>">
                      <i class="bi bi-pencil-square"></i> Editar</button>
-                  <button class="btn btn-sm btn-outline-danger border-0 fw-semibold deleteBtn" data-id="<?= $h['id_movimiento'] ?>">
+                  <button type="button" class="btn btn-sm btn-outline-danger border-0 fw-semibold deleteBtn" data-id="<?= $h['id_movimiento'] ?>">
                      <i class="bi bi-trash-fill"></i> Eliminar</button>
                   </td>
               </tr>
