@@ -191,6 +191,7 @@ function selectAvatar(emoji, el) {
     });
 })();
 // ══════════════════════════════════════════
+// ══════════════════════════════════════════
 // DATATABLES GLOBAL — buscador tiempo real
 // ══════════════════════════════════════════
 $(document).ready(function () {
@@ -204,34 +205,30 @@ $(document).ready(function () {
         if ($.fn.dataTable.isDataTable($t)) return;
         if ($t.find('tbody tr').length < 1) return;
 
-        $t.DataTable({
+        const dt = $t.DataTable({
             language:    { url: dtLang.url },
             order:       [],
             pageLength:  15,
             lengthMenu:  [10, 15, 25, 50, 100],
-            searchDelay: 0,        // ← tiempo real sin delay
+            searchDelay: 0,
             dom: '<"dt-toolbar d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2"lf>rtip',
-            columnDefs: [
-                { orderable: false, targets: -1 }
-            ],
+            columnDefs: [{ orderable: false, targets: -1 }],
             responsive: true,
-            initComplete: function() {
-                // Buscador con ícono y estilo custom
-                const wrapper = $(this.api().table().container());
-                const input   = wrapper.find('input[type="search"]');
-                input.addClass('dt-search-custom');
-                input.attr('placeholder', 'Buscar...');
-
-                // Forzar búsqueda en cada keystroke sin delay
-                input.off('keyup.DT search.DT input.DT paste.DT cut.DT');
-                input.on('input', function() {
-                    $(this).closest('.dataTables_wrapper')
-                           .find('table').DataTable()
-                           .search(this.value)
-                           .draw();
-                });
-            }
         });
+
+        // Reemplazar input generado por DataTables
+        // con uno propio que busca en tiempo real
+        const wrapper  = $t.closest('.dataTables_wrapper');
+        const $dtInput = wrapper.find('input[type="search"]');
+
+        // Estilizar
+        $dtInput.addClass('dt-search-custom');
+        $dtInput.attr('placeholder', 'Buscar...');
+
+        // ── CLAVE: escuchar 'input' nativo, no eventos de DT ──
+        $dtInput[0].addEventListener('input', function () {
+            dt.search(this.value, true, true).draw(false);
+        }, true);  // useCapture = true para interceptar antes que DT
     });
 });
 </script>

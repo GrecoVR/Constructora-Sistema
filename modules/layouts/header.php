@@ -579,7 +579,110 @@ $cargo_actual = $emp_info['cargo'] ?? ($roles[0] ?? 'Sin cargo');
             background: #E74C3C;
             border: 2px solid #fff;
         }
+        /* ══════════════════════════════════════════
+        DROPDOWN NOTIFICACIONES
+        ══════════════════════════════════════════ */
+        .notif-dropdown {
+            width: 340px;
+            max-width: 95vw;
+            padding: 0;
+            border-radius: 14px !important;
+            border: 1px solid #E8ECF0 !important;
+            box-shadow: 0 12px 40px rgba(0,0,0,0.13) !important;
+            overflow: hidden;
+            animation: slideDown 0.22s cubic-bezier(.22,1,.36,1) both;
+        }
+        @keyframes slideDown {
+            from { transform: translateY(-8px); opacity: 0; }
+            to   { transform: translateY(0);    opacity: 1; }
+        }
+        .notif-drop-head {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 14px 18px 12px;
+            border-bottom: 1px solid #F0F2F4;
+        }
+        .notif-drop-title {
+            font-size: 13.5px;
+            font-weight: 700;
+            color: #1C1C1E;
+        }
+        .notif-drop-badge {
+            font-size: 10.5px;
+            font-weight: 700;
+            background: #3498DB;
+            color: #fff;
+            padding: 2px 8px;
+            border-radius: 99px;
+        }
+        .notif-drop-item {
+            display: flex;
+            gap: 12px;
+            padding: 12px 18px;
+            border-bottom: 1px solid #F6F7F9;
+            align-items: flex-start;
+            transition: background 0.15s;
+            cursor: default;
+        }
+        .notif-drop-item:last-of-type { border-bottom: none; }
+        .notif-drop-item:hover        { background: #F8F9FA; }
+        .notif-drop-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #3498DB;
+            margin-top: 5px;
+            flex-shrink: 0;
+            box-shadow: 0 0 0 3px rgba(52,152,219,.18);
+        }
+        .notif-drop-body  { flex: 1; min-width: 0; }
+        .notif-drop-item-title {
+            font-size: 13px;
+            font-weight: 700;
+            color: #1C1C1E;
+            margin-bottom: 2px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .notif-drop-item-text {
+            font-size: 12px;
+            color: #7F8C8D;
+            line-height: 1.45;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+        .notif-drop-empty {
+            padding: 28px;
+            text-align: center;
+            color: #95A5A6;
+            font-size: 13px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+        }
+        .notif-drop-empty i {
+            font-size: 26px;
+            opacity: 0.4;
+        }
+        .notif-drop-footer {
+            padding: 11px 18px;
+            border-top: 1px solid #F0F2F4;
+            text-align: center;
+        }
+        .notif-drop-footer a {
+            font-size: 12.5px;
+            font-weight: 600;
+            color: #3498DB;
+            text-decoration: none;
+        }
+        .notif-drop-footer a:hover { text-decoration: underline; }
 
+        
         .topbar-user {
             display: flex;
             align-items: center;
@@ -1183,7 +1286,272 @@ $cargo_actual = $emp_info['cargo'] ?? ($roles[0] ?? 'Sin cargo');
         [data-bs-theme="dark"] .avatar-option .av-label {
             color: #6b7a8d !important;
         }
+        /* Modo oscuro dropdown */
+        [data-bs-theme="dark"] .notif-dropdown {
+            background: #161b27 !important;
+            border-color: #1e2535 !important;
+        }
+        [data-bs-theme="dark"] .notif-drop-head {
+            border-bottom-color: #1e2535 !important;
+        }
+        [data-bs-theme="dark"] .notif-drop-title {
+            color: #e2e8f0 !important;
+        }
+        [data-bs-theme="dark"] .notif-drop-item {
+            border-bottom-color: #1a1f2e !important;
+        }
+        [data-bs-theme="dark"] .notif-drop-item:hover {
+            background: #1a1f2e !important;
+        }
+        [data-bs-theme="dark"] .notif-drop-item-title {
+            color: #e2e8f0 !important;
+        }
+        [data-bs-theme="dark"] .notif-drop-item-text {
+            color: #6b7a8d !important;
+        }
+        [data-bs-theme="dark"] .notif-drop-footer {
+            border-top-color: #1e2535 !important;
+        }
+               /* ══════════════════════════════════════════
+        MODO OSCURO — FIX LETRAS GENERALES
+        ══════════════════════════════════════════ */
 
+        /* Texto base del body */
+        [data-bs-theme="dark"] body {
+            color: #cbd5e1 !important;
+        }
+
+        /* Títulos y headings */
+        [data-bs-theme="dark"] h1,
+        [data-bs-theme="dark"] h2,
+        [data-bs-theme="dark"] h3,
+        [data-bs-theme="dark"] h4,
+        [data-bs-theme="dark"] h5,
+        [data-bs-theme="dark"] h6 {
+            color: #e2e8f0 !important;
+        }
+
+        /* Párrafos y spans genéricos */
+        [data-bs-theme="dark"] p,
+        [data-bs-theme="dark"] span:not(.badge):not(.est-badge):not(.pago-estado):not(.log-badge):not(.notif-drop-badge) {
+            color: inherit;
+        }
+
+        /* Colores fijos que no se invierten solos */
+        [data-bs-theme="dark"] [style*="color:#1C1C1E"],
+        [data-bs-theme="dark"] [style*="color: #1C1C1E"] {
+            color: #e2e8f0 !important;
+        }
+        [data-bs-theme="dark"] [style*="color:#2C3E50"],
+        [data-bs-theme="dark"] [style*="color: #2C3E50"] {
+            color: #cbd5e1 !important;
+        }
+        [data-bs-theme="dark"] [style*="color:#34495E"],
+        [data-bs-theme="dark"] [style*="color: #34495E"] {
+            color: #a0aec0 !important;
+        }
+        [data-bs-theme="dark"] [style*="color:#7F8C8D"],
+        [data-bs-theme="dark"] [style*="color: #7F8C8D"] {
+            color: #718096 !important;
+        }
+
+        /* Breadcrumbs */
+        [data-bs-theme="dark"] .breadcrumb-item,
+        [data-bs-theme="dark"] .breadcrumb-item a {
+            color: #6b7a8d !important;
+        }
+        [data-bs-theme="dark"] .breadcrumb-item.active {
+            color: #4a5568 !important;
+        }
+        [data-bs-theme="dark"] .breadcrumb-item + .breadcrumb-item::before {
+            color: #4a5568 !important;
+        }
+
+        /* Encabezados de página */
+        [data-bs-theme="dark"] #page-content h1,
+        [data-bs-theme="dark"] #cl-page-content h1 {
+            color: #e2e8f0 !important;
+        }
+        [data-bs-theme="dark"] #page-content p,
+        [data-bs-theme="dark"] #cl-page-content p {
+            color: #6b7a8d !important;
+        }
+
+        /* Labels de formularios */
+        [data-bs-theme="dark"] label,
+        [data-bs-theme="dark"] .form-label {
+            color: #8899aa !important;
+        }
+
+        /* Texto dentro de cards */
+        [data-bs-theme="dark"] .card-body,
+        [data-bs-theme="dark"] .card-body p,
+        [data-bs-theme="dark"] .card-body span,
+        [data-bs-theme="dark"] .card-body div {
+            color: #cbd5e1;
+        }
+
+        /* KPI values en dashboard */
+        [data-bs-theme="dark"] .kpi-label { color: #6b7a8d !important; }
+        [data-bs-theme="dark"] .kpi-value { color: #e2e8f0 !important; }
+        [data-bs-theme="dark"] .kpi-delta { color: #8899aa !important; }
+        [data-bs-theme="dark"] .kpi-lbl   { color: #6b7a8d !important; }
+        [data-bs-theme="dark"] .kpi-val   { color: #e2e8f0 !important; }
+        [data-bs-theme="dark"] .kpi-sub   { color: #6b7a8d !important; }
+
+        /* Section cards texto */
+        [data-bs-theme="dark"] .section-card,
+        [data-bs-theme="dark"] .cl-card,
+        [data-bs-theme="dark"] .proy-card,
+        [data-bs-theme="dark"] .detalle-panel {
+            color: #cbd5e1 !important;
+        }
+
+        /* Tabla celdas td */
+        [data-bs-theme="dark"] .table td {
+            color: #cbd5e1 !important;
+            border-color: #1e2535 !important;
+        }
+        [data-bs-theme="dark"] .table th {
+            color: #6b7a8d !important;
+        }
+
+        /* Inputs y selects */
+        [data-bs-theme="dark"] input[type="text"],
+        [data-bs-theme="dark"] input[type="email"],
+        [data-bs-theme="dark"] input[type="password"],
+        [data-bs-theme="dark"] input[type="date"],
+        [data-bs-theme="dark"] input[type="search"],
+        [data-bs-theme="dark"] select,
+        [data-bs-theme="dark"] textarea {
+            color: #e2e8f0 !important;
+            background-color: #1e2535 !important;
+            border-color: #2d3a4a !important;
+        }
+        [data-bs-theme="dark"] input::placeholder,
+        [data-bs-theme="dark"] textarea::placeholder {
+            color: #4a5568 !important;
+        }
+
+        /* Dropdown genérico de Bootstrap */
+        [data-bs-theme="dark"] .dropdown-menu {
+            background: #161b27 !important;
+            border-color: #1e2535 !important;
+            color: #cbd5e1 !important;
+        }
+        [data-bs-theme="dark"] .dropdown-item {
+            color: #cbd5e1 !important;
+        }
+        [data-bs-theme="dark"] .dropdown-item:hover,
+        [data-bs-theme="dark"] .dropdown-item:focus {
+            background: #1e2535 !important;
+            color: #e2e8f0 !important;
+        }
+        [data-bs-theme="dark"] .dropdown-divider {
+            border-color: #1e2535 !important;
+        }
+        [data-bs-theme="dark"] .dropdown-header {
+            color: #6b7a8d !important;
+        }
+
+        /* Alert boxes */
+        [data-bs-theme="dark"] .alert {
+            background: #1e2535 !important;
+            border-color: #2d3a4a !important;
+            color: #cbd5e1 !important;
+        }
+
+        /* Badges de Bootstrap */
+        [data-bs-theme="dark"] .badge.bg-secondary {
+            background: #2d3a4a !important;
+            color: #cbd5e1 !important;
+        }
+
+        /* Modal de Bootstrap */
+        [data-bs-theme="dark"] .modal-backdrop {
+            background: rgba(0,0,0,0.6) !important;
+        }
+
+        /* Paginación DataTables */
+        [data-bs-theme="dark"] .pagination .page-link {
+            background: #1e2535 !important;
+            border-color: #2d3a4a !important;
+            color: #8899aa !important;
+        }
+        [data-bs-theme="dark"] .pagination .page-link:hover {
+            background: #2d3a4a !important;
+            color: #e2e8f0 !important;
+        }
+        [data-bs-theme="dark"] .pagination .page-item.active .page-link {
+            background: #3498DB !important;
+            border-color: #3498DB !important;
+            color: #fff !important;
+        }
+        [data-bs-theme="dark"] .pagination .page-item.disabled .page-link {
+            background: #161b27 !important;
+            color: #4a5568 !important;
+        }
+
+        /* DataTables info y length */
+        [data-bs-theme="dark"] .dataTables_info {
+            color: #6b7a8d !important;
+        }
+        [data-bs-theme="dark"] .dataTables_length label,
+        [data-bs-theme="dark"] .dataTables_filter label {
+            color: #8899aa !important;
+        }
+
+        /* Texto específico del dashboard con estilos inline */
+        [data-bs-theme="dark"] .section-head h5 { color: #e2e8f0 !important; }
+        [data-bs-theme="dark"] .row-item         { color: #cbd5e1 !important; }
+
+        /* Fix cliente: cards de proyectos */
+        [data-bs-theme="dark"] .proy-card:hover  { color: #e2e8f0 !important; }
+
+        /* Scrollbar modo oscuro */
+        [data-bs-theme="dark"] ::-webkit-scrollbar-track {
+            background: #0f1117;
+        }
+        [data-bs-theme="dark"] ::-webkit-scrollbar-thumb {
+            background: #2d3a4a;
+        }
+        [data-bs-theme="dark"] ::-webkit-scrollbar-thumb:hover {
+            background: #3d4a5a;
+        }
+
+        /* Fix botones outline en modo oscuro */
+        [data-bs-theme="dark"] .btn-outline-primary {
+            color: #3498DB !important;
+            border-color: #3498DB !important;
+        }
+        [data-bs-theme="dark"] .btn-outline-primary:hover {
+            background: #3498DB !important;
+            color: #fff !important;
+        }
+        [data-bs-theme="dark"] .btn-outline-secondary {
+            color: #8899aa !important;
+            border-color: #2d3a4a !important;
+        }
+        [data-bs-theme="dark"] .btn-outline-secondary:hover {
+            background: #1e2535 !important;
+            color: #e2e8f0 !important;
+        }
+        [data-bs-theme="dark"] .btn-outline-danger {
+            color: #E74C3C !important;
+            border-color: #E74C3C !important;
+        }
+
+        /* Fix filter-card de logs */
+        [data-bs-theme="dark"] .filter-card {
+            background: #161b27 !important;
+            color: #cbd5e1 !important;
+        }
+
+        /* Fix footer page */
+        [data-bs-theme="dark"] #page-footer,
+        [data-bs-theme="dark"] #cl-footer {
+            color: #4a5568 !important;
+        }
         /* Input de búsqueda custom */
         .dt-search-custom {
             border: 1.5px solid #E8ECF0;
@@ -1459,10 +1827,83 @@ $cargo_actual = $emp_info['cargo'] ?? ($roles[0] ?? 'Sin cargo');
                 </div>
 
                 <!-- Notificaciones -->
-                <button class="topbar-icon-btn" title="Notificaciones">
-                    <i class="bi bi-bell"></i>
-                    <span class="notif-dot"></span>
-                </button>
+                <div class="dropdown">
+                    <button class="topbar-icon-btn dropdown-toggle"
+                            id="notif-btn"
+                            data-bs-toggle="dropdown"
+                            data-bs-auto-close="outside"
+                            aria-expanded="false"
+                            title="Notificaciones">
+                        <i class="bi bi-bell"></i>
+                        <?php
+                        $stmt_notif = $pdo->prepare("
+                            SELECT COUNT(*) FROM notificaciones_empleados
+                            WHERE id_empleado = (
+                                SELECT id_empleado FROM usuarios_sistema
+                                WHERE id_usuario_sistema = ?
+                            )
+                        ");
+                        $stmt_notif->execute([$_SESSION['id_usuario']]);
+                        $cant_notif = $stmt_notif->fetchColumn();
+                        ?>
+                        <?php if ($cant_notif > 0): ?>
+                        <span class="notif-dot"></span>
+                        <?php endif; ?>
+                    </button>
+
+                    <div class="dropdown-menu dropdown-menu-end notif-dropdown shadow"
+                        aria-labelledby="notif-btn">
+
+                        <div class="notif-drop-head">
+                            <span class="notif-drop-title">Notificaciones</span>
+                            <?php if ($cant_notif > 0): ?>
+                            <span class="notif-drop-badge"><?= $cant_notif ?></span>
+                            <?php endif; ?>
+                        </div>
+
+                        <?php
+                        $stmt_nlist = $pdo->prepare("
+                            SELECT titulo, contenido
+                            FROM notificaciones_empleados
+                            WHERE id_empleado = (
+                                SELECT id_empleado FROM usuarios_sistema
+                                WHERE id_usuario_sistema = ?
+                            )
+                            ORDER BY id_notificacion_empleado DESC
+                            LIMIT 6
+                        ");
+                        $stmt_nlist->execute([$_SESSION['id_usuario']]);
+                        $nlist = $stmt_nlist->fetchAll();
+                        ?>
+
+                        <?php if ($nlist): ?>
+                            <?php foreach ($nlist as $nn): ?>
+                            <div class="notif-drop-item">
+                                <div class="notif-drop-dot"></div>
+                                <div class="notif-drop-body">
+                                    <div class="notif-drop-item-title">
+                                        <?= htmlspecialchars($nn['titulo']) ?>
+                                    </div>
+                                    <div class="notif-drop-item-text">
+                                        <?= htmlspecialchars($nn['contenido']) ?>
+                                    </div>
+                                </div>
+                            </div>
+                            <?php endforeach; ?>
+                        <?php else: ?>
+                            <div class="notif-drop-empty">
+                                <i class="bi bi-bell-slash"></i>
+                                Sin notificaciones nuevas
+                            </div>
+                        <?php endif; ?>
+
+                        <div class="notif-drop-footer">
+                            <a href="../../modules/notificaciones/index.php">
+                                Ver todas las notificaciones →
+                            </a>
+                        </div>
+                    </div>
+                </div>
 
                 <!-- Usuario -->
                 <button class="topbar-user" onclick="openProfile()">
