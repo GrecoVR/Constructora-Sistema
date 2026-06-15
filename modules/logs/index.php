@@ -17,25 +17,24 @@ $permisos = $_SESSION['permisos'];
 
 <?php require_once '../../modules/layouts/header.php'; ?>
 
-<nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
+<nav aria-label="breadcrumb">
   <ol class="breadcrumb">
-    <li class="breadcrumb-item"><a href="../../modules/dashboard/dashboard.php">Dashboard</a></li>
+    <li class="breadcrumb-item"><a class="text-decoration-none" href="../../modules/dashboard/dashboard.php">Dashboard</a></li>
     <li class="breadcrumb-item active" aria-current="page">Registros Sistema</li>
   </ol>
 </nav>
 
+<h4 class="mb-4 fw-semibold">🔍 Últimas 20 acciones en el sistema</h4>
+
 <div class="card shadow mb-4">
-      <div class="card-header">
-          <h4 class="mb-0">🔍 Últimas acciones en el sistema</h4>
-      </div>
       <div class="card-body table-responsive">
       <?php
       $stmt = $pdo->query("
-          SELECT rs.accion, rs.fecha_hora, us.nombre_usuario
+          SELECT rs.accion, rs.descripcion,rs.fecha_hora, us.nombre_usuario
           FROM registros_sistema rs
           JOIN usuarios_sistema us ON us.id_usuario_sistema = rs.id_usuario_sistema
           ORDER BY rs.fecha_hora DESC
-          LIMIT 10
+          LIMIT 20
       ");
       $logs = $stmt->fetchAll();
       ?>
@@ -44,6 +43,7 @@ $permisos = $_SESSION['permisos'];
           <tr>
               <th>Usuario</th>
               <th>Acción</th>
+              <th>Descripcion</th>
               <th>Fecha y hora</th>
           </tr>
         </thead>
@@ -52,6 +52,7 @@ $permisos = $_SESSION['permisos'];
               <tr>
                   <td><?= htmlspecialchars($log['nombre_usuario']) ?></td>
                   <td><?= htmlspecialchars($log['accion']) ?></td>
+                  <td><?= htmlspecialchars($log['descripcion']) ?></td>
                   <td><?= $log['fecha_hora'] ?></td>
               </tr>
           <?php endforeach; ?>

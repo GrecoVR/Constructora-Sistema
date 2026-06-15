@@ -23,8 +23,12 @@ $id_material_filtro = intval($_GET['id_material'] ?? 0);
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   if (isset($_POST['action'])) {
     $id_material     = intval($_POST['id_material'] ?? 0);
-    $id_almacen      = intval($_POST['id_almacen'] ?? 0);
+    $id_almacen      = intval($_POST['id_almacen'] ?? 0);    
+    if (isset($_POST['id_proyecto'])) {
     $id_proyecto      = intval($_POST['id_proyecto'] ?? 0);
+    } else {
+    $id_proyecto = NULL;
+    }
     $tipo_movimiento = $_POST['tipo_movimiento'] ?? '';
     $cantidad        = floatval($_POST['cantidad'] ?? 0);
     $fecha           = $_POST['fecha'] ?? date('Y-m-d');
@@ -360,8 +364,8 @@ $(document).ready(function() {
     if (this.value === 'salida') {
       select_proyecto.enable(); // Enables the element
     } else {
+      select_proyecto.setValue(''); // Optional: resets the selection
       select_proyecto.disable();  // Disables the element
-      select_proyecto.setValue("");    // Optional: resets the selection
     }
     });
     
@@ -406,6 +410,7 @@ $(document).ready(function() {
         if (select_tipo.value === 'salida') {
         select_proyecto.enable(); // Enables the element
         } else {
+        select_proyecto.setValue('');
         select_proyecto.disable();  // Disables the element
         }
         
