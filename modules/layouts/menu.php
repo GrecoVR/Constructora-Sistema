@@ -17,6 +17,13 @@
           </a>
         </li>
         <?php endif; ?>
+        <?php if (in_array('registrar_movimientos', $permisos)): ?>
+        <li>
+          <a href="../../modules/materiales/movimientos.php" class="nav-link link-body-emphasis">
+            <i class="bi bi-file-bar-graph me-2"></i> Inventarios
+          </a>
+        </li>
+        <?php endif; ?>
         <?php if (in_array('gestionar_materiales', $permisos)): ?>
         <li>
           <a href="../../modules/materiales/index.php" class="nav-link link-body-emphasis">
@@ -43,7 +50,7 @@
         <?php if (in_array('ver_proyectos', $permisos)): ?>
         <li>
           <a href="../../modules/proyectos/index.php" class="nav-link link-body-emphasis">
-            <i class="bi bi-building-fill-gear me-2"></i> Proyectos
+            <i class="bi bi-building-gear me-2"></i> Proyectos
           </a>
         </li>
         <?php endif; ?>

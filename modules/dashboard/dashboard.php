@@ -23,201 +23,92 @@ $nombre   = $_SESSION['nombre'];
    <strong>Permisos:</strong> <span><?= implode(', ', $permisos) ?></span>
   </div>
 
-<div class="row">
 
-  <?php if (in_array('ver_reportes_financieros', $permisos)): ?>
-    <div class="col-md-4 col-sm-6 col-xs-12">
-      <div class="card shadow mb-4">
-        <div class="card-header">
-            <h4 class="mb-0">💰 Resumen financiero</h4>
-        </div>
-        <div class="card-body">
-        <?php
+<div class="row">
+<?php if (in_array('ver_reportes_financieros', $permisos)): ?>
+<?php
         $stmt = $pdo->query("
             SELECT
                 (SELECT COALESCE(SUM(monto),0) FROM pagos_cliente WHERE estado = 'completado') as ingresos,
                 (SELECT COALESCE(SUM(monto),0) FROM pagos_empleados WHERE estado = 'completado') as gastos_personal,
+                (SELECT COUNT(*) FROM pagos_cliente WHERE estado='pendiente') AS pagos_pend_count,
                 (SELECT COALESCE(SUM(monto),0) FROM gastos) as gastos_obra
         ");
         $fin = $stmt->fetch();
-        ?>
-        <p>✅ Ingresos recibidos: <strong>Bs <?= number_format($fin['ingresos'], 2) ?></strong></p>
-        <p>👷 Pagos personal: <strong>Bs <?= number_format($fin['gastos_personal'], 2) ?></strong></p>
-        <p>🏗️ Gastos de obra: <strong>Bs <?= number_format($fin['gastos_obra'], 2) ?></strong></p>
+ ?>
+<!-- Metric Cards -->
+  <div class="row mb-4">
+      <div class="col-xl-3 col-md-6 mb-4">
+          <div class="card border-left-primary shadow h-100 py-2">
+              <div class="card-body">
+                  <div class="row no-gutters align-items-center">
+                      <div class="col mr-2">
+                          <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">Ingresos Recibidos</div>
+                          <div class="h5 mb-0 font-weight-bold text-gray-800">Bs <?= number_format($fin['ingresos'], 2) ?></div>
+                      </div>
+                      <div class="col-auto">
+                          <i class="bi bi-currency-dollar fs-2 text-secondary"></i>
+                      </div>
+                  </div>
+              </div>
+          </div>
       </div>
-    </div>
-   </div>
-  <?php endif; ?>
 
-  <?php if (in_array('registrar_movimientos', $permisos)): ?>
-  <div class="col-md-4 col-sm-6 col-xs-12">
-    <div class="card shadow mb-4">
-      <div class="card-header">
-          <h4 class="mb-0">🔄 Movimientos de Inventario</h4>
+      <div class="col-xl-3 col-md-6 mb-4">
+          <div class="card border-left-success shadow h-100 py-2">
+              <div class="card-body">
+                  <div class="row no-gutters align-items-center">
+                      <div class="col mr-2">
+                          <div class="text-xs font-weight-bold text-success text-uppercase mb-1">Pagos Personal</div>
+                          <div class="h5 mb-0 font-weight-bold text-gray-800">Bs <?= number_format($fin['gastos_personal'], 2) ?></div>
+                      </div>
+                      <div class="col-auto">
+                          <i class="bi bi-cash fs-2 text-secondary"></i>
+                      </div>
+                  </div>
+              </div>
+          </div>
       </div>
-      <div class="card-body">
-        <p>Puedes registrar entradas, salidas y ajustes de materiales.</p>
-        <a class="btn btn-primary" href="../materiales/movimientos.php">
-            Registrar movimiento
-        </a>
-      </div>
-    </div>
-  </div>
-  <?php endif; ?>
 
-  <?php if (in_array('registrar_asistencia', $permisos)): ?>
-  <div class="col-md-4 col-sm-6 col-xs-12">
-    <div class="card shadow mb-4">
-      <div class="card-header">
-          <h4 class="mb-0">📋 Asistencia</h4>
+      <div class="col-xl-3 col-md-6 mb-4">
+          <div class="card border-left-info shadow h-100 py-2">
+              <div class="card-body">
+                  <div class="row no-gutters align-items-center">
+                      <div class="col mr-2">
+                          <div class="text-xs font-weight-bold text-info text-uppercase mb-1">Gastos de Obra</div>
+                          <div class="row no-gutters align-items-center">
+                              <div class="col-auto">
+                                  <div class="h5 mb-0 mr-3 font-weight-bold text-gray-800">Bs <?= number_format($fin['gastos_obra'], 2) ?></div>
+                              </div>
+                          </div>
+                      </div>
+                      <div class="col-auto">
+                          <i class="bi bi-clipboard-data fs-2 text-secondary"></i>
+                      </div>
+                  </div>
+              </div>
+          </div>
       </div>
-      <div class="card-body">
-      <p>Registra la asistencia del personal en obra.</p>
-      <a class="btn btn-primary" href="../../modules/empleados/asistencia.php">
-          Registrar asistencia
-      </a>
-      </div>
-    </div>
-  </div>
-  <?php endif; ?>
 
-  <?php if (in_array('gestionar_materiales', $permisos)): ?>
-  <div class="col-md-4 col-sm-6 col-xs-12">
-    <div class="card shadow mb-4">
-      <div class="card-header">
-          <h4 class="mb-0">🧱 Gestión de Materiales</h4>
+      <div class="col-xl-3 col-md-6 mb-4">
+          <div class="card border-left-warning shadow h-100 py-2">
+              <div class="card-body">
+                  <div class="row no-gutters align-items-center">
+                      <div class="col mr-2">
+                          <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">Pagos pendientes</div>
+                          <div class="h5 mb-0 font-weight-bold text-gray-800"><?= $fin['pagos_pend_count'] ?></div>
+                      </div>
+                      <div class="col-auto">
+                          <i class="bi bi-chat-dots fs-2 text-secondary"></i>
+                      </div>
+                  </div>
+              </div>
+          </div>
       </div>
-      <div class="card-body">
-      <p>Administra el catálogo de materiales del sistema.</p>
-      <a class="btn btn-primary" href="../../modules/materiales/index.php">
-          Ver materiales
-      </a>
-      </div>
-    </div>
   </div>
-  <?php endif; ?>
-
-  <?php if (in_array('gestionar_pedidos', $permisos)): ?>
-  <div class="col-md-4 col-sm-6 col-xs-12">
-    <div class="card shadow mb-4">
-      <div class="card-header">
-          <h4 class="mb-0">🛒 Pedidos a Proveedores</h4>
-      </div>
-      <div class="card-body">
-      <p>Crea y gestiona pedidos de materiales.</p>
-      <a class="btn btn-primary" href="../../modules/materiales/pedidos.php">
-          Ver pedidos
-      </a>
-      </div>
-    </div>
-  </div>
-  <?php endif; ?>
-
-  <?php if (in_array('gestionar_contratos', $permisos)): ?>
-  <div class="col-md-4 col-sm-6 col-xs-12">
-    <div class="card shadow mb-4">
-      <div class="card-header">
-          <h4 class="mb-0">📄 Contratos y Cotizaciones</h4>
-      </div>
-      <div class="card-body">
-      <p>Gestiona contratos activos y cotizaciones pendientes.</p>
-      <a class="btn btn-primary" href="../../modules/contratos/index.php">
-         Ver contratos
-      </a>
-      <a class="btn btn-secondary" href="../../modules/contratos/cotizaciones.php">
-          Ver cotizaciones
-      </a>
-      </div>
-    </div>
-  </div>
-  <?php endif; ?>
-
-  <?php if (in_array('gestionar_pagos', $permisos)): ?>
-  <div class="col-md-4 col-sm-6 col-xs-12">
-    <div class="card shadow mb-4">
-      <div class="card-header">
-          <h4 class="mb-0">💳 Pagos</h4>
-      </div>
-      <div class="card-body">
-      <p>Procesa pagos a empleados y proveedores.</p>
-      <a class="btn btn-primary" class="btn btn-primary" href="../../modules/pagos/empleados.php">
-          Pagos empleados
-      </a>
-      <a class="btn btn-primary" href="../../modules/pagos/pedidos.php">
-          Pagos pedidos
-      </a>
-      </div>
-    </div>
-  </div>
-  <?php endif; ?>
-
-  <?php if (in_array('gestionar_empleados', $permisos)): ?>
-  <div class="col-md-4 col-sm-6 col-xs-12">
-    <div class="card shadow mb-4">
-      <div class="card-header">
-          <h4 class="mb-0">👥 Gestión de Empleados</h4>
-      </div>
-      <div class="card-body">
-      <p>Administra el personal de la empresa.</p>
-      <a class="btn btn-primary" href="../../modules/empleados/index.php">
-         Ver empleados
-      </a>
-      <a class="btn btn-secondary" href="../../modules/empleados/crear.php">
-          Nuevo empleado
-      </a>
-      </div>
-    </div>
-  </div>
-  <?php endif; ?>
-
-  <?php if (in_array('gestionar_proveedores', $permisos)): ?>
-  <div class="col-md-4 col-sm-6 col-xs-12">
-    <div class="card shadow mb-4">
-      <div class="card-header">
-          <h4 class="mb-0">🏭 Proveedores</h4>
-      </div>
-      <div class="card-body">
-      <p>Administra el catálogo de proveedores.</p>
-      <a class="btn btn-primary" href="../../modules/proveedores/index.php">
-          Ver proveedores
-      </a>
-      </div>
-    </div>
-  </div>
-  <?php endif; ?>
-
-  <?php if (in_array('crear_proyectos', $permisos)): ?>
-  <div class="col-md-4 col-sm-6 col-xs-12">
-    <div class="card shadow mb-4">
-      <div class="card-header">
-          <h4 class="mb-0">➕ Nuevo Proyecto</h4>
-      </div>
-      <div class="card-body">
-      <p>Crea un nuevo proyecto en el sistema.</p>
-      <a class="btn btn-primary" href="../../modules/proyectos/crear.php">
-          Crear proyecto
-      </a>
-      </div>
-    </div>
-  </div>
-  <?php endif; ?>
-
-  <?php if (in_array('configurar_sistema', $permisos)): ?>
-  <div class="col-md-4 col-sm-6 col-xs-12">
-    <div class="card shadow mb-4">
-      <div class="card-header">
-          <h4 class="mb-0">⚙️ Configuración del Sistema</h4>
-      </div>
-      <div class="card-body">
-      <p>Gestiona usuarios, roles y permisos.</p>
-      <a class="btn btn-primary" href="../../modules/usuarios/index.php">
-          Gestionar usuarios
-      </a>
-      </div>
-    </div>
-  </div>
-  <?php endif; ?>
-  </div> <!-- end row -->
+<?php endif; ?>
+  
+</div> <!-- end row -->
 
 
   <?php if (in_array('ver_proyectos', $permisos)): ?>
@@ -369,44 +260,6 @@ $nombre   = $_SESSION['nombre'];
       </table>
   </div><!-- end card-body -->
   </div><!-- end card -->
-  <?php endif; ?>
-
-  <?php if (in_array('ver_auditoria', $permisos)): ?>
-      <div class="card shadow mb-4">
-      <div class="card-header">
-          <h4 class="mb-0">🔍 Últimas acciones en el sistema</h4>
-      </div>
-      <div class="card-body table-responsive">
-      <?php
-      $stmt = $pdo->query("
-          SELECT rs.accion, rs.fecha_hora, us.nombre_usuario
-          FROM registros_sistema rs
-          JOIN usuarios_sistema us ON us.id_usuario_sistema = rs.id_usuario_sistema
-          ORDER BY rs.fecha_hora DESC
-          LIMIT 10
-      ");
-      $logs = $stmt->fetchAll();
-      ?>
-      <table class="tabla-datos table table-striped table-bordered">
-        <thead>
-          <tr>
-              <th>Usuario</th>
-              <th>Acción</th>
-              <th>Fecha y hora</th>
-          </tr>
-        </thead>
-        <tbody>
-          <?php foreach ($logs as $log): ?>
-              <tr>
-                  <td><?= htmlspecialchars($log['nombre_usuario']) ?></td>
-                  <td><?= htmlspecialchars($log['accion']) ?></td>
-                  <td><?= $log['fecha_hora'] ?></td>
-              </tr>
-          <?php endforeach; ?>
-         </tbody>
-      </table>
-    </div><!-- end card-body -->
-    </div><!-- end card -->
   <?php endif; ?>
 
 <script>
