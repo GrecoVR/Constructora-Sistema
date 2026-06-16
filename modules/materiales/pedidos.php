@@ -18,13 +18,13 @@ $error = '';
 $exito = '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $id_proveedor = intval($_POST['id_proveedor'] ?? 0);
-    $id_almacen   = intval($_POST['id_almacen'] ?? 0);
-    $fecha_pedido = $_POST['fecha_pedido'] ?? date('Y-m-d');
-    $materiales   = $_POST['materiales'] ?? [];
-    $cantidades   = $_POST['cantidades'] ?? [];
-    $precios      = $_POST['precios'] ?? [];
-
+  $id_proveedor = intval($_POST['id_proveedor'] ?? 0);
+  $id_almacen   = intval($_POST['id_almacen'] ?? 0);
+  $fecha_pedido = $_POST['fecha_pedido'] ?? date('Y-m-d');
+  $materiales   = $_POST['materiales'] ?? [];
+  $cantidades   = $_POST['cantidades'] ?? [];
+  $precios      = $_POST['precios'] ?? [];
+  if ($_POST['action'] == 'create') {
     if ($id_proveedor && $id_almacen && !empty($materiales)) {
         // Crea el pedido
         $stmt = $pdo->prepare("
@@ -55,6 +55,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     } else {
         $error = 'Completa todos los campos y agrega al menos un material';
     }
+  }
+  // Eliminar
+   if ($_POST['action'] == 'delete') {
+     $stmt = $pdo->prepare("DELETE FROM pedidos WHERE id_pedido = ?");
+     $result = $stmt->execute([$_POST['id_pedido']]);
+   }  
 }
 
 $proveedores = $pdo->query("SELECT id_proveedor, nombre FROM proveedores ORDER BY nombre ASC")->fetchAll();
@@ -78,9 +84,9 @@ $pedidos = $pdo->query("
 
 <?php require_once '../../modules/layouts/header.php'; ?>
 
-<nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
+<nav aria-label="breadcrumb">
   <ol class="breadcrumb">
-    <li class="breadcrumb-item"><a href="../../modules/dashboard/dashboard.php">Dashboard</a></li>
+    <li class="breadcrumb-item"><a class="text-decoration-none" href="../../modules/dashboard/dashboard.php">Dashboard</a></li>
     <li class="breadcrumb-item active" aria-current="page">Pedidos</li>
   </ol>
 </nav>
@@ -137,10 +143,8 @@ $pedidos = $pdo->query("
             <td><?= $p['estado'] ?></td>
             <td>
             <?php if ($p['estado'] == 'pendiente'): ?>
-            <button class="btn btn-sm btn-outline-secondary border-0 fw-semibold editBtn" data-id="<?= $h['id_pedido'] ?>">
-               <i class="bi bi-pencil-square"></i> Editar</button>
-            <button class="btn btn-sm btn-outline-danger border-0 fw-semibold deleteBtn" data-id="<?= $h['id_pedido'] ?>">
-               <i class="bi bi-trash-fill"></i> Eliminar</button>
+            <button class="btn btn-sm btn-outline-danger border-0 fw-semibold deleteBtn" data-id="<?= $p['id_pedido'] ?>">
+               <i class="bi bi-x-circle"></i> Cancelar</button>
             <?php endif; ?>
             </td>
         </tr>
@@ -230,7 +234,35 @@ var table = $('#tabla-datos').DataTable({
         }
         ]
     });
-
+    //select messajes
+    const select_render = {
+      no_results: function(data, escape) {
+          return '<div class="no-results">No se encontraron resultados</div>';
+      },
+      option_create: function(data, escape) {
+          return '<div class="create">Crear <strong>' + escape(data.input) + '</strong>&hellip;</div>';
+      },
+      max_items: function(data, escape) {
+          return '<div>Límite alcanzado, no se pueden agregar más elementos.</div>';
+      },
+      loading: function(data, escape) {
+          return '<div class="spinner">Cargando...</div>';
+      }      
+    };
+    
+    //selects 
+    const select_proveedor = new TomSelect('#id_proveedor',{
+    allowEmptyOption: true,
+    plugins: ['dropdown_input'],
+    render: select_render
+    });
+    
+    const select_almacen = new TomSelect('#id_almacen',{
+    allowEmptyOption: true,
+    plugins: ['dropdown_input'],
+    render: select_render
+    });
+    
 
   // Use a counter
   let fieldCount = 4;
@@ -256,10 +288,22 @@ var table = $('#tabla-datos').DataTable({
   // Open Modal for Adding row
   $('#addRowBtn').click(function() {
       $('#dataForm')[0].reset();
+      select_proveedor.setValue('');
+      select_almacen.setValue('');
       $('.modal-title').text('Nuevo Pedido');
       $('#action').val('create');
       $('#userModal').modal('show');
   });
+  
+  $(document).on('click', '.deleteBtn', function() {
+        const id = $(this).data('id');
+        $('#id_pedido').val(id);
+        if(confirm("Estas seguro que deseas cancelar este pedido?")) {
+            $('#action').val('delete');
+            $('#dataForm').submit();
+            console.log(id);
+        }
+    });  
 
 </script>
 <?php require_once '../../modules/layouts/footer.php'; ?>

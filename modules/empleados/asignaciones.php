@@ -106,9 +106,9 @@ $cargos = $pdo->query("SELECT id_cargo, nombre FROM cargos ORDER BY nombre ASC")
 
 <?php require_once '../../modules/layouts/header.php'; ?>
 
-<nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
+<nav aria-label="breadcrumb">
   <ol class="breadcrumb">
-    <li class="breadcrumb-item"><a href="index.php"> Empleados</a></li>
+    <li class="breadcrumb-item"><a class="text-decoration-none" href="index.php"> Empleados</a></li>
     <li class="breadcrumb-item active" aria-current="page"> Asignaciones</li>
   </ol>
 </nav>
@@ -166,9 +166,9 @@ $cargos = $pdo->query("SELECT id_cargo, nombre FROM cargos ORDER BY nombre ASC")
                 <?php if (!$a['fecha_fin'] && in_array('gestionar_empleados', $_SESSION['permisos'])): ?>
                     <form method="POST" style="display:inline">
                         <input type="hidden" name="id_asignacion" value="<?= $a['id_asignacion'] ?>">
-                        <button class="btn btn-secondary btn-sm" type="submit" name="finalizar_asignacion"
+                        <button class="btn btn-outline-danger btn-sm border-0 fw-semibold" type="submit" name="finalizar_asignacion"
                                 onclick="return confirm('¿Finalizar esta asignación?')">
-                            Finalizar
+                            <i class="bi bi-x-circle"></i> Finalizar
                         </button>
                     </form>
                 <?php else: ?>
