@@ -332,6 +332,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <i class="bi bi-send me-2"></i>Verificar usuario
             </button>
         </form>
+        <a href="inicio.php" class="link-small" style="margin-top:6px">← Volver al inicio</a>
 
     <?php elseif ($paso === 2): ?>
         <p style="font-size:13.5px;color:#7F8C8D;margin-bottom:20px;text-align:center;">
@@ -390,7 +391,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 Tu contraseña fue cambiada exitosamente.
             </p>
             <a href="login_cliente.php" class="btn-green" style="margin-top:22px;">
-                <i class="bi bi-box-arrow-in-right me-2"></i>Ir al portal
+                <i class="bi bi-box-arrow-in-right me-2"></i>Iniciar sesión
             </a>
         </div>
     <?php endif; ?>
