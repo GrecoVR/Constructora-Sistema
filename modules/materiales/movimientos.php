@@ -23,7 +23,12 @@ $id_material_filtro = intval($_GET['id_material'] ?? 0);
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   if (isset($_POST['action'])) {
     $id_material     = intval($_POST['id_material'] ?? 0);
-    $id_almacen      = intval($_POST['id_almacen'] ?? 0);
+    $id_almacen      = intval($_POST['id_almacen'] ?? 0);    
+    if (isset($_POST['id_proyecto'])) {
+    $id_proyecto      = intval($_POST['id_proyecto'] ?? 0);
+    } else {
+    $id_proyecto = NULL;
+    }
     $tipo_movimiento = $_POST['tipo_movimiento'] ?? '';
     $cantidad        = floatval($_POST['cantidad'] ?? 0);
     $fecha           = $_POST['fecha'] ?? date('Y-m-d');
@@ -52,7 +57,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 (id_material, id_almacen, tipo_movimiento, fecha, cantidad)
                 VALUES (?, ?, ?, ?, ?)
             ");
-            $cantidad_real = $tipo_movimiento === 'salida' ? -$cantidad : $cantidad;
+            $cantidad_real = $tipo_movimiento === 'salida' ? $cantidad : $cantidad;
             $stmt->execute([$id_material, $id_almacen, $tipo_movimiento, $fecha, $cantidad_real]);
 
             // Dispara el trigger correspondiente
@@ -103,11 +108,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             // Actualiza el movimiento
             $stmt = $pdo->prepare("
                 UPDATE movimientos_inventario SET
-                id_material = ?, id_almacen = ?, tipo_movimiento = ? , fecha = ? , cantidad = ?
+                id_material = ?, id_almacen = ?,id_proyecto = ? , tipo_movimiento = ? , fecha = ? , cantidad = ?
                 WHERE id_movimiento = ?
             ");
-            $cantidad_real = $tipo_movimiento === 'salida' ? -$cantidad : $cantidad;
-            $result = $stmt->execute([$id_material, $id_almacen, $tipo_movimiento, $fecha, $cantidad_real, $_POST['id_movimiento']]);
+            $cantidad_real = $tipo_movimiento === 'salida' ? $cantidad : $cantidad;
+            $result = $stmt->execute([$id_material, $id_almacen, $id_proyecto, $tipo_movimiento, $fecha, $cantidad_real, $_POST['id_movimiento']]);
 
             // Dispara el trigger correspondiente
             $manager = new TriggerManager($pdo);
@@ -145,14 +150,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 $materiales = $pdo->query("SELECT id_material, nombre FROM materiales ORDER BY nombre ASC")->fetchAll();
 $almacenes  = $pdo->query("SELECT id_almacen, nombre FROM almacenes ORDER BY nombre ASC")->fetchAll();
+$proyectos  = $pdo->query("SELECT id_proyecto, nombre FROM proyectos ORDER BY nombre ASC")->fetchAll();
 
 // Historial de movimientos
 $historial_stmt = $pdo->query("
     SELECT mi.id_movimiento, mi.fecha, mi.tipo_movimiento, mi.cantidad,
-           m.nombre as material, a.nombre as almacen
+           m.nombre as material, a.nombre as almacen, p.nombre as proyecto
     FROM movimientos_inventario mi
     JOIN materiales m ON m.id_material = mi.id_material
     JOIN almacenes a ON a.id_almacen = mi.id_almacen
+    LEFT JOIN proyectos p ON mi.id_proyecto = p.id_proyecto
     ORDER BY mi.id_movimiento DESC
     LIMIT 20
 ");
@@ -161,9 +168,9 @@ $historial = $historial_stmt->fetchAll();
 
 <?php require_once '../../modules/layouts/header.php'; ?>
 
-<nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
+<nav aria-label="breadcrumb">
   <ol class="breadcrumb">
-    <li class="breadcrumb-item"><a href="../../modules/dashboard/dashboard.php">Dashboard</a></li>
+    <li class="breadcrumb-item"><a class="text-decoration-none" href="../../modules/dashboard/dashboard.php">Dashboard</a></li>
     <li class="breadcrumb-item active" aria-current="page">Movimientos</li>
   </ol>
 </nav>
@@ -196,7 +203,7 @@ $historial = $historial_stmt->fetchAll();
   <div class="card shadow mt-2">
       <div class="card-header d-flex justify-content-between align-items-center">
           <h4 class="mb-0">Últimos 20 movimientos</h4>
-          <button type="button" class="btn btn-primary" id="addRowBtn"><i class="bi bi-plus-lg"></i> Registrar Movimiento</button>
+          <button type="button" class="btn btn-success" id="addRowBtn"><i class="bi bi-plus-lg"></i> Registrar Movimiento</button>
       </div>
       <div class="card-body table-responsive">
       <table id="tabla-datos" class="table table-striped table-bordered">
@@ -206,6 +213,7 @@ $historial = $historial_stmt->fetchAll();
               <th>Material</th>
               <th>Almacén</th>
               <th>Tipo</th>
+              <th>Proyecto</th>
               <th>Cantidad</th>
               <th>Acciones</th>
           </tr>
@@ -217,11 +225,12 @@ $historial = $historial_stmt->fetchAll();
                   <td><?= htmlspecialchars($h['material']) ?></td>
                   <td><?= htmlspecialchars($h['almacen']) ?></td>
                   <td><?= $h['tipo_movimiento'] ?></td>
+                  <td><?= htmlspecialchars($h['proyecto'] ?? '') ?></td>
                   <td><?= $h['cantidad'] ?></td>
                   <td>
-                  <button class="btn btn-sm btn-outline-secondary border-0 fw-semibold editBtn" data-id="<?= $h['id_movimiento'] ?>">
+                  <button type="button" class="btn btn-sm btn-outline-primary border-0 fw-semibold editBtn" data-id="<?= $h['id_movimiento'] ?>">
                      <i class="bi bi-pencil-square"></i> Editar</button>
-                  <button class="btn btn-sm btn-outline-danger border-0 fw-semibold deleteBtn" data-id="<?= $h['id_movimiento'] ?>">
+                  <button type="button" class="btn btn-sm btn-outline-danger border-0 fw-semibold deleteBtn" data-id="<?= $h['id_movimiento'] ?>">
                      <i class="bi bi-trash-fill"></i> Eliminar</button>
                   </td>
               </tr>
@@ -250,7 +259,7 @@ $historial = $historial_stmt->fetchAll();
               </div>
               <div class="mt-3 mb-3">
                 <label for="id_material" class="form-label">Material: *</label>
-                <select class="form-select" id="id_material" name="id_material" required>
+                <select class="form-select" id="id_material" name="id_material" data-live-search="true" required>
                     <option value="">-- Selecciona --</option>
                     <?php foreach ($materiales as $m): ?>
                         <option value="<?= $m['id_material'] ?>"
@@ -279,6 +288,15 @@ $historial = $historial_stmt->fetchAll();
                 </select>
               </div>
               <div class="mb-3">
+                <label for="id_proyecto" class="form-label">Proyecto: *</label>
+                <select class="form-select" id="id_proyecto" name="id_proyecto" required>
+                    <option value="">-- Selecciona --</option>
+                    <?php foreach ($proyectos as $p): ?>
+                        <option value="<?= $p['id_proyecto'] ?>"><?= htmlspecialchars($p['nombre']) ?></option>
+                    <?php endforeach; ?>
+                </select>
+              </div>
+              <div class="mb-3">
                 <label for="cantidad" class="form-label">Cantidad: *</label>
                 <input class="form-control" type="number" id="cantidad" name="cantidad" step="0.01" min="0.01" required>
               </div>
@@ -293,7 +311,7 @@ $historial = $historial_stmt->fetchAll();
 
 <script>
 $(document).ready(function() {
-    var table = $('#tabla-datos').DataTable({
+    const table = $('#tabla-datos').DataTable({
         language: {
             url: "https://cdn.datatables.net/plug-ins/1.11.5/i18n/es-ES.json"
         },
@@ -305,10 +323,59 @@ $(document).ready(function() {
         }
         ]
     });
-
+    
+    const select_render = {
+      no_results: function(data, escape) {
+          return '<div class="no-results">No se encontraron resultados</div>';
+      },
+      option_create: function(data, escape) {
+          return '<div class="create">Crear <strong>' + escape(data.input) + '</strong>&hellip;</div>';
+      },
+      max_items: function(data, escape) {
+          return '<div>Límite alcanzado, no se pueden agregar más elementos.</div>';
+      },
+      loading: function(data, escape) {
+          return '<div class="spinner">Cargando...</div>';
+      }      
+    };
+    
+    //selects 
+    const select_material = new TomSelect('#id_material',{
+    allowEmptyOption: true,
+    plugins: ['dropdown_input'],
+    render: select_render
+    });
+    
+    const select_almacen = new TomSelect('#id_almacen',{
+    allowEmptyOption: true,
+    plugins: ['dropdown_input'],
+    render: select_render
+    });
+    
+    const select_proyecto = new TomSelect('#id_proyecto',{
+    allowEmptyOption: true,
+    plugins: ['dropdown_input'],
+    render: select_render
+    });
+    
+    // Listen for changes on the first dropdown
+    const select_tipo = document.getElementById('tipo_movimiento');
+    select_tipo.addEventListener('change', function() {
+    if (this.value === 'salida') {
+      select_proyecto.enable(); // Enables the element
+    } else {
+      select_proyecto.setValue(''); // Optional: resets the selection
+      select_proyecto.disable();  // Disables the element
+    }
+    });
+    
     // Open Modal for Adding row
     $('#addRowBtn').click(function() {
         $('#dataForm')[0].reset();
+        select_material.setValue('');
+        select_almacen.setValue('');
+        select_proyecto.setValue('');
+        
         $('.modal-title').text('Registrar Movimiento');
         $('#action').val('create');
         $('#userModal').modal('show');
@@ -317,28 +384,43 @@ $(document).ready(function() {
 
     // Handle Edit Button Click
     $(document).on('click', '.editBtn', function() {
-        var id = $(this).data('id');
+        const id = $(this).data('id');
         $('#id_movimiento').val(id);
 
         //Get the row data
-        var data = table.row($(this).parents('tr')).data();
+        const data = table.row($(this).parents('tr')).data();
 
         // Map data to Modal fields (using IDs of input elements)
         $('#fecha').val(data[0]);
 
-        var idMaterial = $("#id_material option").filter(function() {
+        const idMaterial = $("#id_material option").filter(function() {
             return $(this).text().trim() === data[1];
         }).val();
 
-        $('#id_material').val(idMaterial);
+        select_material.setValue(idMaterial);
 
-        var idAlmacen = $("#id_almacen option").filter(function() {
+        const idAlmacen = $("#id_almacen option").filter(function() {
             return $(this).text().trim() === data[2];
         }).val();
 
-        $('#id_almacen').val(idAlmacen);
+        select_almacen.setValue(idAlmacen);
+        
         $('#tipo_movimiento').val(data[3]);
-        var cantidadFloat = parseFloat(data[4].replaceAll(',', ''));
+        
+        if (select_tipo.value === 'salida') {
+        select_proyecto.enable(); // Enables the element
+        } else {
+        select_proyecto.setValue('');
+        select_proyecto.disable();  // Disables the element
+        }
+        
+        const idProyecto = $("#id_proyecto option").filter(function() {
+            return $(this).text().trim() === data[4];
+        }).val();
+        
+        select_proyecto.setValue(idProyecto);
+        
+        const cantidadFloat = parseFloat(data[5].replaceAll(',', ''));
         $('#cantidad').val(cantidadFloat);
 
         $('.modal-title').text('Editar Movimiento');
@@ -349,7 +431,7 @@ $(document).ready(function() {
 
     // Handle Delete Button Click
     $(document).on('click', '.deleteBtn', function() {
-        var id = $(this).data('id');
+        const id = $(this).data('id');
         $('#id_movimiento').val(id);
         if(confirm("Estas seguro que deseas eliminar este movimiento?")) {
             $('#action').val('delete');

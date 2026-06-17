@@ -84,9 +84,9 @@ $unidades = $pdo->query("SELECT * FROM unidades_medida ORDER BY descripcion ASC"
 <?php require_once '../../modules/layouts/header.php'; ?>
 
 
-<nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
+<nav aria-label="breadcrumb">
   <ol class="breadcrumb">
-    <li class="breadcrumb-item"><a href="../../modules/dashboard/dashboard.php">Dashboard</a></li>
+    <li class="breadcrumb-item"><a class="text-decoration-none" href="../../modules/dashboard/dashboard.php">Dashboard</a></li>
     <li class="breadcrumb-item active" aria-current="page">Materiales</li>
   </ol>
 </nav>
@@ -117,7 +117,7 @@ $unidades = $pdo->query("SELECT * FROM unidades_medida ORDER BY descripcion ASC"
   <div class="card shadow mt-2">
       <div class="card-header d-flex justify-content-between align-items-center">
           <h4 class="mb-0">Lista de Materiales</h4>
-          <button type="button" class="btn btn-primary" id="addRowBtn"><i class="bi bi-plus-lg"></i> Nuevo Material</button>
+          <button type="button" class="btn btn-success" id="addRowBtn"><i class="bi bi-plus-lg"></i> Nuevo Material</button>
       </div>
       <div class="card-body table-responsive">
       <table id="tabla-datos" class="table table-striped table-bordered">
@@ -142,12 +142,12 @@ $unidades = $pdo->query("SELECT * FROM unidades_medida ORDER BY descripcion ASC"
                   <td><?= $m['unidad'] ?></td>
                   <td><?= number_format($m['precio_unitario_base'], 2) ?></td>
                   <td>
-                      <button class="btn btn-sm btn-outline-secondary border-0 fw-semibold editBtn" data-id="<?= $m['id_material'] ?>">
+                      <button type="button" class="btn btn-sm btn-outline-primary border-0 fw-semibold editBtn" data-id="<?= $m['id_material'] ?>">
                         <i class="bi bi-pencil-square"></i> Editar</button>
-                     <!--<button class="btn btn-sm btn-outline-danger deleteBtn" data-id="<?= $m['id_material'] ?>">
+                     <!--<button type="button" class="btn btn-sm btn-outline-danger deleteBtn" data-id="<?= $m['id_material'] ?>">
                      Eliminar</button>-->
-                      <a class="btn btn-outline-success btn-sm border-0 fw-semibold" href="movimientos.php?id_material=<?= $m['id_material'] ?>">
-                       <i class="bi bi-eye-fill"></i> Ver stock</a>
+                      <button type="button" class="btn btn-outline-secondary btn-sm border-0 fw-semibold viewBtn" data-id="<?= $m['id_material'] ?>">
+                       <i class="bi bi-eye-fill"></i> Ver stock</button>
                   </td>
               </tr>
           <?php endforeach; ?>
@@ -208,6 +208,24 @@ $unidades = $pdo->query("SELECT * FROM unidades_medida ORDER BY descripcion ASC"
    </div>
 </div><!-- end modal -->
 </form>
+<!-- view stock modal -->
+<div class="modal fade" id="detailsModal" tabindex="-1" aria-labelledby="detailsModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="detailsModalLabel">Stock de Material</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <!-- AJAX will dynamically inject data here -->
+            <div class="modal-body" id="modalDynamicContent">
+                <div class="text-center">Cargando...</div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+            </div>
+        </div>
+    </div>
+</div>
 
 <?php if (empty($materiales)): ?>
     <p>No se encontraron materiales.</p>
@@ -231,7 +249,7 @@ $(document).ready(function() {
     // Open Modal for Adding row
     $('#addRowBtn').click(function() {
         $('#dataForm')[0].reset();
-        $('.modal-title').text('Crear Material');
+        $('#userModalLabel').text('Crear Material');
         $('#action').val('create');
         $('#userModal').modal('show');
     });
@@ -243,7 +261,7 @@ $(document).ready(function() {
 
         //Get the row data
         var data = table.row($(this).parents('tr')).data();
-        console.log(data);
+        
         // Map data to Modal fields (using IDs of input elements)
         $('#nombre').val(data[1]);
         $('#descripcion').val(data[2]);
@@ -261,10 +279,37 @@ $(document).ready(function() {
         var precioFloat = parseFloat(data[5].replaceAll(',', ''));
         $('#precio').val(precioFloat);
 
-        $('.modal-title').text('Editar Material');
+        $('#userModalLabel').text('Editar Material');
         $('#action').val('update');
         $('#userModal').modal('show');
 
+    });
+    
+    //Handle View button Click
+     $('.viewBtn').on('click', function() {
+        var materialId = $(this).data('id'); // Grab ID from button data-id attribute
+        
+        // Reset modal body to a loader before sending the request
+        $('#modalDynamicContent').html('<div class="text-center">Cargando...</div>');
+        
+        // Open the Bootstrap modal structure manually
+        var myModal = new bootstrap.Modal(document.getElementById('detailsModal'));
+        myModal.show();
+
+        // Perform AJAX request
+        $.ajax({
+            url: 'fetch_stock.php',
+            type: 'POST',
+            data: { id: materialId },
+            dataType: 'html', // Expecting HTML structure back from PHP
+            success: function(response) {
+                // Inject the processed PHP template directly into the modal body
+                $('#modalDynamicContent').html(response);
+            },
+            error: function() {
+                $('#modalDynamicContent').html('<div class="alert alert-danger">Error al obtener registros.</div>');
+            }
+        });
     });
 
     // Handle Delete Button Click

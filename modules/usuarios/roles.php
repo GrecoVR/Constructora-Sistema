@@ -22,7 +22,7 @@ $exito = '';
 
 // Carga el usuario
 $stmt = $pdo->prepare("
-    SELECT us.*, e.nombre as empleado
+    SELECT us.*, CONCAT(e.nombre, ' ', e.apellidos) AS empleado
     FROM usuarios_sistema us
     JOIN empleados e ON e.id_empleado = us.id_empleado
     WHERE us.id_usuario_sistema = ?
@@ -68,14 +68,14 @@ $i=0;
 
 <?php require_once '../../modules/layouts/header.php'; ?>
 
-<nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
+<nav aria-label="breadcrumb">
   <ol class="breadcrumb">
-    <li class="breadcrumb-item"><a href="index.php">Usuarios</a></li>
+    <li class="breadcrumb-item"><a class="text-decoration-none" href="index.php">Usuarios</a></li>
     <li class="breadcrumb-item active" aria-current="page">Editar Roles</li>
   </ol>
 </nav>
 
-<h2 class="mb-4 fw-semibold">🔐 Roles de : </h2>
+<h2 class="mb-4 fw-semibold">🔐 Editar Roles de : <?= htmlspecialchars($usuario['nombre_usuario']) ?></h2>
 
 <h4 class="mb-4 fw-semibold"><?= htmlspecialchars($usuario['empleado']) ?></h4>
 
@@ -90,11 +90,12 @@ $i=0;
     </div>
 <?php endif; ?>
 
+<form method="POST">
 <div class="card shadow">
 <div class="card-body">
-<form method="POST">
+
     <p class="fw-semibold">Selecciona los roles para este usuario:</p>
-    <div class="d-grid gap-2 mb-4" style="grid-template-columns: auto 1fr;">
+    <div class="d-grid gap-2 mb-4 p-2" style="grid-template-columns: auto 1fr;">
     <?php foreach ($todos_roles as $rol): ?>
       <div class="form-check form-switch">
           <input class="form-check-input" type="checkbox" id="rol_<?= $i ?>" name="roles[]" value="<?= $rol['id_rol'] ?>"
@@ -106,8 +107,8 @@ $i=0;
     <?php endforeach; ?>
     </div>
     <button class="btn btn-primary" type="submit">Guardar roles</button>
+</div>
+</div>
 </form>
-</div>
-</div>
 
 <?php require_once '../../modules/layouts/footer.php'; ?>

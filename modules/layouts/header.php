@@ -19,9 +19,10 @@ $nombre   = $_SESSION['nombre'];
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
   <!-- datatables -->
   <link rel="stylesheet" href="https://cdn.datatables.net/2.3.8/css/dataTables.bootstrap5.min.css">
+  <!-- tom select -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tom-select@2.6.1/dist/css/tom-select.bootstrap5.min.css">
   <!-- Custom styles for this template -->
   <style>
-
   body {
      height: 100%;
      transition:
@@ -78,7 +79,21 @@ $nombre   = $_SESSION['nombre'];
       flex-direction: column;
       flex-grow:1;
     }
+    
+    .autocomplete-box{
+    position:absolute;
+    top:100%;
+    left:0;
+    width:100%;
+    z-index:1000;
+    display:none;
+    }
 
+    .autocomplete-item{
+        display:block;
+        padding:10px;
+    }
+        
     @media screen and (max-width: 575px) {
       #sidebarshow {
         display: inline;
@@ -99,6 +114,8 @@ $nombre   = $_SESSION['nombre'];
   <!-- datatables -->
   <script src="https://cdn.datatables.net/2.3.8/js/dataTables.min.js" crossorigin="anonymous"></script>
   <script src="https://cdn.datatables.net/2.3.8/js/dataTables.bootstrap5.min.js" crossorigin="anonymous"></script>
+  <!-- tom-select -->
+  <script src="https://cdn.jsdelivr.net/npm/tom-select@2.6.1/dist/js/tom-select.complete.min.js" crossorigin="anonymous"></script>
 </head>
 <!-- Body of dashboard - inside is all content-->
 <body>
@@ -124,14 +141,17 @@ $nombre   = $_SESSION['nombre'];
           style="margin-right: 10px; padding: 2px 6px 2px 6px;" id="sidebarshow">
           <i class="bi bi-arrow-bar-right"></i>
         </button>
-        <a class="navbar-brand" href="#">Empresa Constructora</a>
-
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
           aria-controls="navbarSupportedContent" aria-expanded="true" aria-label="Toggle navigation">
           <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
-          <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+          <form class="d-flex mt-3 mt-lg-0" role="search" action="../../modules/layouts/search.php" method="post">
+            <input class="form-control me-2" type="search" id="search" name="q" placeholder="Buscar" aria-label="Search">
+            <button class="btn btn-outline-secondary" type="submit">Buscar</button>
+            <div id="suggestions" class="autocomplete-box list-group list-group-flush bg-body-tertiary"></div>
+          </form>
+          <ul class="navbar-nav ms-auto me-2 mb-lg-0">
             <!-- Cambiar Tema -->
             <li class="nav-item dropdown">
             <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
@@ -209,34 +229,34 @@ $nombre   = $_SESSION['nombre'];
           </ul>
           <!-- Cambiar Tema claro oscuro -->
           <div class="dropdown-center">
-          <ul class="navbar-nav ms-auto me-3">
+          <ul class="navbar-nav me-3">
           <li class="nav-item dropdown">
-            <button class="btn btn-bd-primary py-2 dropdown-toggle d-flex align-items-center" id="bd-theme"
-              type="button" aria-expanded="false" data-bs-toggle="dropdown" aria-label="Toggle theme (auto)">
-              Modo: <i class="bi bi-circle-half mx-2" id="theme-icon-active"></i>
+            <a class="nav-link dropdown-toggle d-flex align-items-center" id="bd-theme"
+              aria-expanded="false" data-bs-toggle="dropdown" aria-label="Toggle theme (auto)">
+              Modo: <i class="bi bi-circle-half me-2" id="theme-icon-active"></i>
               <span class="visually-hidden" id="bd-theme-text">Cambiar Tema</span>
-            </button>
+            </a>
             <ul class="dropdown-menu dropdown-menu-end shadow" aria-labelledby="bd-theme-text">
               <li>
-                <button type="button" class="dropdown-item d-flex align-items-center" data-bs-theme-value="light"
+                <a class="dropdown-item d-flex align-items-center" data-bs-theme-value="light"
                   data-bs-icon-value="sun-fill" aria-pressed="false">
                   <i class="bi bi-sun-fill mx-2"></i>
                   Claro
-                </button>
+                </a>
               </li>
               <li>
-                <button type="button" class="dropdown-item d-flex align-items-center" data-bs-theme-value="dark"
+                <a class="dropdown-item d-flex align-items-center" data-bs-theme-value="dark"
                   data-bs-icon-value="moon-stars-fill" aria-pressed="false">
                   <i class="bi bi-moon-stars-fill mx-2"></i>
                   Oscuro
-                </button>
+                </a>
               </li>
               <li>
-                <button type="button" class="dropdown-item d-flex align-items-center active" data-bs-theme-value="auto"
+                <a class="dropdown-item d-flex align-items-center active" data-bs-theme-value="auto"
                   data-bs-icon-value="circle-half" aria-pressed="true">
                   <i class="bi bi-circle-half mx-2"></i>
                   Auto
-                </button>
+                </a>
               </li>
             </ul>
             </li>

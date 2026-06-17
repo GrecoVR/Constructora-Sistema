@@ -86,7 +86,7 @@ $metodos = $pdo->query("SELECT * FROM metodos_pago ORDER BY nombre ASC")->fetchA
 // Pagos recientes con ajustes
 $pagos = $pdo->query("
     SELECT pe.id_pago_empleado, pe.fecha_pago, pe.monto, pe.estado,
-           e.nombre as empleado, mp.nombre as metodo,
+           e.nombre as empleado, e.apellidos, mp.nombre as metodo,
            COALESCE(SUM(ap.monto), 0) as total_ajustes
     FROM pagos_empleados pe
     JOIN empleados e ON e.id_empleado = pe.id_empleado
@@ -286,7 +286,8 @@ $pagos = $pdo->query("
                         <thead>
                             <tr>
                                 <th class="ps-3">ID</th>
-                                <th>Empleado</th>
+                                <th>Nombres</th>
+                                <th>Apellidos</th>
                                 <th>Fecha</th>
                                 <th>Método</th>
                                 <th class="text-end">Monto (Bs)</th>
@@ -299,11 +300,8 @@ $pagos = $pdo->query("
                             <?php foreach ($pagos as $p): ?>
                                 <tr>
                                     <td class="ps-3 text-muted fw-semibold">#<?= $p['id_pago_empleado'] ?></td>
-                                    <td>
-                                        <span class="fw-semibold">
-                                            <i class="bi bi-person-fill text-primary me-1"></i><?= htmlspecialchars($p['empleado']) ?>
-                                        </span>
-                                    </td>
+                                    <td><i class="bi bi-person-fill me-1"></i><?= htmlspecialchars($p['empleado']) ?></td>
+                                    <td><?= htmlspecialchars($p['apellidos']) ?></td>
                                     <td class="text-muted"><?= formatoFechaCorta($p['fecha_pago']) ?></td>
                                     <td><span class="badge bg-secondary bg-opacity-10 text-secondary"><?= htmlspecialchars($p['metodo']) ?></span></td>
                                     <td class="text-end"><?= number_format($p['monto'], 2) ?></td>
