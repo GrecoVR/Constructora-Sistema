@@ -183,7 +183,7 @@ $nombre   = $_SESSION['nombre'];
                 <div class="card-body">
                     <nav class="nav nav-pills flex-column">
                         <?php if (in_array('registrar_movimientos', $permisos)): ?>
-                        <a class="nav-link" href="../modules/materiales/movimientos.php">
+                        <a class="nav-link" href="../../modules/materiales/movimientos.php">
                            <i class="bi bi-file-bar-graph me-2"></i> Movimientos de Inventario
                         </a>
                         <?php endif; ?>
