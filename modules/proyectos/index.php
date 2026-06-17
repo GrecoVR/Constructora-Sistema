@@ -49,7 +49,7 @@ $proyectos = $stmt->fetchAll();
 
 <?php require_once '../../modules/layouts/header.php'; ?>
 
-<nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
+<nav aria-label="breadcrumb">
   <ol class="breadcrumb">
     <li class="breadcrumb-item"><a href="../../modules/dashboard/dashboard.php">Dashboard</a></li>
     <li class="breadcrumb-item active" aria-current="page">Proyectos</li>

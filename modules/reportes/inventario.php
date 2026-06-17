@@ -179,14 +179,14 @@ $mas_usados = $pdo->query("
 
         <?php if ($bajo_minimo): ?>
         <div class="col-12 <?= $agotados ? 'col-lg-7' : '' ?>">
-            <div class="section-card">
-                <div class="section-head">
-                    <div class="section-icon" style="background:var(--yellow-dim);color:var(--yellow)"><i class="bi bi-exclamation-triangle-fill"></i></div>
+            <div class="card">
+                <div class="card-header d-flex justify-content-between gap-2">
+                    <div><i class="bi bi-exclamation-triangle-fill"></i></div>
                     <h5>Materiales bajo stock mínimo</h5>
                     <span class="ms-auto badge" style="background:var(--yellow-dim);color:var(--yellow);font-size:.75rem"><?= count($bajo_minimo) ?></span>
                 </div>
-                <div class="table-responsive">
-                    <table class="table table-vc">
+                <div class="card-body table-responsive">
+                    <table class="table table-striped">
                         <thead>
                             <tr>
                                 <th>Material</th>
